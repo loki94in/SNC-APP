@@ -1,0 +1,15 @@
+{
+  "name": "snc",
+  "local_port": 50826,
+  "entrypoint": "bun run dev",
+  "publish": {
+    "label": "snc",
+    "type": "http",
+    "entrypoint": "bun run prod",
+    "published_port": 58543,
+    "env": {
+      "NODE_ENV": "production",
+      "ZO_CLIENT_IDENTITY_TOKEN": "none"
+    }
+  }
+}
