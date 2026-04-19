@@ -5,7 +5,13 @@ import { audit } from "../audit.js";
 const sessions = new Hono();
 
 sessions.get("/", async (c) => {
-  return c.json({ sessions: db.prepare("SELECT * FROM sessions ORDER BY session_no DESC").all() });
+  const sessions = db.prepare(`
+    SELECT s.*, p.name as patient_name 
+    FROM sessions s 
+    LEFT JOIN patients p ON p.id = s.patient_id 
+    ORDER BY s.session_no DESC
+  `).all();
+  return c.json({ sessions });
 });
 
 sessions.get("/by-patient/:patientId", async (c) => {

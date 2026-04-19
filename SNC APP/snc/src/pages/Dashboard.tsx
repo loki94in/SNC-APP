@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { IconUsers, IconReceipt, IconTrendingUp, IconClock } from "@tabler/icons-react";
 import { api } from "@/lib/api";
 import { onAppEvent } from "@/lib/appEvents";
@@ -102,7 +103,11 @@ export default function Dashboard() {
           ) : (
             <div className="space-y-3">
               {recentPatients.map((pt: any) => (
-                <div key={pt.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#f0f7f4] cursor-pointer transition-colors">
+                <Link
+                  key={pt.id}
+                  to={`/patients/${pt.id}`}
+                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-[#f0f7f4] cursor-pointer transition-colors"
+                >
                   <div className="w-10 h-10 bg-[#d4ede1] rounded-full flex items-center justify-center text-sm font-bold text-[#1a7a4a]">
                     {pt.name?.charAt(0) || "?"}
                   </div>
@@ -113,7 +118,7 @@ export default function Dashboard() {
                   <span className="px-2 py-0.5 bg-[#dcfce7] text-[#16a34a] rounded-full text-[11px] font-bold">
                     Active
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           )}
