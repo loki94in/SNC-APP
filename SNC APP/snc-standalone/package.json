@@ -1,0 +1,12 @@
+{
+  "name": "snc-standalone",
+  "version": "1.0.0",
+  "description": "SNC - Siyaram Neurotherapy Center App",
+  "main": "server.ts",
+  "scripts": {
+    "start": "bun run server.ts"
+  },
+  "dependencies": {
+    "bun": "^1.3.0"
+  }
+}
