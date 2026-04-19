@@ -1312,6 +1312,35 @@ tbody tr:hover td{background:var(–bg);cursor:pointer}
 
 // ─── DATA LAYER ──────────────────────────────────────────────
 
+const API_BASE = 'http://localhost:3000/api';
+let authToken = localStorage.getItem('snc_api_token') || null;
+
+async function apiFetch(path, opts={}) {
+  const r = await fetch(`${API_BASE}${path}`, {
+    ...opts,
+    headers: { ...(opts.headers||{}), ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}) }
+  });
+  if (!r.ok) throw new Error(`API ${path} failed: ${r.status}`);
+  const ct = r.headers.get('content-type')||'';
+  return ct.includes('json') ? r.json() : r.text();
+}
+
+async function apiPost(path, body) { return apiFetch(path, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); }
+async function apiPatch(path, body) { return apiFetch(path, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); }
+async function apiDel(path) { return apiFetch(path, { method:'DELETE' }); }
+async function apiGet(path) { return apiFetch(path); }
+
+// localStorage-backed DB for offline seed data
+const DB = {
+  get(k){ try{ return JSON.parse(localStorage.getItem('snc_'+k))||null } catch{ return null } },
+  set(k,v){ localStorage.setItem('snc_'+k, JSON.stringify(v)) },
+  push(k,v){ const a=this.get(k)||[]; a.push(v); this.set(k,a); return v },
+  update(k,id,patch){ const a=this.get(k)||[]; const i=a.findIndex(x=>x.id===id); if(i>-1){a[i]={...a[i],...patch}; this.set(k,a)} },
+  delete(k,id){ const a=(this.get(k)||[]).filter(x=>x.id!==id); this.set(k,a) },
+  find(k,fn){ return (this.get(k)||[]).find(fn)||null },
+  filter(k,fn){ return (this.get(k)||[]).filter(fn) }
+};
+
 const DB = {
 
   get(k){try{return JSON.parse(localStorage.getItem(&#x27;snc\_&#x27;+k))||null}catch{return null}},
@@ -1344,13 +1373,9 @@ function fmtMoney(n){return&#x27;₹&#x27;+(n||0).toLocaleString(&#x27;en-IN&#x2
 
 let currentUser = null;
 
-function initData(){
-
-  if(!DB.get(&#x27;users&#x27;)){
-
-    DB.set(&#x27;users&#x27;,\[
-
-      {id:&#x27;u1&#x27;,name:&#x27;Pt. Pradeep Kumar&#x27;,loginId:&#x27;admin&#x27;,passwordHash:simpleHash(&#x27;admin123&#x27;),role:&#x27;ADMIN&#x27;,active:true},
+function initData() {
+  // Default seed data is handled server-side on first login
+},
 
       {id:&#x27;u2&#x27;,name:&#x27;Ku. Sangeeta&#x27;,loginId:&#x27;sangeeta&#x27;,passwordHash:simpleHash(&#x27;pass123&#x27;),role:&#x27;CLINICIAN&#x27;,active:true},
 
@@ -1384,28 +1409,23 @@ function initData(){
 
 }
 
-function doLogin(){
-
-  const lid=document.getElementById(&#x27;lg-id&#x27;).value.trim();
-
-  const pw=document.getElementById(&#x27;lg-pw&#x27;).value;
-
-  const users=DB.get(&#x27;users&#x27;)||\[\];
-
-  const user=users.find(u=&gt;u.loginId===lid&amp;&amp;u.passwordHash===simpleHash(pw)&amp;&amp;u.active);
-
-  if(!user){document.getElementById(&#x27;lg-err&#x27;).style.display=&#x27;block&#x27;;return;}
-
-  document.getElementById(&#x27;lg-err&#x27;).style.display=&#x27;none&#x27;;
-
-  currentUser=user;
-
-  sessionStorage.setItem(&#x27;snc_session&#x27;,JSON.stringify({id:user.id,role:user.role}));
-
-  document.getElementById(&#x27;login-screen&#x27;).classList.add(&#x27;hidden&#x27;);
-
-  initApp();
-
+async function doLogin() {
+  const lid = document.getElementById('lg-id').value.trim();
+  const pw = document.getElementById('lg-pw').value;
+  try {
+    const r = await fetch(`${API_BASE}/auth/login`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ loginId: lid, password: pw })
+    });
+    const d = await r.json();
+    if (!r.ok) { document.getElementById('lg-err').style.display='block'; return; }
+    authToken = d.token;
+    localStorage.setItem('snc_api_token', authToken);
+    currentUser = d.user;
+    sessionStorage.setItem('snc_session', JSON.stringify({ id: d.user.id, role: d.user.role }));
+    document.getElementById('login-screen').classList.add('hidden');
+    initApp();
+  } catch(e) { document.getElementById('lg-err').style.display='block'; }
 }
 
 function doLogout(){
@@ -1422,48 +1442,25 @@ function doLogout(){
 
 }
 
-function checkSession(){
-
-  const s=sessionStorage.getItem(&#x27;snc_session&#x27;);
-
-  if(!s)return false;
-
-  const sess=JSON.parse(s);
-
-  const user=DB.find(&#x27;users&#x27;,u=&gt;u.id===sess.id);
-
-  if(user){currentUser=user;return true;}
-
-  return false;
-
+async function checkSession() {
+  const s = sessionStorage.getItem('snc_session');
+  if (!s || !authToken) return false;
+  try {
+    const r = await fetch(`${API_BASE}/auth/me`, { headers: { Authorization: `Bearer ${authToken}` } });
+    if (r.ok) { currentUser = (await r.json()).user; return true; }
+  } catch(e) {}
+  authToken = null; localStorage.removeItem('snc_api_token'); return false;
 }
 
 // ─── APP INIT ─────────────────────────────────────────────────
 
-function initApp(){
-
-  // Sidebar user badge
-
-  document.getElementById(&#x27;sb-av&#x27;).textContent=currentUser.name.split(&#x27; &#x27;).map(w=&gt;w\[0\]).join(&#x27;&#x27;).slice(0,2);
-
-  document.getElementById(&#x27;sb-name&#x27;).textContent=currentUser.name;
-
-  document.getElementById(&#x27;sb-role&#x27;).textContent=currentUser.role;
-
-  // Enforce nav permissions
-
-  applyNavPermissions();
-
-  // Set today date
-
-  document.getElementById(&#x27;today-date&#x27;).textContent=fmtDate(today());
-
-  // Load dashboard
-
+async function initApp() {
+  document.getElementById('sb-av').textContent = currentUser.name.split(' ').map(w=>w[0]).join('').slice(0,2);
+  document.getElementById('sb-name').textContent = currentUser.name;
+  document.getElementById('sb-role').textContent = currentUser.role;
+  document.getElementById('today-date').textContent = fmtDate(today());
   loadDashboard();
-
   populateClinicianDropdowns();
-
 }
 
 function applyNavPermissions(){
@@ -1544,74 +1541,23 @@ function switchTab(el,pane){
 
 // ─── DASHBOARD ────────────────────────────────────────────────
 
-function loadDashboard(){
-
-  const patients=DB.get(&#x27;patients&#x27;)||\[\];
-
-  const sessions=DB.get(&#x27;sessions&#x27;)||\[\];
-
-  const todaySes=sessions.filter(s=&gt;s.date===today());
-
-  const rev=todaySes.reduce((a,s)=&gt;a+(parseInt(s.payment)||0),0);
-
-  const regPlans=(DB.get(&#x27;regular-plans&#x27;)||\[\]).filter(p=&gt;p.active);
-
-  document.getElementById(&#x27;s-total&#x27;).textContent=patients.length;
-
-  document.getElementById(&#x27;s-today&#x27;).textContent=todaySes.length;
-
-  document.getElementById(&#x27;s-rev&#x27;).textContent=fmtMoney(rev);
-
-  document.getElementById(&#x27;s-reg&#x27;).textContent=regPlans.length;
-
-  // Regular patients today
-
-  const todayDay=\[&#x27;Sun&#x27;,&#x27;Mon&#x27;,&#x27;Tue&#x27;,&#x27;Wed&#x27;,&#x27;Thu&#x27;,&#x27;Fri&#x27;,&#x27;Sat&#x27;\]\[new Date().getDay()\];
-
-  const dueToday=regPlans.filter(p=&gt;p.frequency===&#x27;DAILY&#x27;||(p.days&amp;&amp;p.days.includes(todayDay))||p.frequency===&#x27;ALT&#x27;);
-
-  const regWrap=document.getElementById(&#x27;dash-regular-list&#x27;);
-
-  if(dueToday.length===0){regWrap.innerHTML=&#x27;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;📭&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No regular patients today&lt;/div&gt;&lt;/div&gt;&#x27;;return;}
-
-  regWrap.innerHTML=&#x27;&#x27;;
-
-  dueToday.forEach(plan=&gt;{
-
-    const pt=DB.find(&#x27;patients&#x27;,p=&gt;p.id===plan.patientId);
-
-    if(!pt)return;
-
-    const visits=DB.filter(&#x27;visit-entries&#x27;,v=&gt;v.planId===plan.id);
-
-    const d=document.createElement(&#x27;div&#x27;);
-
-    d.style.cssText=&#x27;display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)&#x27;;
-
-    d.innerHTML`&lt;div style=&quot;font-size:20px&quot;&gt;🧑&lt;/div&gt;&lt;div style=&quot;flex:1&quot;&gt;&lt;div style=&quot;font-weight:600;font-size:13.5px&quot;&gt;${pt.name}&lt;/div&gt;&lt;div style=&quot;font-size:12px;color:var(--text-muted)&quot;&gt;${visits.length} sessions done&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;btn btn-sm btn-p&quot; onclick=&quot;openPatientDetail(&#x27;${pt.id}&#x27;)&quot;&gt;View&lt;/button&gt;`;
-
-    regWrap.appendChild(d);
-
-  });
-
-  // Recent sessions
-
-  const recentWrap=document.getElementById(&#x27;dash-recent-list&#x27;);
-
-  if(todaySes.length===0){recentWrap.innerHTML=&#x27;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;📋&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No sessions today&lt;/div&gt;&lt;/div&gt;&#x27;;return;}
-
-  recentWrap.innerHTML=\`&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Patient&lt;/th&gt;&lt;th&gt;Amount&lt;/th&gt;&lt;th&gt;Response&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;${
-
-    todaySes.slice(-5).reverse().map(s=&gt;{
-
-      const pt=DB.find(&#x27;patients&#x27;,p=&gt;p.id===s.patientId);
-
-      retur`&lt;tr onclick=&quot;openPatientDetail(&#x27;${s.patientId}&#x27;)&quot;&gt;&lt;td&gt;${pt?pt.name:&#x27;—&#x27;}&lt;/td&gt;&lt;td&gt;${fmtMoney(s.payment)}&lt;/td&gt;&lt;td&gt;${responseBadge(s.post?.response)}&lt;/td&gt;&lt;/tr&gt;`;
-
-    }).join(&#x27;&#x27;)
-
-  }&lt;/tbody&gt;&lt;/table&gt;\`;
-
+async function loadDashboard() {
+  try {
+    const [dash, patients] = await Promise.all([
+      apiGet('/dashboard'),
+      apiGet('/patients')
+    ]);
+    const s = dash.stats || {};
+    document.getElementById('stat-total').textContent = s.totalPatients || 0;
+    document.getElementById('stat-sessions').textContent = s.todaySessions || 0;
+    document.getElementById('stat-revenue').textContent = fmtMoney(s.monthRevenue || 0);
+    document.getElementById('stat-plans').textContent = s.activePlans || 0;
+    const rec = (patients.patients || []).slice(-5).reverse();
+    document.getElementById('pt-list').innerHTML = rec.length
+      ? rec.map(p => `<tr onclick="openPatientDetail('${p.id}')"><td><strong>${p.regNo}</strong></td><td style="font-weight:600">${p.name}</td><td>${p.age||'—'}/${p.sex?.charAt(0)||'?'}</td><td>${p.mobile||'—'}</td><td>${p.active?'<span class="badge bg-g">Active</span>':'<span class="badge bg-grey">Inactive</span>'}</td></tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">No patients yet</td></tr>';
+    loadRegularPatientsToday();
+  } catch(e) { console.error('Dashboard load failed', e); }
 }
 
 function responseBadge(r){
@@ -1628,39 +1574,20 @@ let patientFilter=&#x27;&#x27;;
 
 function filterPatients(v){patientFilter=v.toLowerCase();renderPatientTable();}
 
-function renderPatientTable(){
-
-  const patients=(DB.get(&#x27;patients&#x27;)||\[\]).filter(p=&gt;!patientFilter||p.name.toLowerCase().includes(patientFilter)||p.regNo.toLowerCase().includes(patientFilter));
-
-  const tbody=document.getElementById(&#x27;patient-table-body&#x27;);
-
-  document.getElementById(&#x27;patient-empty&#x27;).style.display=patients.length?&#x27;none&#x27;:&#x27;block&#x27;;
-
-  if(!patients.length){tbody.innerHTML=&#x27;&#x27;;return;}
-
-  tbody.innerHTML=patients.map(p=&gt;\`
-
-    &lt;tr onclick=&quot;openPatientDetail(&#x27;${p.id}&#x27;)&quot;&gt;
-
-      &lt;td&gt;&lt;strong&gt;${p.regNo}&lt;/strong&gt;&lt;/td&gt;
-
-      &lt;td&gt;&lt;div style=&quot;font-weight:600&quot;&gt;${p.name}&lt;/div&gt;&lt;/td&gt;
-
-      &lt;td&gt;${p.age}/${p.sex?.\[0\]||&#x27;?&#x27;}&lt;/td&gt;
-
-      &lt;td&gt;${p.mobile||&#x27;—&#x27;}&lt;/td&gt;
-
-      &lt;td&gt;${(p.conditions||\[\]).slice(0,3).map(c=`&lt;span class=&quot;badge bg-b&quot;&gt;${c}&lt;/span&gt;`).join(&#x27; &#x27;)}&lt;/td&gt;
-
-      &lt;td&gt;${p.active?&#x27;&lt;span class=&quot;badge bg-g&quot;&gt;Active&lt;/span&gt;&#x27;:&#x27;&lt;span class=&quot;badge bg-grey&quot;&gt;Inactive&lt;/span&gt;&#x27;}&lt;/td&gt;
-
-      &lt;td onclick=&quot;event.stopPropagation()&quot;&gt;&lt;button class=&quot;btn btn-sm btn-o&quot; onclick=&quot;openPatientDetail(&#x27;${p.id}&#x27;)&quot;&gt;View&lt;/button&gt;&lt;/td&gt;
-
-    &lt;/tr&gt;\`).join(&#x27;&#x27;);
-
+async function renderPatientTable() {
+  try {
+    const data = await apiGet('/patients');
+    const patients = data.patients || [];
+    const tbody = document.getElementById('patient-table-body');
+    document.getElementById('patient-empty').style.display = patients.length ? 'none' : 'block';
+    if (!patients.length) { tbody.innerHTML = ''; return; }
+    const q = document.getElementById('pt-search')?.value?.toLowerCase() || '';
+    const filtered = patients.filter(p => !q || p.name?.toLowerCase().includes(q) || p.regNo?.toLowerCase().includes(q));
+    tbody.innerHTML = filtered.map(p => `<tr onclick="openPatientDetail('${p.id}')"><td><strong>${p.regNo}</strong></td><td><div style="font-weight:600">${p.name}</div></td><td>${p.age||'—'}/${p.sex?.charAt(0)||'?'}</td><td>${p.mobile||'—'}</td><td>${(p.conditions||[]).slice(0,3).map(c=>`<span class="badge bg-b">${c}</span>`).join(' ')}</td><td>${p.active?'<span class="badge bg-g">Active</span>':'<span class="badge bg-grey">Inactive</span>'}</td><td onclick="event.stopPropagation()"><button class="btn btn-sm btn-o" onclick="openPatientDetail('${p.id}')">View</button></td></tr>`).join('');
+  } catch(e) { console.error(e); }
 }
 
-function openAddPatient(){
+async function openAddPatient() {{
 
   document.getElementById(&#x27;pt-name&#x27;).value=&#x27;&#x27;;
 
@@ -1686,44 +1613,26 @@ function openAddPatient(){
 
 }
 
-function savePatient(){
-
-  const name=document.getElementById(&#x27;pt-name&#x27;).value.trim();
-
-  const mob=document.getElementById(&#x27;pt-mob&#x27;).value.trim();
-
-  if(!name||!mob){toast(&#x27;Name and mobile are required&#x27;,&#x27;t-err&#x27;);return;}
-
-  const pts=DB.get(&#x27;patients&#x27;)||\[\];
-
-  const regNo=document.getElementById(&#x27;pt-reg&#x27;).value.trim()||&#x27;SNC&#x27;+String(pts.length+1).padStart(4,&#x27;0&#x27;);
-
-  const conds=getChecked(&#x27;cond-group&#x27;);
-
-  const restrs=getChecked(&#x27;restr-group&#x27;);
-
-  const pt={
-
-    id:uid(),regNo,name,age:document.getElementById(&#x27;pt-age&#x27;).value,sex:document.getElementById(&#x27;pt-sex&#x27;).value,
-
-    occupation:document.getElementById(&#x27;pt-occ&#x27;).value,address:document.getElementById(&#x27;pt-addr&#x27;).value,
-
-    mobile:mob,telephone:document.getElementById(&#x27;pt-tel&#x27;).value,
-
-    conditions:conds,restrictions:restrs,history:document.getElementById(&#x27;pt-history&#x27;).value,
-
-    active:true,createdAt:today()
-
+async function savePatient() {
+  const name = document.getElementById('pt-name').value.trim();
+  const mob = document.getElementById('pt-mob').value.trim();
+  if (!name || !mob) { toast('Name and mobile are required', 't-err'); return; }
+  const conditions = [...document.querySelectorAll('#cond-group .ci.checked')].map(el => el.querySelector('input').value);
+  const restrictions = [...document.querySelectorAll('#restr-group .ci.checked')].map(el => el.querySelector('input').value);
+  const payload = {
+    name, mobile: mob,
+    age: document.getElementById('pt-age').value, sex: document.getElementById('pt-sex').value,
+    occupation: document.getElementById('pt-occ').value, address: document.getElementById('pt-addr').value,
+    telephone: document.getElementById('pt-tel').value, conditions, restrictions,
+    history: document.getElementById('pt-history').value,
+    regNo: document.getElementById('pt-reg').value.trim() || undefined
   };
-
-  DB.push(&#x27;patients&#x27;,pt);
-
-  closeModal(&#x27;modal-patient&#x27;);
-
-  renderPatientTable();
-
-  toast`Patient ${name} registered ✅`,&#x27;t-ok&#x27;);
-
+  try {
+    await apiPost('/patients', payload);
+    closeModal('modal-patient');
+    renderPatientTable();
+    toast('Patient ' + name + ' registered', 't-ok');
+  } catch(e) { toast('Failed to save patient', 't-err'); }
 }
 
 function getChecked(groupId){
@@ -1736,211 +1645,31 @@ function getChecked(groupId){
 
 let activePatientId=&#x27;&#x27;;
 
-function openPatientDetail(pid){
-
-  activePatientId=pid;
-
-  const pt=DB.find(&#x27;patients&#x27;,p=&gt;p.id===pid);
-
-  if(!pt)return;
-
-  gotoScreen(&#x27;patient-detail&#x27;,null);
-
-  // Hero
-
-  const initials=pt.name.split(&#x27; &#x27;).map(w=&gt;w\[0\]).join(&#x27;&#x27;).slice(0,2);
-
-  document.getElementById(&#x27;pt-hero&#x27;).innerHTML=\`
-
-    &lt;div class=&quot;pt-av&quot;&gt;${initials}&lt;/div&gt;
-
-    &lt;div style=&quot;flex:1&quot;&gt;
-
-      &lt;div class=&quot;pt-name&quot;&gt;${pt.name}&lt;/div&gt;
-
-      &lt;div class=&quot;pt-meta&quot;&gt;Reg: ${pt.regNo}  •  ${pt.age}/${pt.sex?.\[0\]}  •  ${pt.occupation||&#x27;—&#x27;}  •  📞 ${pt.mobile}&lt;/div&gt;
-
-      &lt;div class=&quot;pt-tags&quot;&gt;${(pt.conditions||\[\]).map(c=`&lt;span class=&quot;pt-tag&quot;&gt;⚠️ ${c}&lt;/span&gt;`).join(&#x27;&#x27;)}${(pt.restrictions||\[\]).map(r=`&lt;span class=&quot;pt-tag&quot;&gt;🚫 ${r}&lt;/span&gt;`).join(&#x27;&#x27;)}&lt;/div&gt;
-
-    &lt;/div&gt;
-
-    &lt;div class=&quot;pt-hero-right&quot;&gt;
-
-      &lt;button class=&quot;btn btn-a btn-sm&quot; onclick=&quot;openAddSession()&quot;&gt;+ Add Session&lt;/button&gt;
-
-      &lt;button class=&quot;btn btn-g btn-sm&quot; style=&quot;color:#fff;border-color:rgba(255,255,255,.3)&quot; onclick=&quot;openRegularPlanModal()&quot;&gt;🔄 Set Plan&lt;/button&gt;
-
-    &lt;/div&gt;\`;
-
-  // Info tab
-
-  document.getElementById(&#x27;pt-info-body&#x27;).innerHTML=\`
-
-    &lt;div class=&quot;fr&quot;&gt;
-
-      &lt;div class=&quot;card card-bd&quot; style=&quot;margin-bottom:0&quot;&gt;
-
-        &lt;div class=&quot;sec-label&quot;&gt;Contact&lt;/div&gt;
-
-        &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Address&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${pt.address||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-        &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Mobile&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${pt.mobile}&lt;/div&gt;&lt;/div&gt;
-
-        &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Telephone&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${pt.telephone||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-      &lt;/div&gt;
-
-      &lt;div class=&quot;card card-bd&quot; style=&quot;margin-bottom:0&quot;&gt;
-
-        &lt;div class=&quot;sec-label&quot;&gt;Medical Notes&lt;/div&gt;
-
-        &lt;div class=&quot;nv&quot; style=&quot;white-space:pre-wrap&quot;&gt;${pt.history||&#x27;No history recorded.&#x27;}&lt;/div&gt;
-
-      &lt;/div&gt;
-
-    &lt;/div&gt;\`;
-
-  // Tabs reset
-
-  document.querySelectorAll(&#x27;#pt-tabs .tab&#x27;).forEach((t,i)=&gt;t.classList.toggle(&#x27;active&#x27;,i===0));
-
-  document.querySelectorAll(&#x27;#scr-patient-detail .tab-pane&#x27;).forEach((p,i)=&gt;p.classList.toggle(&#x27;active&#x27;,i===0));
-
+async function openPatientDetail(pid) {
+  activePatientId = pid;
+  const pt = await apiGet(`/patients/${pid}`);
+  if (!pt) return;
+  gotoScreen('patient-detail', null);
+  const initials = pt.name.split(' ').map(w=>w[0]).join('').slice(0,2);
+  document.getElementById('pt-hero').innerHTML = `<div class="pt-av">${initials}</div><div style="flex:1"><div class="pt-name">${pt.name}</div><div class="pt-meta">Reg: ${pt.regNo} &nbsp;•&nbsp; ${pt.age}/${pt.sex?.charAt(0)||'?'} &nbsp;•&nbsp; ${pt.occupation||'—'} &nbsp;•&nbsp; 📞 ${pt.mobile}</div><div class="pt-tags">${(pt.conditions||[]).map(c=>`<span class="pt-tag">⚠️ ${c}</span>`).join('')}${(pt.restrictions||[]).map(r=>`<span class="pt-tag">🚫 ${r}</span>`).join('')}</div></div><div class="pt-hero-right"><button class="btn btn-a btn-sm" onclick="openAddSession()">+ Add Session</button><button class="btn btn-g btn-sm" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="openRegularPlanModal()">🔄 Set Plan</button></div>`;
+  document.getElementById('pt-info-body').innerHTML = `<div class="fr"><div class="card card-bd" style="margin-bottom:0"><div class="sec-label">Contact</div><div class="nr"><div class="nl">Address</div><div class="nv">${pt.address||'—'}</div></div><div class="nr"><div class="nl">Mobile</div><div class="nv">${pt.mobile}</div></div><div class="nr"><div class="nl">Telephone</div><div class="nv">${pt.telephone||'—'}</div></div></div><div class="card card-bd" style="margin-bottom:0"><div class="sec-label">Medical Notes</div><div class="nv" style="white-space:pre-wrap">${pt.history||'No history recorded.'}</div></div></div>`;
+  document.querySelectorAll('#pt-tabs .tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.querySelectorAll('#scr-patient-detail .tab-pane').forEach((p,i)=>p.classList.toggle('active',i===0));
   loadSessionList();
-
   loadRegularVisitTab();
-
 }
 
 // ─── SESSIONS ─────────────────────────────────────────────────
 
-function loadSessionList(){
-
-  const sessions=DB.filter(&#x27;sessions&#x27;,s=&gt;s.patientId===activePatientId).sort((a,b)=&gt;b.sessionNo-a.sessionNo);
-
-  const wrap=document.getElementById(&#x27;session-list-wrap&#x27;);
-
-  if(!sessions.length){wrap.innerHTML=&#x27;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;🩺&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No sessions yet&lt;/div&gt;&lt;div class=&quot;es-sub&quot;&gt;Click &quot;+ Add Session&quot; to record the first session&lt;/div&gt;&lt;/div&gt;&#x27;;return;}
-
-  wrap.innerHTML=sessions.map(s=&gt;\`
-
-    &lt;div class=&quot;ses-card&quot; id=&quot;sc-${s.id}&quot;&gt;
-
-      &lt;div class=&quot;ses-hd&quot; onclick=&quot;toggleSession(&#x27;${s.id}&#x27;)&quot;&gt;
-
-        &lt;div class=&quot;ses-no&quot;&gt;#${s.sessionNo}&lt;/div&gt;
-
-        &lt;div style=&quot;flex:1&quot;&gt;&lt;div style=&quot;font-weight:600;font-size:13.5px&quot;&gt;${fmtDate(s.date)}&lt;/div&gt;&lt;div style=&quot;font-size:12px;color:var(--text-muted)&quot;&gt;${s.visitType===&#x27;HOME&#x27;?&#x27;🏠 Home Visit&#x27;:&#x27;🏥 In-Clinic&#x27;}  •  ${s.clinicianName||&#x27;—&#x27;}  •  ${s.duration||&#x27;?&#x27;}min&lt;/div&gt;&lt;/div&gt;
-
-        &lt;div&gt;${responseBadge(s.post?.response)}&lt;/div&gt;
-
-        &lt;div style=&quot;font-weight:700;color:var(--primary);margin-left:8px&quot;&gt;${fmtMoney(s.payment)}&lt;/div&gt;
-
-        &lt;div style=&quot;color:var(--text-muted);margin-left:10px;font-size:18px&quot;&gt;▾&lt;/div&gt;
-
-      &lt;/div&gt;
-
-      &lt;div class=&quot;ses-bd&quot;&gt;
-
-        &lt;div class=&quot;pp-grid&quot;&gt;
-
-          &lt;div class=&quot;pre-box&quot;&gt;
-
-            &lt;div class=&quot;pp-head&quot;&gt;📋 Pre-Treatment&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Complaint&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.pre?.complaint||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Pain Level&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.pre?.pain??&#x27;—&#x27;}/10&lt;/div&gt;&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Mobility&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.pre?.mobility||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Vitals&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.pre?.vitals||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Notes&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.pre?.notes||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-          &lt;/div&gt;
-
-          &lt;div class=&quot;post-box&quot;&gt;
-
-            &lt;div class=&quot;pp-head&quot;&gt;✅ Post-Treatment&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Techniques&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.post?.techniques||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Post Pain&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.post?.pain??&#x27;—&#x27;}/10&lt;/div&gt;&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Response&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.post?.response||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Assessment&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.post?.notes||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Recommendation&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${s.post?.recommendation||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-            ${s.followup`&lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Follow-up&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;📅 ${fmtDate(s.followup)}&lt;/div&gt;&lt;/div&gt;`:&#x27;&#x27;}
-
-          &lt;/div&gt;
-
-        &lt;/div&gt;
-
-      &lt;/div&gt;
-
-    &lt;/div&gt;\`).join(&#x27;&#x27;);
-
+async function loadSessionList() {
+  try {
+    const sessions = await apiGet(`/sessions?patientId=${activePatientId}`);
+    sessions.sort((a,b)=>b.sessionNo-a.sessionNo);
+    const wrap = document.getElementById('session-list-wrap');
+    if (!sessions.length) { wrap.innerHTML = '<div class="empty-state"><div class="es-icon">🩺</div><div class="es-title">No sessions yet</div><div class="es-sub">Click "+ Add Session" to record the first session</div></div>'; return; }
+    wrap.innerHTML = sessions.map(s => `<div class="ses-card" id="sc-${s.id}"><div class="ses-hd" onclick="toggleSession('${s.id}')"><div class="ses-no">#${s.sessionNo}</div><div style="flex:1"><div style="font-weight:600;font-size:13.5px">${fmtDate(s.date)}</div><div style="font-size:12px;color:var(--text-muted)">${s.visitType==='HOME'?'🏠 Home Visit':'🏥 In-Clinic'} &nbsp;•&nbsp; ${s.clinicianName||'—'} &nbsp;•&nbsp; ${s.duration||'?'}min</div></div><div>${responseBadge(s.post?.response)}</div><div style="font-weight:700;color:var(--primary);margin-left:8px">${fmtMoney(s.payment)}</div><div style="color:var(--text-muted);margin-left:10px;font-size:18px">▾</div></div><div class="ses-bd"><div class="pp-grid"><div class="pre-box"><div class="pp-head">📋 Pre-Treatment</div><div class="nr"><div class="nl">Complaint</div><div class="nv">${s.pre?.complaint||'—'}</div></div><div class="nr"><div class="nl">Pain Level</div><div class="nv">${s.pre?.pain??'—'}/10</div></div><div class="nr"><div class="nl">Mobility</div><div class="nv">${s.pre?.mobility||'—'}</div></div><div class="nr"><div class="nl">Vitals</div><div class="nv">${s.pre?.vitals||'—'}</div></div><div class="nr"><div class="nl">Notes</div><div class="nv">${s.pre?.notes||'—'}</div></div></div><div class="post-box"><div class="pp-head">✅ Post-Treatment</div><div class="nr"><div class="nl">Techniques</div><div class="nv">${s.post?.techniques||'—'}</div></div><div class="nr"><div class="nl">Post Pain</div><div class="nv">${s.post?.pain??'—'}/10</div></div><div class="nr"><div class="nl">Response</div><div class="nv">${s.post?.response||'—'}</div></div><div class="nr"><div class="nl">Assessment</div><div class="nv">${s.post?.notes||'—'}</div></div><div class="nr"><div class="nl">Recommendation</div><div class="nv">${s.post?.recommendation||'—'}</div></div>${s.followup?`<div class="nr"><div class="nl">Follow-up</div><div class="nv">📅 ${fmtDate(s.followup)}</div></div>`:''}</div></div></div></div>`).join('');
+  } catch(e) { console.error(e); }
 }
-
-// Session form dirty tracking &amp; auto-save
-let sessionFormDirty=false;
-function markSessionDirty(){sessionFormDirty=true;}
-function startSessionAutoSave(){
-  sessionFormDirty=false;
-  setInterval(()=&gt;{
-    if(sessionFormDirty&amp;&amp;document.getElementById(&#x27;modal-session&#x27;).classList.contains(&#x27;active&#x27;)){
-      const draft={
-        date:document.getElementById(&#x27;ses-date&#x27;).value,
-        vtype:document.getElementById(&#x27;ses-vtype&#x27;).value,
-        dur:document.getElementById(&#x27;ses-dur&#x27;).value,
-        amt:document.getElementById(&#x27;ses-amt&#x27;).value,
-        pmode:document.getElementById(&#x27;ses-pmode&#x27;).value,
-        preComplaint:document.getElementById(&#x27;ses-pre-complaint&#x27;).value,
-        prePain:document.getElementById(&#x27;ses-pre-pain&#x27;).value,
-        preMob:document.getElementById(&#x27;ses-pre-mob&#x27;).value,
-        preVitals:document.getElementById(&#x27;ses-pre-vitals&#x27;).value,
-        preNotes:document.getElementById(&#x27;ses-pre-notes&#x27;).value,
-        postTech:document.getElementById(&#x27;ses-post-tech&#x27;).value,
-        postPain:document.getElementById(&#x27;ses-post-pain&#x27;).value,
-        postResp:document.getElementById(&#x27;ses-post-resp&#x27;).value,
-        postNotes:document.getElementById(&#x27;ses-post-notes&#x27;).value,
-        postRec:document.getElementById(&#x27;ses-post-rec&#x27;).value,
-        followup:document.getElementById(&#x27;ses-followup&#x27;).value,
-      };
-      sessionStorage.setItem(&#x27;snc_session_draft_&#x27;+activePatientId,JSON.stringify(draft));
-    }
-  },30000);
-}
-function restoreSessionDraft(){
-  const draft=sessionStorage.getItem(&#x27;snc_session_draft_&#x27;+activePatientId);
-  if(draft)try{
-    var d=JSON.parse(draft);
-    if(d.date)document.getElementById(&#x27;ses-date&#x27;).value=d.date;
-    if(d.vtype)document.getElementById(&#x27;ses-vtype&#x27;).value=d.vtype;
-    if(d.dur)document.getElementById(&#x27;ses-dur&#x27;).value=d.dur;
-    if(d.amt)document.getElementById(&#x27;ses-amt&#x27;).value=d.amt;
-    if(d.pmode)document.getElementById(&#x27;ses-pmode&#x27;).value=d.pmode;
-    if(d.preComplaint)document.getElementById(&#x27;ses-pre-complaint&#x27;).value=d.preComplaint;
-    if(d.prePain){document.getElementById(&#x27;ses-pre-pain&#x27;).value=d.prePain;document.getElementById(&#x27;sl-pre-v&#x27;).textContent=d.prePain;}
-    if(d.preMob)document.getElementById(&#x27;ses-pre-mob&#x27;).value=d.preMob;
-    if(d.preVitals)document.getElementById(&#x27;ses-pre-vitals&#x27;).value=d.preVitals;
-    if(d.preNotes)document.getElementById(&#x27;ses-pre-notes&#x27;).value=d.preNotes;
-    if(d.postTech)document.getElementById(&#x27;ses-post-tech&#x27;).value=d.postTech;
-    if(d.postPain){document.getElementById(&#x27;ses-post-pain&#x27;).value=d.postPain;document.getElementById(&#x27;sl-post-v&#x27;).textContent=d.postPain;}
-    if(d.postResp)document.getElementById(&#x27;ses-post-resp&#x27;).value=d.postResp;
-    if(d.postNotes)document.getElementById(&#x27;ses-post-notes&#x27;).value=d.postNotes;
-    if(d.postRec)document.getElementById(&#x27;ses-post-rec&#x27;).value=d.postRec;
-    if(d.followup)document.getElementById(&#x27;ses-followup&#x27;).value=d.followup;
-    toast(&#x27;Draft restored from auto-save&#x27;,&#x27;t-warn&#x27;);
-  }catch(e){}
-}
-function clearSessionDraft(){sessionFormDirty=false;sessionStorage.removeItem(&#x27;snc_session_draft_&#x27;+activePatientId);}
-// Unsaved changes warning
-window.addEventListener(&#x27;beforeunload&#x27;,function(e){if(sessionFormDirty){e.preventDefault();e.returnValue=&#x27;&#x27;;}});
 
 function toggleSession(id){document.getElementById(&#x27;sc-&#x27;+id)?.classList.toggle(&#x27;open&#x27;)}
 
@@ -2063,86 +1792,40 @@ function openAddSession(){
 
 }
 
-function saveSession(){
-
-  if(!activePatientId){toast(&#x27;No patient selected&#x27;,&#x27;t-err&#x27;);return;}
-
-  const existing=DB.filter(&#x27;sessions&#x27;,s=&gt;s.patientId===activePatientId);
-
-  const clinSel=document.getElementById(&#x27;ses-clinician&#x27;);
-
-  const s={
-
-    id:uid(),patientId:activePatientId,sessionNo:existing.length+1,
-
-    date:document.getElementById(&#x27;ses-date&#x27;).value,
-
-    visitType:document.getElementById(&#x27;ses-vtype&#x27;).value,
-
-    clinicianId:clinSel.value,clinicianName:clinSel.options\[clinSel.selectedIndex\]?.text||&#x27;—&#x27;,
-
-    duration:document.getElementById(&#x27;ses-dur&#x27;).value,
-
-    payment:document.getElementById(&#x27;ses-amt&#x27;).value,
-
-    paymentMode:document.getElementById(&#x27;ses-pmode&#x27;).value,
-
-    pre:{
-
-      complaint:document.getElementById(&#x27;ses-pre-complaint&#x27;).value,
-
-      pain:document.getElementById(&#x27;ses-pre-pain&#x27;).value,
-
-      mobility:document.getElementById(&#x27;ses-pre-mob&#x27;).value,
-
-      vitals:document.getElementById(&#x27;ses-pre-vitals&#x27;).value,
-
-      notes:document.getElementById(&#x27;ses-pre-notes&#x27;).value
-
+async function saveSession() {
+  if (!activePatientId) { toast('No patient selected', 't-err'); return; }
+  const clinSel = document.getElementById('ses-clinician');
+  const payload = {
+    patientId: activePatientId,
+    date: document.getElementById('ses-date').value,
+    visitType: document.getElementById('ses-vtype').value,
+    clinicianId: clinSel.value, clinicianName: clinSel.options[clinSel.selectedIndex]?.text||'—',
+    duration: document.getElementById('ses-dur').value,
+    payment: document.getElementById('ses-amt').value,
+    paymentMode: document.getElementById('ses-pmode').value,
+    pre: {
+      complaint: document.getElementById('ses-pre-complaint').value,
+      pain: document.getElementById('ses-pre-pain').value,
+      mobility: document.getElementById('ses-pre-mob').value,
+      vitals: document.getElementById('ses-pre-vitals').value,
+      notes: document.getElementById('ses-pre-notes').value
     },
-
-    post:{
-
-      techniques:document.getElementById(&#x27;ses-post-tech&#x27;).value,
-
-      pain:document.getElementById(&#x27;ses-post-pain&#x27;).value,
-
-      response:document.getElementById(&#x27;ses-post-resp&#x27;).value,
-
-      notes:document.getElementById(&#x27;ses-post-notes&#x27;).value,
-
-      recommendation:document.getElementById(&#x27;ses-post-rec&#x27;).value
-
+    post: {
+      techniques: document.getElementById('ses-post-tech').value,
+      pain: document.getElementById('ses-post-pain').value,
+      response: document.getElementById('ses-post-resp').value,
+      notes: document.getElementById('ses-post-notes').value,
+      recommendation: document.getElementById('ses-post-rec').value
     },
-
-    followup:document.getElementById(&#x27;ses-followup&#x27;).value
-
+    followup: document.getElementById('ses-followup').value
   };
-
-  DB.push(&#x27;sessions&#x27;,s);
-
-  if(parseInt(s.payment)&gt;0){
-
-    DB.push(&#x27;payments&#x27;,{id:uid(),patientId:activePatientId,sessionId:s.id,date:s.date,amount:parseInt(s.payment),mode:s.paymentMode,notes`Session #${s.sessionNo}`});
-
-  }
-
-  if(document.getElementById(&#x27;ses-mark-regular&#x27;).checked){
-
-    const existing=DB.find(&#x27;regular-plans&#x27;,p=&gt;p.patientId===activePatientId&amp;&amp;p.active);
-
-    if(!existing)openRegularPlanModal();
-
-  }
-
-  closeModal(&#x27;modal-session&#x27;);
-
-  loadSessionList();
-
-  loadDashboard();
-
-  toast`Session #${s.sessionNo} saved ✅`,&#x27;t-ok&#x27;);
-
+  try {
+    await apiPost('/sessions', payload);
+    closeModal('modal-session');
+    loadSessionList();
+    loadDashboard();
+    toast('Session saved', 't-ok');
+  } catch(e) { toast('Failed to save session', 't-err'); }
 }
 
 // ─── REGULAR VISITS ───────────────────────────────────────────
@@ -2221,93 +1904,53 @@ function saveRegularPlan(){
 
 }
 
-function loadRegularVisitTab(){
-
-  const wrap=document.getElementById(&#x27;pt-regular-wrap&#x27;);
-
-  const plan=DB.find(&#x27;regular-plans&#x27;,p=&gt;p.patientId===activePatientId&amp;&amp;p.active);
-
-  if(!plan){
-
-    wrap.innerHTML`&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;🔄&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No regular plan set&lt;/div&gt;&lt;div class=&quot;es-sub&quot;&gt;Set up a recurring visit plan for this patient&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;text-align:center;margin-top:12px&quot;&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;openRegularPlanModal()&quot;&gt;+ Set Regular Plan&lt;/button&gt;&lt;/div&gt;`;
-
-    return;
-
-  }
-
-  activePlanId=plan.id;
-
-  const entries=DB.filter(&#x27;visit-entries&#x27;,v=&gt;v.planId===plan.id);
-
-  const attended=entries.filter(v=&gt;v.attended).length;
-
-  wrap.innerHTML=\`
-
-    &lt;div style=&quot;display:grid;grid-template-columns:1fr 1fr;gap:16px&quot;&gt;
-
-      &lt;div&gt;
-
-        &lt;div class=&quot;card&quot; style=&quot;margin-bottom:14px&quot;&gt;
-
-          &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;📋 Plan Details&lt;/div&gt;&lt;button class=&quot;btn btn-sm btn-o&quot; onclick=&quot;openRegularPlanModal()&quot;&gt;✏️ Edit&lt;/button&gt;&lt;/div&gt;
-
-          &lt;div class=&quot;card-bd&quot;&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Frequency&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${plan.frequency}${plan.days?.length?&#x27; — &#x27;+plan.days.join(&#x27;, &#x27;):&#x27;&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Start Date&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${fmtDate(plan.startDate)}&lt;/div&gt;&lt;/div&gt;
-
-            ${plan.endDate`&lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;End Date&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${fmtDate(plan.endDate)}&lt;/div&gt;&lt;/div&gt;`:&#x27;&#x27;}
-
-            ${plan.targetSessions`&lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Progress&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${attended} / ${plan.targetSessions} sessions&lt;/div&gt;&lt;/div&gt;`:&#x27;&#x27;}
-
-            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Protocol&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${plan.protocol||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
-
-          &lt;/div&gt;
-
-        &lt;/div&gt;
-
-        &lt;div id=&quot;visit-entry-panel&quot;&gt;&lt;/div&gt;
-
-      &lt;/div&gt;
-
-      &lt;div&gt;
-
-        &lt;div class=&quot;cal-wrap&quot;&gt;
-
-          &lt;div class=&quot;cal-nav&quot;&gt;
-
-            &lt;button onclick=&quot;calPrev()&quot;&gt;◀&lt;/button&gt;
-
-            &lt;h3 id=&quot;cal-month-title&quot;&gt;&lt;/h3&gt;
-
-            &lt;button onclick=&quot;calNext()&quot;&gt;▶&lt;/button&gt;
-
-          &lt;/div&gt;
-
-          &lt;div class=&quot;cal-days-header&quot;&gt;${\[&#x27;S&#x27;,&#x27;M&#x27;,&#x27;T&#x27;,&#x27;W&#x27;,&#x27;T&#x27;,&#x27;F&#x27;,&#x27;S&#x27;\].map(d=`&lt;div class=&quot;cal-dn&quot;&gt;${d}&lt;/div&gt;`).join(&#x27;&#x27;)}&lt;/div&gt;
-
-          &lt;div class=&quot;cal-grid&quot; id=&quot;cal-grid&quot;&gt;&lt;/div&gt;
-
-          &lt;div class=&quot;cal-legend&quot;&gt;
-
-            &lt;div class=&quot;cal-leg&quot;&gt;&lt;div class=&quot;cal-dot&quot; style=&quot;background:#16a34a&quot;&gt;&lt;/div&gt;Attended&lt;/div&gt;
-
-            &lt;div class=&quot;cal-leg&quot;&gt;&lt;div class=&quot;cal-dot&quot; style=&quot;background:#dc2626&quot;&gt;&lt;/div&gt;Absent&lt;/div&gt;
-
-            &lt;div class=&quot;cal-leg&quot;&gt;&lt;div class=&quot;cal-dot&quot; style=&quot;background:var(--primary)&quot;&gt;&lt;/div&gt;Today&lt;/div&gt;
-
-          &lt;/div&gt;
-
-        &lt;/div&gt;
-
-      &lt;/div&gt;
-
-    &lt;/div&gt;\`;
-
-  renderCalendar(plan);
-
+async function loadRegularVisitTab() {
+  try {
+    const plans = await apiGet(`/regular?patientId=${activePatientId}`);
+    const tabContent = document.querySelector('#scr-patient-detail .tab-pane:nth-child(2)');
+    if (!tabContent) return;
+    if (!plans.length) {
+      tabContent.innerHTML = '<div class="empty-state"><div class="es-icon">🔄</div><div class="es-title">No Regular Visit Plan</div><div class="es-sub">Click "🔄 Set Plan" to create one</div></div>';
+      return;
+    }
+    const activePlan = plans.find(p => p.active) || plans[0];
+    activePlanId = activePlan.id;
+    const entries = await apiGet(`/regular/${activePlan.id}/entries`).catch(()=>[]);
+    tabContent.innerHTML = `<div class="card card-bd" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div><strong>${activePlan.frequency||''}</strong> plan — ${activePlan.protocol||''}</div><button class="btn btn-sm btn-a" onclick="openRegularPlanModal()">Edit Plan</button></div><div class="cal-wrap"><div class="cal-nav"><button onclick="calNav(-1)">‹</button><h3 id="cal-month-label"></h3><button onclick="calNav(1)">›</button></div><div class="cal-days-header"><div class="cal-dn">Sun</div><div class="cal-dn">Mon</div><div class="cal-dn">Tue</div><div class="cal-dn">Wed</div><div class="cal-dn">Thu</div><div class="cal-dn">Fri</div><div class="cal-dn">Sat</div></div><div class="cal-grid" id="cal-grid"></div></div></div>`;
+    renderCalendarPatch(activePlan, entries);
+  } catch(e) { console.error(e); }
 }
+
+function renderCalendarPatch(plan, entries) {
+  const grid = document.getElementById('cal-grid');
+  if (!grid) return;
+  const entryMap = {};
+  (entries||[]).forEach(e => { entryMap[e.date] = e; });
+  document.getElementById('cal-month-label').textContent = calYear.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+  const daysInMonth = new Date(calYear.getFullYear(), calYear.getMonth() + 1, 0).getDate();
+  const firstDay = new Date(calYear.getFullYear(), calYear.getMonth(), 1).getDay();
+  let html = '';
+  for (let i = 0; i < firstDay; i++) html += '<div></div>';
+  const todayStr = today();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = `${calYear.getFullYear()}-${String(calYear.getMonth()+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const entry = entryMap[ds];
+    let cls = 'cal-day';
+    if (entry?.attended) cls += ' cal-done';
+    else if (entry?.absent) cls += ' cal-absent';
+    else if (ds < todayStr && !entry) cls += ' cal-missed';
+    html += `<div class="${cls}" onclick="openDatePanel('${ds}','${entry?.attended?'yes':entry?.absent?'no':''}')">${d}</div>`;
+  }
+  grid.innerHTML = html;
+}
+function calNav(dir) { calYear.setMonth(calYear.getMonth()+dir); loadRegularVisitTab(); }
+function openDatePanel(date, status) {
+  const attended = status === 'yes' || confirm('Mark as attended for ' + date + '?');
+  if (attended) {
+    apiPost(`/regular/${activePlanId}/entries`, { date, attended: true, patientCondition: 'ASSESSED' }).then(() => loadRegularVisitTab());
+  }
+}
+
 
 function renderCalendar(plan){
 
@@ -2457,52 +2100,32 @@ function saveVisitEntry(){
 
 }
 
-function renderRegularList(){
-
-  const plans=DB.filter(&#x27;regular-plans&#x27;,p=&gt;p.active);
-
-  const wrap=document.getElementById(&#x27;reg-list-wrap&#x27;);
-
-  if(!plans.length){wrap.innerHTML=&#x27;&lt;div class=&quot;card card-bd&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;🔄&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No regular patients&lt;/div&gt;&lt;div class=&quot;es-sub&quot;&gt;Mark patients as regular from their session notes&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&#x27;;return;}
-
-  wrap.innerHTML=\`&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;tw&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Patient&lt;/th&gt;&lt;th&gt;Frequency&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;Sessions Done&lt;/th&gt;&lt;th&gt;Protocol&lt;/th&gt;&lt;th&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;${
-
-    plans.map(plan=&gt;{
-
-      const pt=DB.find(&#x27;patients&#x27;,p=&gt;p.id===plan.patientId);
-
-      const done=DB.filter(&#x27;visit-entries&#x27;,v=&gt;v.planId===plan.id&amp;&amp;v.attended).length;
-
-      retur`&lt;tr onclick=&quot;openPatientDetail(&#x27;${plan.patientId}&#x27;)&quot;&gt;&lt;td&gt;&lt;strong&gt;${pt?.name||&#x27;Unknown&#x27;}&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;badge bg-b&quot;&gt;${plan.frequency}&lt;/span&gt;&lt;/td&gt;&lt;td&gt;${fmtDate(plan.startDate)}&lt;/td&gt;&lt;td&gt;${done}${plan.targetSessions?&#x27; / &#x27;+plan.targetSessions:&#x27;&#x27;}&lt;/td&gt;&lt;td style=&quot;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap&quot;&gt;${plan.protocol||&#x27;—&#x27;}&lt;/td&gt;&lt;td&gt;&lt;button class=&quot;btn btn-sm btn-o&quot; onclick=&quot;event.stopPropagation();openPatientDetail(&#x27;${plan.patientId}&#x27;)&quot;&gt;View Plan&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;`;
-
-    }).join(&#x27;&#x27;)
-
-  }&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;\`;
-
+async function renderRegularList() {
+  try {
+    const plans = await apiGet('/regular');
+    const patients = await apiGet('/patients');
+    const pmap = {}; (patients.patients||[]).forEach(p=>{ pmap[p.id]=p; });
+    document.getElementById('reg-total-count').textContent = plans.length;
+    document.getElementById('reg-active-count').textContent = (plans||[]).filter(p=>p.active).length;
+    const rows = plans.map(p => {
+      const pt = pmap[p.patientId]||{};
+      return `<tr onclick="openPatientDetail('${p.patientId}')"><td><strong>${pt.regNo||'—'}</strong></td><td style="font-weight:600">${pt.name||'—'}</td><td>${p.frequency||'—'}</td><td>${p.active?'<span class="badge bg-g">Active</span>':'<span class="badge bg-grey">Inactive</span>'}</td><td>${p.protocol||'—'}</td></tr>`;
+    }).join('');
+    document.getElementById('reg-table-body').innerHTML = rows || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">No regular plans</td></tr>';
+  } catch(e) { console.error(e); }
 }
 
 // ─── PAYMENTS ─────────────────────────────────────────────────
 
-function renderPayments(){
-
-  const pays=DB.get(&#x27;payments&#x27;)||\[\];
-
-  const tbody=document.getElementById(&#x27;pay-table-body&#x27;);
-
-  document.getElementById(&#x27;pay-empty&#x27;).style.display=pays.length?&#x27;none&#x27;:&#x27;block&#x27;;
-
-  if(!pays.length){tbody.innerHTML=&#x27;&#x27;;return;}
-
-  const sorted=\[...pays\].sort((a,b)=&gt;b.date.localeCompare(a.date));
-
-  tbody.innerHTML=sorted.map(p=&gt;{
-
-    const pt=DB.find(&#x27;patients&#x27;,x=&gt;x.id===p.patientId);
-
-    retur`&lt;tr&gt;&lt;td&gt;${fmtDate(p.date)}&lt;/td&gt;&lt;td&gt;${pt?.name||&#x27;—&#x27;}&lt;/td&gt;&lt;td style=&quot;font-weight:700;color:var(--primary)&quot;&gt;${fmtMoney(p.amount)}&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;badge ${p.mode===&#x27;CASH&#x27;?&#x27;bg-g&#x27;:p.mode===&#x27;UPI&#x27;?&#x27;bg-b&#x27;:&#x27;bg-a&#x27;}&quot;&gt;${p.mode}&lt;/span&gt;&lt;/td&gt;&lt;td&gt;${p.sessionId?&#x27;Session&#x27;:&#x27;Regular&#x27;}&lt;/td&gt;&lt;td&gt;${p.notes||&#x27;—&#x27;}&lt;/td&gt;&lt;/tr&gt;`;
-
-  }).join(&#x27;&#x27;);
-
+async function renderPayments() {
+  try {
+    const [payments, patients] = await Promise.all([apiGet('/payments'), apiGet('/patients')]);
+    const pmap = {}; (patients.patients||[]).forEach(p=>{ pmap[p.id]=p; });
+    const total = (payments||[]).reduce((s,p)=>s+(p.amount||0),0);
+    document.getElementById('pm-total').textContent = fmtMoney(total);
+    const rows = (payments||[]).reverse().slice(0,50).map(p => `<tr><td>${fmtDate(p.date)}</td><td>${pmap[p.patientId]?.name||'—'}</td><td>${fmtMoney(p.amount)}</td><td><span class="badge ${p.mode==='UPI'?'bg-b':p.mode==='PENDING'?'bg-r':'bg-g'}">${p.mode||'CASH'}</span></td><td>${p.notes||'—'}</td></tr>`).join('');
+    document.getElementById('pay-table-body').innerHTML = rows || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">No payments yet</td></tr>';
+  } catch(e) { console.error(e); }
 }
 
 function openAddPayment(){
@@ -3082,14 +2705,13 @@ function saveUser(){
 
 // ─── HELPERS ─────────────────────────────────────────────────
 
-function populateClinicianDropdowns(){
-
-  const clinicians=(DB.get(&#x27;users&#x27;)||\[\]).filter(u=&gt;u.active&amp;&amp;(u.role===&#x27;CLINICIAN&#x27;||u.role===&#x27;ADMIN&#x27;));
-
-  const opts=clinicians.map(c=`&lt;option value=&quot;${c.id}&quot;&gt;${c.name}&lt;/option&gt;`).join(&#x27;&#x27;);
-
-  \[&#x27;ses-clinician&#x27;,&#x27;ve-clinician&#x27;\].forEach(id=&gt;{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
-
+async function populateClinicianDropdowns() {
+  try {
+    const users = await apiGet('/users');
+    const clinicians = (users||[]).filter(u => u.role === 'CLINICIAN' || u.role === 'ADMIN');
+    const opts = clinicians.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+    document.querySelectorAll('#ses-clinician').forEach(el => { el.innerHTML = opts; });
+  } catch(e) { console.error(e); }
 }
 
 function toggleChk(el){el.classList.toggle(&#x27;checked&#x27;);el.querySelector(&#x27;input&#x27;).checked=el.classList.contains(&#x27;checked&#x27;);}
@@ -3140,15 +2762,16 @@ document.getElementById(&#x27;lg-id&#x27;).addEventListener(&#x27;keydown&#x27;,
 
 // ─── BOOT ─────────────────────────────────────────────────────
 
-initData();
+(async () => {
+  initData();
+  if (await checkSession()) {
+    document.getElementById('login-screen').classList.add('hidden');
+    initApp();
+  }
+  // Seed demo data (no longer needed with API backend)
+  // populateDemoData();
+})();
 
-if(checkSession()){
-
-  document.getElementById(&#x27;login-screen&#x27;).classList.add(&#x27;hidden&#x27;);
-
-  initApp();
-
-}
 
 // Seed some demo data if empty
 
