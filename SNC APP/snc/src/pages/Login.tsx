@@ -1,27 +1,51 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { api } from "@/lib/api";
 
 const CLINICS = [
   { value: "agra-main", label: "Agra Main Center" },
 ];
 
-export default function Login() {
+interface LoginProps {
+  auth?: {
+    isAuthenticated: boolean;
+    login: (password: string) => boolean;
+    logout: () => void;
+  };
+}
+
+export default function Login({ auth }: LoginProps) {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
-  const [clinic, setClinic] = useState("agra-main");
+  const [clinic] = useState("agra-main");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginId || !password) {
       setError("Login ID and password are required");
       return;
     }
-    // Demo: accept admin/admin123
-    if (loginId === "admin" && password === "admin123") {
-      localStorage.setItem("snc_user", JSON.stringify({ id: "1", name: "Admin", role: "ADMIN" }));
-      window.location.href = "/";
-    } else {
-      setError("Invalid credentials");
+    setLoading(true);
+    setError("");
+    try {
+      const data = await api<{ token: string; user: any; mustChangePassword: boolean }>("/api/auth/login", {
+        method: "POST",
+        body: { loginId, password },
+      });
+      localStorage.setItem("snc_token", data.token);
+      localStorage.setItem("snc_user", JSON.stringify(data.user));
+      if (data.mustChangePassword) {
+        navigate("/admin/security");
+      } else {
+        navigate("/");
+      }
+    } catch (err: any) {
+      setError(err.message || "Invalid credentials");
+    } finally {
+      setLoading(false);
     }
   };
 

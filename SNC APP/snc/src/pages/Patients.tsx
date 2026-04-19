@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { IconSearch, IconPlus } from "@tabler/icons-react";
+import { api } from "@/lib/api";
+import { usePermission } from "@/App";
+import { onAppEvent, emitAppEvent } from "@/lib/appEvents";
+import NoAccess from "@/components/NoAccess";
 
 interface Patient {
   id: string;
-  regNo: string;
+  reg_no: string;
   name: string;
   age: string;
   sex: string;
@@ -22,44 +26,65 @@ export default function Patients() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [form, setForm] = useState({ name: "", regNo: "", age: "", sex: "Male", occupation: "", address: "", mobile: "", telephone: "", history: "" });
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const [selectedRestrictions, setSelectedRestrictions] = useState<string[]>([]);
+  const { canView, canEdit } = usePermission('patients');
 
+  const loadPatients = () => {
+    setLoading(true);
+    setLoadError(false);
+    api<{ patients: Patient[] }>("/api/patients/")
+      .then(data => setPatients(data.patients || []))
+      .catch(() => setLoadError(true))
+      .finally(() => setLoading(false));
+  };
+
+  // Stay fresh: reload if any page creates a patient elsewhere
   useEffect(() => {
-    setPatients(JSON.parse(localStorage.getItem("snc_patients") || "[]"));
+    const cleanups = [
+      onAppEvent("app:patients-changed", loadPatients),
+    ];
+    return () => cleanups.forEach(fn => fn());
   }, []);
 
+  useEffect(() => { loadPatients(); }, []);
+
   const filtered = patients.filter(p =>
-    !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.regNo.includes(search) || p.mobile.includes(search)
+    !search || p.name.toLowerCase().includes(search.toLowerCase()) || (p.reg_no || "").includes(search) || (p.mobile || "").includes(search)
   );
 
   const toggleCond = (c: string) => setSelectedConditions(prev => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
   const toggleRest = (r: string) => setSelectedRestrictions(prev => prev.includes(r) ? prev.filter(x => x !== r) : [...prev, r]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name || !form.mobile) { alert("Name and mobile required"); return; }
-    const newPt: Patient = {
-      id: Math.random().toString(36).slice(2),
-      regNo: form.regNo || "SNC" + String(patients.length + 1).padStart(4, "0"),
-      name: form.name, age: form.age, sex: form.sex, mobile: form.mobile,
-      occupation: form.occupation, conditions: selectedConditions, restrictions: selectedRestrictions, active: true
-    };
-    const updated = [...patients, newPt];
-    setPatients(updated);
-    localStorage.setItem("snc_patients", JSON.stringify(updated));
-    setShowModal(false);
-    setForm({ name: "", regNo: "", age: "", sex: "Male", occupation: "", address: "", mobile: "", telephone: "", history: "" });
-    setSelectedConditions([]);
-    setSelectedRestrictions([]);
+    try {
+      const result = await api<{ ok: boolean; id: string; regNo: string }>("/api/patients/", {
+        method: "POST",
+        body: { name: form.name, regNo: form.regNo, age: form.age, sex: form.sex, occupation: form.occupation, address: form.address, mobile: form.mobile, telephone: form.telephone, history: form.history, conditions: selectedConditions, restrictions: selectedRestrictions },
+      });
+      setShowModal(false);
+      setForm({ name: "", regNo: "", age: "", sex: "Male", occupation: "", address: "", mobile: "", telephone: "", history: "" });
+      setSelectedConditions([]);
+      setSelectedRestrictions([]);
+      loadPatients();
+      emitAppEvent("app:patients-changed");
+    } catch (err) {
+      alert("Failed to save patient");
+    }
   };
+
+  if (!canView) return <NoAccess message="Access Restricted" detail="You do not have permission to view patients." />;
 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-['Syne'] text-xl font-extrabold text-[#0d4a2c]">Patient Records</h1>
-          <p className="text-sm text-[#6b8878] mt-1">{patients.length} registered patients</p>
+          <p className="text-sm text-[#6b8878] mt-1">{loading ? "..." : `${patients.length} registered patients`}</p>
         </div>
         <div className="flex gap-3">
           <div className="relative">
@@ -67,9 +92,11 @@ export default function Patients() {
             <input type="text" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)}
               className="pl-10 pr-4 py-2 border border-[#cfe0d8] rounded-lg text-sm w-64 focus:outline-none focus:border-[#1a7a4a]" />
           </div>
-          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 bg-[#1a7a4a] hover:bg-[#0d4a2c] text-white font-semibold rounded-lg transition-colors">
-            <IconPlus className="w-4 h-4" /> Add Patient
-          </button>
+          {canEdit && (
+            <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 bg-[#1a7a4a] hover:bg-[#0d4a2c] text-white font-semibold rounded-lg transition-colors">
+              <IconPlus className="w-4 h-4" /> Add Patient
+            </button>
+          )}
         </div>
       </div>
 
@@ -87,30 +114,41 @@ export default function Patients() {
             </tr>
           </thead>
           <tbody>
-            {filtered.length === 0 ? (
+            {loading ? (
+              <tr><td colSpan={7} className="text-center py-12"><div className="h-6 w-24 mx-auto bg-[#f0f7f4] rounded animate-pulse" /></td></tr>
+            ) : loadError ? (
+              <tr><td colSpan={7} className="text-center py-12 text-[#6b8878]">
+                <div className="text-4xl mb-2">⚠️</div><div className="font-medium">Failed to load patients</div>
+              </td></tr>
+            ) : filtered.length === 0 ? (
               <tr><td colSpan={7} className="text-center py-12 text-[#6b8878]">
                 <div className="text-4xl mb-2">👤</div><div className="font-medium">No patients found</div>
               </td></tr>
-            ) : filtered.map(p => (
-              <tr key={p.id} className="border-t border-[#cfe0d8] hover:bg-[#f0f7f4] cursor-pointer transition-colors">
-                <td className="px-4 py-3"><strong className="text-sm">{p.regNo}</strong></td>
-                <td className="px-4 py-3"><div className="font-semibold text-sm">{p.name}</div><div className="text-xs text-[#6b8878]">{p.occupation || "—"}</div></td>
-                <td className="px-4 py-3 text-sm">{p.age}/{p.sex?.[0] || "?"}</td>
-                <td className="px-4 py-3 text-sm">{p.mobile}</td>
-                <td className="px-4 py-3">
-                  <div className="flex flex-wrap gap-1">
-                    {(p.conditions || []).slice(0, 3).map(c => <span key={c} className="px-2 py-0.5 bg-[#dbeafe] text-[#2563eb] rounded-full text-[11px] font-bold">{c}</span>)}
-                    {(p.conditions || []).length > 3 && <span className="px-2 py-0.5 bg-[#f3f4f6] text-[#6b7280] rounded-full text-[11px]">+{p.conditions.length - 3}</span>}
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${p.active ? "bg-[#dcfce7] text-[#16a34a]" : "bg-[#f3f4f6] text-[#6b7280]"}`}>{p.active ? "Active" : "Inactive"}</span>
-                </td>
-                <td className="px-4 py-3">
-                  <Link to={`/patients/${p.id}`} className="px-3 py-1 border border-[#1a7a4a] text-[#1a7a4a] font-semibold rounded-lg text-xs hover:bg-[#d4ede1] transition-colors">View</Link>
-                </td>
-              </tr>
-            ))}
+            ) : filtered.map(p => {
+              const conds = Array.isArray(p.conditions) ? p.conditions : JSON.parse(p.conditions || "[]");
+              return (
+                <tr key={p.id} className="border-t border-[#cfe0d8] hover:bg-[#f0f7f4] cursor-pointer transition-colors">
+                  <td className="px-4 py-3"><strong className="text-sm">{p.reg_no || "—"}</strong></td>
+                  <td className="px-4 py-3"><div className="font-semibold text-sm">{p.name}</div><div className="text-xs text-[#6b8878]">{p.occupation || "—"}</div></td>
+                  <td className="px-4 py-3 text-sm">{p.age}/{p.sex?.[0] || "?"}</td>
+                  <td className="px-4 py-3 text-sm">{p.mobile}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-1">
+                      {conds.slice(0, 3).map((c: string) => <span key={c} className="px-2 py-0.5 bg-[#dbeafe] text-[#2563eb] rounded-full text-[11px] font-bold">{c}</span>)}
+                      {conds.length > 3 && <span className="px-2 py-0.5 bg-[#f3f4f6] text-[#6b7280] rounded-full text-[11px]">+{conds.length - 3}</span>}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${p.active ? "bg-[#dcfce7] text-[#16a34a]" : "bg-[#f3f4f6] text-[#6b7280]"}`}>{p.active ? "Active" : "Inactive"}</span>
+                  </td>
+                  <td className="px-4 py-3">
+                    {canView && (
+                      <Link to={`/patients/${p.id}`} className="px-3 py-1 border border-[#1a7a4a] text-[#1a7a4a] font-semibold rounded-lg text-xs hover:bg-[#d4ede1] transition-colors">View</Link>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
