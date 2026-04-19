@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 
+interface Payment { id: string; patientId: string; amount: number; mode: string; date: string; patientName?: string; }
+
 export default function Payments() {
-  const [payments, setPayments] = useState<any[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
 
   useEffect(() => {
-    const allPayments = JSON.parse(localStorage.getItem("snc_payments") || "[]");
+    const allPayments: Payment[] = JSON.parse(localStorage.getItem("snc_payments") || "[]");
     const patients = JSON.parse(localStorage.getItem("snc_patients") || "[]");
     setPayments(allPayments.map(p => ({
       ...p,

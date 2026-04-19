@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 interface Session {
-  id: string; patientId: string; sessionNo: number; date: string; visitType: string; clinicianName: string; payment: number; pre: any; post: any;
+  id: string; patientId: string; sessionNo: number; date: string; visitType: string; clinicianName: string; payment: number; pre: any; post: any; patientName?: string;
 }
 
 export default function Sessions() {
