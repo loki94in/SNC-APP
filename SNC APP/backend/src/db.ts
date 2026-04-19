@@ -1,8 +1,11 @@
 import { Database } from "bun:sqlite";
 import { hashSync } from "bcryptjs";
 import { v4 as uid } from "uuid";
+import { resolve } from "path";
 
-export const db = new Database("/home/workspace/SNC APP/backend/snc.db");
+// Use relative path for cross-platform compatibility
+const DB_PATH = resolve(import.meta.dir, "snc.db");
+export const db = new Database(DB_PATH);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
