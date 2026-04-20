@@ -38,15 +38,11 @@
           "target": "portable",
           "arch": ["x64"]
         }
-      ],
-      "icon": "src/icon.ico"
+      ]
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "src/icon.ico",
-      "uninstallerIcon": "src/icon.ico",
-      "installerHeaderIcon": "src/icon.ico",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "SNC Patient Register"
