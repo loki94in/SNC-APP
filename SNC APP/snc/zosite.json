@@ -1,11 +1,11 @@
 {
   "name": "snc",
   "local_port": 50826,
-  "entrypoint": "bun run dev",
+  "entrypoint": "npm run dev",
   "publish": {
     "label": "snc",
     "type": "http",
-    "entrypoint": "bun run prod",
+    "entrypoint": "npm run prod",
     "published_port": 58543,
     "env": {
       "NODE_ENV": "production",

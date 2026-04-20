@@ -1,19 +1,16 @@
-import { serve } from "bun";
+import http from "http";
 import { readFileSync } from "fs";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const html = readFileSync(resolve(__dirname, "../snc_dev_decoded.html"), "utf-8");
 
-const server = serve({
-  port: 3000,
-  fetch(req) {
-    return new Response(html, {
-      headers: {
-        "Content-Type": "text/html; charset=utf-8",
-        "Cache-Control": "no-cache",
-      },
-    });
-  },
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-cache" });
+  res.end(html);
 });
 
-console.log("SNC App running at http://localhost:" + server.port);
+server.listen(3000, () => {
+  console.log("SNC App running at http://localhost:3000");
+});
