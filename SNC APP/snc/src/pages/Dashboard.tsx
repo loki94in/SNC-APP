@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { IconUsers, IconReceipt, IconTrendingUp, IconClock } from "@tabler/icons-react";
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, Legend,
+} from "recharts";
 import { api } from "@/lib/api";
 import { onAppEvent } from "@/lib/appEvents";
 
@@ -9,6 +13,13 @@ interface Stats {
   todaySessions: number;
   monthRevenue: number;
   activePlans: number;
+}
+
+interface ChartData {
+  months: string[];
+  revenueData: number[];
+  patientData: number[];
+  sessionData: number[];
 }
 
 function DataError({ onRetry }: { onRetry: () => void }) {
@@ -27,22 +38,26 @@ function DataError({ onRetry }: { onRetry: () => void }) {
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats>({ totalPatients: 0, todaySessions: 0, monthRevenue: 0, activePlans: 0 });
   const [recentPatients, setRecentPatients] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<ChartData>({ months: [], revenueData: [], patientData: [], sessionData: [] });
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
   const loadData = () => {
     setLoading(true);
     setLoadError(false);
-    api<{ stats: Stats; recentPatients: any[] }>("/api/dashboard/")
-      .then(data => {
-        setStats(data.stats || { totalPatients: 0, todaySessions: 0, monthRevenue: 0, activePlans: 0 });
-        setRecentPatients(data.recentPatients || []);
+    Promise.all([
+      api<{ stats: Stats; recentPatients: any[] }>("/api/dashboard/"),
+      api<ChartData>("/api/dashboard/charts"),
+    ])
+      .then(([dashData, chartRes]) => {
+        setStats(dashData.stats || { totalPatients: 0, todaySessions: 0, monthRevenue: 0, activePlans: 0 });
+        setRecentPatients(dashData.recentPatients || []);
+        setChartData(chartRes);
       })
       .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
   };
 
-  // Reload whenever any mutation happens elsewhere in the app
   useEffect(() => {
     const cleanups = [
       onAppEvent("app:patients-changed", loadData),
@@ -52,7 +67,6 @@ export default function Dashboard() {
     return () => cleanups.forEach(fn => fn());
   }, []);
 
-  // Initial load
   useEffect(() => { loadData(); }, []);
 
   const statCards = [
@@ -61,6 +75,13 @@ export default function Dashboard() {
     { label: "Monthly Revenue", value: `₹${(stats.monthRevenue || 0).toLocaleString()}`, icon: IconReceipt, color: "#16a34a" },
     { label: "Regular Patients", value: stats.activePlans, icon: IconTrendingUp, color: "#e8a020" },
   ];
+
+  const formattedChartData = chartData.months.map((month, i) => ({
+    month: month.slice(5), // "03" → "Mar"
+    Revenue: chartData.revenueData[i],
+    Patients: chartData.patientData[i],
+    Sessions: chartData.sessionData[i],
+  }));
 
   return (
     <div className="space-y-6">
@@ -81,6 +102,47 @@ export default function Dashboard() {
           ))}
         </div>
       )}
+
+      {/* Charts */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Revenue Trend */}
+        <div className="bg-white rounded-xl border border-[#cfe0d8] p-5">
+          <h3 className="font-['Syne'] text-sm font-extrabold text-[#0d4a2c] mb-4">Revenue Trend (6 Months)</h3>
+          {loading ? (
+            <div className="h-48 bg-[#f0f7f4] rounded animate-pulse" />
+          ) : (
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={formattedChartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#cfe0d8" />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6b8878" }} />
+                <YAxis tick={{ fontSize: 11, fill: "#6b8878" }} />
+                <Tooltip formatter={(v: number) => `₹${v.toLocaleString()}`} contentStyle={{ borderRadius: 8, border: "1px solid #cfe0d8" }} />
+                <Line type="monotone" dataKey="Revenue" stroke="#1a7a4a" strokeWidth={2} dot={{ r: 3 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        {/* Patients & Sessions */}
+        <div className="bg-white rounded-xl border border-[#cfe0d8] p-5">
+          <h3 className="font-['Syne'] text-sm font-extrabold text-[#0d4a2c] mb-4">Patients & Sessions (6 Months)</h3>
+          {loading ? (
+            <div className="h-48 bg-[#f0f7f4] rounded animate-pulse" />
+          ) : (
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={formattedChartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#cfe0d8" />
+                <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6b8878" }} />
+                <YAxis tick={{ fontSize: 11, fill: "#6b8878" }} />
+                <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #cfe0d8" }} />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Bar dataKey="Patients" fill="#e8a020" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Sessions" fill="#1a7a4a" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </div>
 
       <div className="bg-white rounded-xl border border-[#cfe0d8]">
         <div className="px-5 py-4 border-b border-[#cfe0d8] flex items-center gap-3">
