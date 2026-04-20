@@ -20,7 +20,9 @@ dashboard.get("/", async (c) => {
   });
 });
 
-// GET /api/dashboard/charts → 6-month trends for revenue, patients, sessions
+const MONTHS_ARR = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+// GET /api/dashboard/charts → 6-month trends (fixed 6-entry aligned arrays)
 dashboard.get("/charts", async (c) => {
   const months: string[] = [];
   const revenueData: number[] = [];
@@ -30,15 +32,17 @@ dashboard.get("/charts", async (c) => {
   for (let i = 5; i >= 0; i--) {
     const d = new Date();
     d.setMonth(d.getMonth() - i);
-    const ym = d.toISOString().slice(0, 7); // "2026-03"
-    months.push(ym);
+    const m = d.getMonth(); // 0-indexed
+    const y = d.getFullYear();
+    const label = `${MONTHS_ARR[m]}`;
+    months.push(label);
 
-    const monthStart = ym + "-01";
-    const monthEnd = ym + "-31";
+    const monthStart = `${y}-${String(m + 1).padStart(2, "0")}-01`;
+    const monthEnd   = `${y}-${String(m + 1).padStart(2, "0")}-31`;
 
     const rev = db.prepare("SELECT COALESCE(SUM(amount),0) as t FROM payments WHERE created_at >= ? AND created_at <= ?").get(monthStart, monthEnd) as any;
     const pts = db.prepare("SELECT COUNT(*) as c FROM patients WHERE active=1 AND created_at >= ? AND created_at <= ?").get(monthStart, monthEnd) as any;
-    const ssn = db.prepare("SELECT COUNT(*) as c FROM sessions WHERE date >= ? AND date <= ?").get(ym + "-01", ym + "-31") as any;
+    const ssn = db.prepare("SELECT COUNT(*) as c FROM sessions WHERE date >= ? AND date <= ?").get(monthStart, monthEnd) as any;
 
     revenueData.push(rev.t);
     patientData.push(pts.c);

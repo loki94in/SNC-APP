@@ -22,6 +22,13 @@ interface ChartData {
   sessionData: number[];
 }
 
+interface RenderData {
+  month: string;
+  revenue: number;
+  patients: number;
+  sessions: number;
+}
+
 function DataError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="col-span-4 bg-white rounded-xl border border-[#fee2e2] p-8 text-center">
@@ -38,7 +45,7 @@ function DataError({ onRetry }: { onRetry: () => void }) {
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats>({ totalPatients: 0, todaySessions: 0, monthRevenue: 0, activePlans: 0 });
   const [recentPatients, setRecentPatients] = useState<any[]>([]);
-  const [chartData, setChartData] = useState<ChartData>({ months: [], revenueData: [], patientData: [], sessionData: [] });
+  const [renderData, setRenderData] = useState<RenderData[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
@@ -52,7 +59,14 @@ export default function Dashboard() {
       .then(([dashData, chartRes]) => {
         setStats(dashData.stats || { totalPatients: 0, todaySessions: 0, monthRevenue: 0, activePlans: 0 });
         setRecentPatients(dashData.recentPatients || []);
-        setChartData(chartRes);
+        const raw: ChartData = chartRes;
+        if (!raw.months || raw.months.length !== 6) { setLoadError(true); return; }
+        setRenderData(raw.months.map((m, i) => ({
+          month: m,
+          revenue: raw.revenueData[i] || 0,
+          patients: raw.patientData[i] || 0,
+          sessions: raw.sessionData[i] || 0,
+        })));
       })
       .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
@@ -75,13 +89,6 @@ export default function Dashboard() {
     { label: "Monthly Revenue", value: `₹${(stats.monthRevenue || 0).toLocaleString()}`, icon: IconReceipt, color: "#16a34a" },
     { label: "Regular Patients", value: stats.activePlans, icon: IconTrendingUp, color: "#e8a020" },
   ];
-
-  const formattedChartData = chartData.months.map((month, i) => ({
-    month: month.slice(5), // "03" → "Mar"
-    Revenue: chartData.revenueData[i],
-    Patients: chartData.patientData[i],
-    Sessions: chartData.sessionData[i],
-  }));
 
   return (
     <div className="space-y-6">
@@ -112,12 +119,12 @@ export default function Dashboard() {
             <div className="h-48 bg-[#f0f7f4] rounded animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <LineChart data={formattedChartData}>
+              <LineChart data={renderData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#cfe0d8" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6b8878" }} />
                 <YAxis tick={{ fontSize: 11, fill: "#6b8878" }} />
                 <Tooltip formatter={(v: number) => `₹${v.toLocaleString()}`} contentStyle={{ borderRadius: 8, border: "1px solid #cfe0d8" }} />
-                <Line type="monotone" dataKey="Revenue" stroke="#1a7a4a" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="revenue" stroke="#1a7a4a" strokeWidth={2} dot={{ r: 3 }} name="Revenue" />
               </LineChart>
             </ResponsiveContainer>
           )}
@@ -130,14 +137,14 @@ export default function Dashboard() {
             <div className="h-48 bg-[#f0f7f4] rounded animate-pulse" />
           ) : (
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={formattedChartData}>
+              <BarChart data={renderData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#cfe0d8" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#6b8878" }} />
                 <YAxis tick={{ fontSize: 11, fill: "#6b8878" }} />
                 <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #cfe0d8" }} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="Patients" fill="#e8a020" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Sessions" fill="#1a7a4a" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="patients" fill="#e8a020" radius={[4, 4, 0, 0]} name="Patients" />
+                <Bar dataKey="sessions" fill="#1a7a4a" radius={[4, 4, 0, 0]} name="Sessions" />
               </BarChart>
             </ResponsiveContainer>
           )}
