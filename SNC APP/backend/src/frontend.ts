@@ -1,7 +1,11 @@
 // Serves the patched frontend HTML at GET /
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const frontend = new Hono();
 
@@ -10,8 +14,8 @@ frontend.use("/*", cors());
 // Read the frontend HTML once at startup
 let frontendHtml = "";
 try {
-    const path = resolve(import.meta.dirname, "../../site/index.html");
-    frontendHtml = await Bun.file(path).text();
+    const path = resolve(__dirname, "../../site/index.html");
+    frontendHtml = readFileSync(path, "utf-8");
     console.log(`Frontend HTML loaded: ${frontendHtml.length} chars`);
 } catch (e) {
     console.error("Failed to load frontend HTML:", e);

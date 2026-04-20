@@ -2,23 +2,24 @@
   "name": "zo-site",
   "type": "module",
   "scripts": {
-    "clear-cache": "rm -rf node_modules/.vite",
-    "dev": "bun run clear-cache && NODE_ENV=development bun run --hot server.ts",
-    "build": "bun run clear-cache && vite build",
-    "prod": "bun run build && NODE_ENV=production bun run server.ts",
-    "preview": "bun run vite preview"
+    "clear-cache": "node --experimental-modules node -e \"require('fs').rmSync('node_modules/.vite', {recursive:true,force:true})\" 2>/dev/null || true",
+    "dev": "npm run clear-cache && NODE_ENV=development node server.ts",
+    "build": "npm run clear-cache && vite build",
+    "prod": "npm run build && NODE_ENV=production node server.ts",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
+    "@hono/node-server": "^1.13.7",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-checkbox": "^1.3.3",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.8",
-    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-select": "^1.2.6",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tabs": "^1.1.13",
@@ -28,8 +29,8 @@
     "@tabler/icons-react": "^3.35.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.1.17",
-    "@vitejs/plugin-react-swc": "^4.2.2",
     "@tanstack/react-table": "^8.21.3",
+    "@vitejs/plugin-react-swc": "^4.2.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "hono": "^4.10.6",
@@ -50,9 +51,9 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/bun": "1.2.21",
-    "@types/react": "^19.2.7",
-    "@types/react-dom": "^19.2.3",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
     "typescript": "^5.9.3"
   }
 }

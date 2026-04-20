@@ -1,6 +1,10 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { serveStatic } from "hono/bun";
+import { readFileSync, existsSync } from "fs";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = new Hono();
 
@@ -37,7 +41,11 @@ app.use("/api/*", async (c) => {
 
 // ─── SPA fallback (serves React app) ─────────────────────────
 app.get("*", async (c) => {
-  const index = Bun.file("./index.html");
+  const indexPath = resolve(__dirname, "./index.html");
+  if (!existsSync(indexPath)) {
+    return c.html("<h1>index.html not found</h1>", 404);
+  }
+  const index = readFileSync(indexPath);
   return new Response(index, {
     headers: { "Content-Type": "text/html" },
   });
