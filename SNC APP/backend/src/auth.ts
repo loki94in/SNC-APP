@@ -1,5 +1,5 @@
 import type { Context, Next } from "hono";
-import { verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { db } from "./db.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "snc-secret-key-change-in-production";
@@ -13,7 +13,7 @@ export async function authMiddleware(c: Context, next: Next) {
   if (!header?.startsWith("Bearer ")) return c.json({ error: "Unauthorized" }, 401);
   const token = header.slice(7);
   try {
-    const payload = verify(token, JWT_SECRET) as AuthUser;
+    const payload = jwt.verify(token, JWT_SECRET) as AuthUser;
     const user = db.prepare("SELECT * FROM users WHERE id = ? AND active = 1").get(payload.id) as any;
     if (!user) return c.json({ error: "User not found or inactive" }, 401);
     c.set("user", user);

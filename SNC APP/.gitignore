@@ -1,6 +1,8 @@
 # Database
 *.db
 *.db-journal
+*.db-shm
+*.db-wal
 
 # OS files
 .DS_Store
@@ -12,3 +14,7 @@ Thumbs.db
 # Environment
 .env
 .env.local
+
+# Build output
+dist/
+package-lock.json

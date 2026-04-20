@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { hashSync } from "bcryptjs";
+import pkg from "bcryptjs";
 import { v4 as uid } from "uuid";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
@@ -97,7 +97,7 @@ const adminExists = db.prepare("SELECT id FROM users WHERE login_id = ?").get("a
 if (!adminExists) {
   db.prepare(`INSERT INTO users (id, login_id, password_hash, name, role, active, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(uid(), "admin", hashSync("admin123"), "System Admin", "ADMIN", 1,
+  ).run(uid(), "admin", pkg.hashSync("admin123"), "System Admin", "ADMIN", 1,
     new Date().toISOString(), new Date().toISOString());
 }
 

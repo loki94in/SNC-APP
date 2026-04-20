@@ -7,7 +7,7 @@ const patients = new Hono();
 
 // GET /api/patients → list all
 patients.get("/", async (c) => {
-  const rows = db.prepare("SELECT * FROM patients WHERE active=1 ORDER BY created_at DESC").all();
+  const rows = db.prepare("SELECT * FROM patients WHERE active=1 ORDER BY created_at DESC").all() as any[];
   const result = rows.map(r => ({
     id: r.id, regNo: r.reg_no, name: r.name, age: r.age, sex: r.sex,
     occupation: r.occupation, address: r.address, mobile: r.mobile,

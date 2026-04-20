@@ -1,10 +1,11 @@
 import { Hono } from "hono";
-import { compareSync, hashSync } from "bcryptjs";
+import pkg from "bcryptjs";
 import { v4 as uid } from "uuid";
-import { sign, verify } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { db, now } from "../db.js";
 import { audit } from "../audit.js";
 
+const { compareSync, hashSync } = pkg;
 const JWT_SECRET = process.env.JWT_SECRET || "snc-secret-key-change-in-production";
 const auth = new Hono();
 
@@ -16,7 +17,7 @@ auth.post("/login", async (c) => {
     audit("LOGIN_FAILED", null, `Failed login attempt: ${loginId}`);
     return c.json({ error: "Invalid credentials" }, 401);
   }
-  const token = sign({ id: user.id, login_id: user.login_id, name: user.name, role: user.role }, JWT_SECRET, { expiresIn: "8h" });
+  const token = jwt.sign({ id: user.id, login_id: user.login_id, name: user.name, role: user.role }, JWT_SECRET, { expiresIn: "8h" });
   audit("LOGIN_SUCCESS", user.id, `User logged in: ${user.login_id}`);
   return c.json({ token, user: { id: user.id, login_id: user.login_id, name: user.name, role: user.role }, mustChangePassword: !!user.must_change_password });
 });
@@ -26,7 +27,7 @@ auth.post("/logout", async (c) => {
   const token = header?.startsWith("Bearer ") ? header.slice(7) : null;
   if (token) {
     try {
-      const payload = verify(token, JWT_SECRET) as any;
+      const payload = jwt.verify(token, JWT_SECRET) as any;
       audit("LOGOUT", payload.id, `User logged out`);
     } catch {}
   }
