@@ -1,11 +1,19 @@
-import { Database } from "bun:sqlite";
+import Database from "better-sqlite3";
 import { hashSync } from "bcryptjs";
 import { v4 as uid } from "uuid";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+import { mkdirSync } from "fs";
 
-// Use relative path for cross-platform compatibility
-const DB_PATH = resolve(import.meta.dir, "snc.db");
+// Resolve DB path relative to this file's directory
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = resolve(__dirname, "../../data");
+mkdirSync(DATA_DIR, { recursive: true });
+const DB_PATH = resolve(DATA_DIR, "snc.db");
+
 export const db = new Database(DB_PATH);
+db.pragma("journal_mode = WAL");
+db.pragma("foreign_keys = ON");
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -81,14 +89,14 @@ const defaultPerms = [
   ["RECEPTIONIST","patient-detail","VIEW"],["RECEPTIONIST","calendar","EDIT"],
   ["FINANCE","dashboard","VIEW"],["FINANCE","payments","EDIT"],
 ];
-const insertPerm = db.prepare("INSERT OR IGNORE INTO permissions (id, role, screen, level) VALUES ($1, $2, $3, $4)");
+const insertPerm = db.prepare("INSERT OR IGNORE INTO permissions (id, role, screen, level) VALUES (?, ?, ?, ?)");
 for (const [role, screen, level] of defaultPerms) insertPerm.run(uid(), role, screen, level);
 
 // Seed default admin
-const adminExists = db.prepare("SELECT id FROM users WHERE login_id = $1").get("admin");
+const adminExists = db.prepare("SELECT id FROM users WHERE login_id = ?").get("admin");
 if (!adminExists) {
   db.prepare(`INSERT INTO users (id, login_id, password_hash, name, role, active, created_at, updated_at)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
   ).run(uid(), "admin", hashSync("admin123"), "System Admin", "ADMIN", 1,
     new Date().toISOString(), new Date().toISOString());
 }
