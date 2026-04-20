@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { usePermission } from "@/App";
-import { onAppEvent } from "@/lib/appEvents";
+import { onAppEvent, emitAppEvent } from "@/lib/appEvents";
 import NoAccess from "@/components/NoAccess";
 
 interface Session {
@@ -74,7 +74,7 @@ export default function Sessions() {
       });
       setDeleteTarget(null);
       loadSessions();
-      onAppEvent("app:sessions-changed");
+      emitAppEvent("app:sessions-changed");
     } catch (err: any) {
       alert(err.message || "Delete failed");
     } finally {

@@ -1,9 +1,9 @@
 import { db } from "./db.js";
 import { v4 as uid } from "uuid";
 
-function sendTg(text: string) {
+async function sendTg(text: string) {
   try {
-    const { sendTelegramMessage } = require("./telegram.js");
+    const { sendTelegramMessage } = await import("./telegram.js");
     sendTelegramMessage(text);
   } catch {
     // Telegram not configured or unavailable — silently skip

@@ -42,11 +42,11 @@ export default function RegularVisits() {
     setLoadError(false);
     Promise.all([
       api<{ patients: any[] }>("/api/patients/"),
-      api<{ plans: Plan[] }>("/api/regular/today"),
+      api<any[]>("/api/regular/today"),
     ])
       .then(([ptData, planData]) => {
         setPatients(ptData.patients || []);
-        setPlans(planData.plans || []);
+        setPlans(planData || []);
       })
       .catch(() => setLoadError(true))
       .finally(() => setLoading(false));

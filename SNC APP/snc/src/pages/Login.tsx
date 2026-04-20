@@ -17,7 +17,7 @@ interface LoginProps {
 export default function Login({ auth }: LoginProps) {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
-  const [clinic] = useState("agra-main");
+  const [clinic, setClinic] = useState("agra-main");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();

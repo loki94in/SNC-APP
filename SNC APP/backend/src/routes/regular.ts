@@ -40,7 +40,7 @@ regular.post("/plan", async (c) => {
 
 // GET /api/regular/:id/entries
 regular.get("/:id/entries", async (c) => {
-  const entries = db.prepare("SELECT * FROM visit_entries WHERE plan_id=? ORDER BY date DESC").all(c.req.param("id"));
+  const entries = db.prepare("SELECT * FROM regular_visits WHERE plan_id=? ORDER BY visit_date DESC").all(c.req.param("id"));
   return c.json(entries);
 });
 
@@ -49,13 +49,13 @@ regular.post("/:id/entries", async (c) => {
   const user = c.get("user") as any;
   const b = await c.req.json();
   if (!b.date) return c.json({ error: "date required" }, 400);
-  const existing = db.prepare("SELECT id FROM visit_entries WHERE plan_id=? AND date=?").get(c.req.param("id"), b.date) as any;
+  const existing = db.prepare("SELECT id FROM regular_visits WHERE plan_id=? AND visit_date=?").get(c.req.param("id"), b.date) as any;
   if (existing) {
-    db.prepare("UPDATE visit_entries SET attended=?,absent=?,absence_reason=?,treatment=?,clinician_id=?,duration=?,notes=?,patient_condition=?,updated_at=? WHERE id=?").run(b.attended?1:0, b.absent?1:0, b.absenceReason||"", b.treatment||"", b.clinicianId||"", b.duration||0, b.notes||"", b.patientCondition||"NOT_ASSESSED", now(), existing.id);
+    db.prepare("UPDATE regular_visits SET attended=?,absence_reason=?,treatment=?,clinician_id=?,duration=?,notes=?,condition_status=?,updated_at=? WHERE id=?").run(b.attended?1:0, b.absenceReason||"", b.treatment||"", b.clinicianId||"", b.duration||0, b.notes||"", b.patientCondition||"NOT_ASSESSED", now(), existing.id);
     return c.json({ ok: true, id: existing.id });
   }
   const id = uid();
-  db.prepare(`INSERT INTO visit_entries (id,plan_id,date,attended,absent,absence_reason,treatment,clinician_id,duration,notes,patient_condition,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(id, c.req.param("id"), b.date, b.attended?1:0, b.absent?1:0, b.absenceReason||"", b.treatment||"", b.clinicianId||"", b.duration||0, b.notes||"", b.patientCondition||"NOT_ASSESSED", now(), now());
+  db.prepare(`INSERT INTO regular_visits (id,plan_id,patient_id,visit_date,attended,absence_reason,treatment,clinician_id,duration,notes,condition_status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).run(id, c.req.param("id"), b.patientId||"", b.date, b.attended?1:0, b.absenceReason||"", b.treatment||"", b.clinicianId||"", b.duration||0, b.notes||"", b.patientCondition||"NOT_ASSESSED", now());
   audit("VISIT_ENTRY_ADDED", user.id, `Visit entry for plan: ${c.req.param("id")}, date: ${b.date}`);
   return c.json({ ok: true, id });
 });

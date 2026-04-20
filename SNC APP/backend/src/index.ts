@@ -10,6 +10,7 @@ import regularRoutes from "./routes/regular.js";
 import roleRoutes from "./routes/roles.js";
 import dashboardRoutes from "./routes/dashboard.js";
 import telegramRoutes from "./routes/telegram.js";
+import { resolve } from "path";
 
 const app = new Hono();
 
@@ -26,7 +27,7 @@ app.route("/api/roles", roleRoutes);
 app.route("/api/telegram", telegramRoutes);
 
 // Serve frontend HTML inline (avoid circular import)
-const frontendHtml = await Bun.file("/home/workspace/SNC APP/site/index.html").text();
+const frontendHtml = await Bun.file(resolve(import.meta.dirname, "../../site/index.html")).text();
 app.get("/", (c) => c.html(frontendHtml));
 
 const PORT = parseInt(process.env.PORT || "3000");
