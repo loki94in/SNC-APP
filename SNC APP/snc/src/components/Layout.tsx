@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { IconDashboard, IconUsers, IconCalendar, IconReceipt, IconReport, IconSettings, IconShield, IconMessage, IconListCheck } from "@tabler/icons-react";
-import { clearAuth } from "@/lib/api";
+import { clearAuth, api } from "@/lib/api";
 import { useAuth } from "@/App";
 import { usePermission } from "@/App";
 import { emitAppEvent, clearAllAppListeners } from "@/lib/appEvents";
@@ -110,7 +110,8 @@ export default function Layout() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try { await api("/api/auth/logout", { method: "POST" }); } catch {}
     emitAppEvent("app:logout");
     clearAllAppListeners();
     clearAuth();

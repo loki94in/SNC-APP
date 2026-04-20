@@ -68,6 +68,27 @@ export default function Telegram() {
     }
   };
 
+  const handleTest = async () => {
+    if (!token) { setMessage({ type: "error", text: "Enter a bot token first" }); return; }
+    setSaving(true);
+    setMessage(null);
+    try {
+      const result = await api<{ok: boolean; bot?: string}>("/api/telegram/test", {
+        method: "POST",
+        body: { token },
+      });
+      if (result.ok) {
+        setMessage({ type: "success", text: `✅ Bot @${result.bot} is reachable!` });
+      } else {
+        setMessage({ type: "error", text: "Could not verify token with Telegram" });
+      }
+    } catch (err: any) {
+      setMessage({ type: "error", text: err.message || "Test failed" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-5">
       <div>
@@ -107,6 +128,10 @@ export default function Telegram() {
         </div>
 
         <div className="flex gap-3">
+          <button onClick={handleTest} disabled={saving || !token}
+            className="px-4 py-2 bg-[#2563eb] text-white font-semibold rounded-lg hover:bg-[#1d4ed8] disabled:opacity-50">
+            Test Connection
+          </button>
           <button onClick={handleSave} disabled={saving || !token}
             className="px-4 py-2 bg-[#1a7a4a] text-white font-semibold rounded-lg hover:bg-[#0d4a2c] disabled:opacity-50">
             {saving ? "Saving..." : "Save Token"}

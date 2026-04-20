@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { compareSync, hashSync } from "bcryptjs";
-import { sign } from "jsonwebtoken";
+import { v4 as uid } from "uuid";
+import { sign, verify } from "jsonwebtoken";
 import { db, now } from "../db.js";
 import { audit } from "../audit.js";
 
@@ -21,8 +22,14 @@ auth.post("/login", async (c) => {
 });
 
 auth.post("/logout", async (c) => {
-  const user = c.get("user") as any;
-  if (user) audit("LOGOUT", user.id, `User logged out`);
+  const header = c.req.header("Authorization");
+  const token = header?.startsWith("Bearer ") ? header.slice(7) : null;
+  if (token) {
+    try {
+      const payload = verify(token, JWT_SECRET) as any;
+      audit("LOGOUT", payload.id, `User logged out`);
+    } catch {}
+  }
   return c.json({ ok: true });
 });
 

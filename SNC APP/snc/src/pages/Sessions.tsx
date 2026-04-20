@@ -22,10 +22,7 @@ function DataError({ onRetry }: { onRetry: () => void }) {
       <div className="text-3xl mb-2">⚠️</div>
       <div className="font-semibold text-[#dc2626] mb-1">Failed to load sessions</div>
       <div className="text-sm text-[#6b8878] mb-4">Could not reach the server. Check your connection.</div>
-      <button
-        onClick={onRetry}
-        className="px-4 py-2 bg-[#1a7a4a] text-white font-semibold rounded-lg hover:bg-[#0d4a2c] text-sm"
-      >
+      <button onClick={onRetry} className="px-4 py-2 bg-[#1a7a4a] text-white font-semibold rounded-lg hover:bg-[#0d4a2c] text-sm">
         Try Again
       </button>
     </div>
@@ -36,7 +33,11 @@ export default function Sessions() {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
-  const { canView } = usePermission("sessions");
+  const [editingSession, setEditingSession] = useState<Session | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Session | null>(null);
+  const [deleteReason, setDeleteReason] = useState("");
+  const [saving, setSaving] = useState(false);
+  const { canView, canEdit } = usePermission("sessions");
 
   const loadSessions = () => {
     setLoading(true);
@@ -47,16 +48,39 @@ export default function Sessions() {
       .finally(() => setLoading(false));
   };
 
-  // Stay fresh: reload whenever any mutation occurs elsewhere
   useEffect(() => {
-    const cleanups = [
-      onAppEvent("app:sessions-changed", loadSessions),
-    ];
+    const cleanups = [onAppEvent("app:sessions-changed", loadSessions)];
     return () => cleanups.forEach(fn => fn());
   }, []);
 
-  // Initial load only
   useEffect(() => { loadSessions(); }, []);
+
+  const handleEditSession = (session: Session) => {
+    setEditingSession(session);
+  };
+
+  const handleDeleteSession = (session: Session) => {
+    setDeleteTarget(session);
+    setDeleteReason("");
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setSaving(true);
+    try {
+      await api(`/api/sessions/${deleteTarget.id}`, {
+        method: "DELETE",
+        body: { reason: deleteReason },
+      });
+      setDeleteTarget(null);
+      loadSessions();
+      onAppEvent("app:sessions-changed");
+    } catch (err: any) {
+      alert(err.message || "Delete failed");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (!canView) return <NoAccess message="Access Restricted" detail="You do not have permission to view sessions." />;
 
@@ -84,13 +108,14 @@ export default function Sessions() {
                 <th className="text-left px-4 py-3 text-[11px] font-bold text-[#6b8878] uppercase">Type</th>
                 <th className="text-left px-4 py-3 text-[11px] font-bold text-[#6b8878] uppercase">Response</th>
                 <th className="text-left px-4 py-3 text-[11px] font-bold text-[#6b8878] uppercase">Amount</th>
+                <th className="text-left px-4 py-3 text-[11px] font-bold text-[#6b8878] uppercase">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={6} className="text-center py-12"><div className="h-6 w-32 mx-auto bg-[#f0f7f4] rounded animate-pulse" /></td></tr>
+                <tr><td colSpan={7} className="text-center py-12"><div className="h-6 w-32 mx-auto bg-[#f0f7f4] rounded animate-pulse" /></td></tr>
               ) : sessions.length === 0 ? (
-                <tr><td colSpan={6} className="text-center py-12 text-[#6b8878]">
+                <tr><td colSpan={7} className="text-center py-12 text-[#6b8878]">
                   <div className="text-4xl mb-2">🩺</div>
                   <div className="font-medium">No sessions recorded yet</div>
                   <div className="text-sm mt-1">Add a session from a patient profile to get started.</div>
@@ -111,12 +136,175 @@ export default function Sessions() {
                     </span>
                   </td>
                   <td className="px-4 py-3 font-bold text-[#1a7a4a]">₹{s.payment || 0}</td>
+                  <td className="px-4 py-3">
+                    {canEdit && (
+                      <div className="flex gap-2">
+                        <button onClick={() => handleEditSession(s)}
+                          className="px-2 py-1 border border-[#1a7a4a] text-[#1a7a4a] font-semibold rounded-lg text-xs hover:bg-[#d4ede1] transition-colors"
+                        >Edit</button>
+                        <button onClick={() => handleDeleteSession(s)}
+                          className="px-2 py-1 border border-[#dc2626] text-[#dc2626] font-semibold rounded-lg text-xs hover:bg-[#fee2e2] transition-colors"
+                        >Delete</button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      {/* Edit Session Modal */}
+      {editingSession && (
+        <SessionEditModal
+          session={editingSession}
+          onClose={() => setEditingSession(null)}
+          onSaved={() => { setEditingSession(null); loadSessions(); onAppEvent("app:sessions-changed"); }}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+            <div className="px-6 py-4 border-b border-[#cfe0d8]">
+              <h2 className="font-['Syne'] text-base font-extrabold text-[#dc2626]">Delete Session #{deleteTarget.session_no}</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-[#6b8878]">This will permanently delete this session and its associated payment record. This action cannot be undone.</p>
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Reason for deletion (optional)</label>
+                <textarea
+                  value={deleteReason}
+                  onChange={e => setDeleteReason(e.target.value)}
+                  rows={2}
+                  className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a] resize-none"
+                  placeholder="e.g. Double entry, patient refund issued..."
+                />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-[#cfe0d8] flex gap-3 justify-end">
+              <button onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 border border-[#cfe0d8] text-[#6b8878] font-semibold rounded-lg hover:bg-[#f0f7f4]"
+                disabled={saving}>Cancel</button>
+              <button onClick={confirmDelete} disabled={saving}
+                className="px-4 py-2 bg-[#dc2626] text-white font-semibold rounded-lg hover:bg-[#b91c1c] disabled:opacity-50">
+                {saving ? "Deleting..." : "Delete Session"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Edit Session Modal ─────────────────────────────────────────────────────
+
+interface SessionEditModalProps {
+  session: Session;
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+function SessionEditModal({ session, onClose, onSaved }: SessionEditModalProps) {
+  const [form, setForm] = useState({
+    date: session.date,
+    visitType: session.visit_type || "IN-CLINIC",
+    clinicianName: session.clinician_name || "",
+    payment: String(session.payment || ""),
+    paymentMode: "CASH",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSave = async () => {
+    if (!form.date) { setError("Date is required"); return; }
+    setSaving(true);
+    setError(null);
+    try {
+      await api(`/api/sessions/${session.id}`, {
+        method: "PUT",
+        body: {
+          date: form.date,
+          visitType: form.visitType,
+          clinicianName: form.clinicianName,
+          payment: form.payment ? parseFloat(form.payment) : 0,
+          paymentMode: form.paymentMode,
+        },
+      });
+      onSaved();
+    } catch (err: any) {
+      setError(err.message || "Failed to update session");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="px-6 py-4 border-b border-[#cfe0d8] flex items-center justify-between">
+          <h2 className="font-['Syne'] text-base font-extrabold text-[#0d4a2c]">Edit Session #{session.session_no}</h2>
+          <button onClick={onClose} className="text-xl text-[#6b8878] hover:text-[#1a2e24]">✕</button>
+        </div>
+        <div className="p-6 space-y-4">
+          {error && <div className="text-sm text-[#dc2626] bg-[#fee2e2] px-4 py-2 rounded-lg">{error}</div>}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Date *</label>
+              <input type="date" value={form.date}
+                onChange={e => setForm({ ...form, date: e.target.value })}
+                className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Visit Type</label>
+              <select value={form.visitType}
+                onChange={e => setForm({ ...form, visitType: e.target.value })}
+                className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]">
+                <option value="IN-CLINIC">In-Clinic</option>
+                <option value="HOME">Home Visit</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-1.5">Clinician Name</label>
+            <input value={form.clinicianName}
+              onChange={e => setForm({ ...form, clinicianName: e.target.value })}
+              className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]"
+              placeholder="e.g. Dr. Siyaram" />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Payment (₹)</label>
+              <input type="number" value={form.payment}
+                onChange={e => setForm({ ...form, payment: e.target.value })}
+                className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]"
+                placeholder="0" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Payment Mode</label>
+              <select value={form.paymentMode}
+                onChange={e => setForm({ ...form, paymentMode: e.target.value })}
+                className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]">
+                <option value="CASH">Cash</option>
+                <option value="UPI">UPI</option>
+                <option value="PENDING">Pending</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t border-[#cfe0d8] flex gap-3 justify-end">
+          <button onClick={onClose}
+            className="px-4 py-2 border border-[#cfe0d8] text-[#6b8878] font-semibold rounded-lg hover:bg-[#f0f7f4]"
+            disabled={saving}>Cancel</button>
+          <button onClick={handleSave} disabled={saving}
+            className="px-4 py-2 bg-[#1a7a4a] text-white font-semibold rounded-lg hover:bg-[#0d4a2c] disabled:opacity-50">
+            {saving ? "Saving..." : "💾 Save Changes"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

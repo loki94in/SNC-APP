@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "@/App";
 import { api } from "@/lib/api";
 
 interface AuditEntry {
@@ -10,6 +11,7 @@ interface AuditEntry {
 }
 
 export default function Security() {
+  const { user } = useAuth();
   const [currentPwd, setCurrentPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
@@ -115,7 +117,7 @@ export default function Security() {
         </button>
       </div>
 
-      {/* Audit Log — visible only to ADMIN */}
+      {user?.role === "ADMIN" && (
       <div className="bg-white rounded-xl border border-[#cfe0d8] overflow-hidden">
         <div className="px-5 py-4 border-b border-[#cfe0d8]">
           <h3 className="font-semibold text-[#0d4a2c]">Recent Activity</h3>

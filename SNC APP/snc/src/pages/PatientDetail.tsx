@@ -28,6 +28,7 @@ export default function PatientDetail() {
   const [regularError, setRegularError] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "sessions" | "regular">("info");
   const [showModal, setShowModal] = useState(false);
+  const [showRegularPlanModal, setShowRegularPlanModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [planLoading, setPlanLoading] = useState(false);
@@ -66,8 +67,11 @@ export default function PatientDetail() {
     if (!id) return;
     setPlanLoading(true);
     setRegularError(false);
-    api<{ plan: any }>(`/api/regular/plan/${id}`)
-      .then(data => setRegularPlan(data.plan || null))
+    api<any>(`/api/regular?patientId=${id}`)
+      .then(data => {
+        const plans = Array.isArray(data) ? data : [];
+        setRegularPlan(plans.length > 0 ? plans[0] : null);
+      })
       .catch(() => setRegularError(true))
       .finally(() => setPlanLoading(false));
   }, [id]);
@@ -195,6 +199,13 @@ export default function PatientDetail() {
 
       {activeTab === "regular" && (
         <div className="bg-white rounded-xl border border-[#cfe0d8] p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-sm text-[#6b8878]">Regular Visit Plans</h3>
+            <button onClick={() => setShowRegularPlanModal(true)}
+              className="px-3 py-1.5 bg-[#1a7a4a] text-white text-xs font-semibold rounded-lg hover:bg-[#0d4a2c]">
+              + Create Plan
+            </button>
+          </div>
           {planLoading ? (
             <div className="h-24 bg-[#f0f7f4] rounded animate-pulse" />
           ) : regularPlan ? (
@@ -237,6 +248,139 @@ export default function PatientDetail() {
       )}
 
       {showModal && <SessionModal patientId={id!} onClose={() => { setShowModal(false); loadSessions(); }} />}
+      {showRegularPlanModal && (
+        <RegularPlanModal
+          patientId={id!}
+          existingPlan={regularPlan}
+          onClose={() => setShowRegularPlanModal(false)}
+          onSaved={() => { setShowRegularPlanModal(false); loadRegularPlan(); }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── REGULAR PLAN MODAL ───────────────────────────────────────────────────
+
+interface RegularPlanModalProps {
+  patientId: string;
+  existingPlan: any;
+  onClose: () => void;
+  onSaved: () => void;
+}
+
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+function RegularPlanModal({ patientId, existingPlan, onClose, onSaved }: RegularPlanModalProps) {
+  const [frequency, setFrequency] = useState(existingPlan?.frequency || "WEEKLY");
+  const [selectedDays, setSelectedDays] = useState<string[]>(() => {
+    if (existingPlan?.days) {
+      try { return JSON.parse(existingPlan.days); } catch {}
+    }
+    return [];
+  });
+  const [protocol, setProtocol] = useState(existingPlan?.protocol || "");
+  const [startDate, setStartDate] = useState(existingPlan?.start_date || new Date().toISOString().split("T")[0]);
+  const [endDate, setEndDate] = useState(existingPlan?.end_date || "");
+  const [targetCount, setTargetCount] = useState(String(existingPlan?.target_count || ""));
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const toggleDay = (day: string) => {
+    setSelectedDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]);
+  };
+
+  const handleSave = async () => {
+    if (!patientId) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await api("/api/regular/plan", {
+        method: "POST",
+        body: {
+          patientId,
+          frequency,
+          days: selectedDays,
+          protocol,
+          startDate,
+          endDate,
+          targetCount: targetCount ? parseInt(targetCount) : 0,
+        },
+      });
+      onSaved();
+    } catch (err: any) {
+      setError(err.message || "Failed to save plan");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl">
+        <div className="px-6 py-4 border-b border-[#cfe0d8] flex items-center justify-between">
+          <h2 className="font-['Syne'] text-base font-extrabold text-[#0d4a2c]">
+            {existingPlan ? "Edit Regular Plan" : "Create Regular Plan"}
+          </h2>
+          <button onClick={onClose} className="text-xl text-[#6b8878] hover:text-[#1a2e24]">✕</button>
+        </div>
+        <div className="p-6 space-y-4">
+          {error && <div className="text-sm text-[#dc2626] bg-[#fee2e2] px-4 py-2 rounded-lg">{error}</div>}
+          <div>
+            <label className="block text-sm font-semibold mb-1.5">Frequency</label>
+            <select value={frequency} onChange={e => setFrequency(e.target.value)}
+              className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]">
+              <option value="WEEKLY">Weekly</option>
+              <option value="BIWEEKLY">Bi-Weekly</option>
+              <option value="MONTHLY">Monthly</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-2">Days of Week</label>
+            <div className="flex gap-2 flex-wrap">
+              {DAYS.map(day => (
+                <button key={day} type="button" onClick={() => toggleDay(day)}
+                  className={`px-3 py-1.5 border rounded-full text-sm font-medium transition-all ${
+                    selectedDays.includes(day) ? "bg-[#d4ede1] border-[#1a7a4a] text-[#1a7a4a]" : "border-[#cfe0d8] text-[#6b8878]"
+                  }`}>{day}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-1.5">Protocol / Notes</label>
+            <textarea value={protocol} onChange={e => setProtocol(e.target.value)} rows={3}
+              className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a] resize-none"
+              placeholder="e.g. Spine treatment, Acupuncture..." />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Start Date</label>
+              <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)}
+                className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">End Date</label>
+              <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)}
+                className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]" />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-1.5">Target Sessions</label>
+            <input type="number" value={targetCount} onChange={e => setTargetCount(e.target.value)}
+              className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]"
+              placeholder="e.g. 12" />
+          </div>
+        </div>
+        <div className="px-6 py-4 border-t border-[#cfe0d8] flex gap-3 justify-end">
+          <button onClick={onClose}
+            className="px-4 py-2 border border-[#cfe0d8] text-[#6b8878] font-semibold rounded-lg hover:bg-[#f0f7f4]"
+            disabled={saving}>Cancel</button>
+          <button onClick={handleSave} disabled={saving}
+            className="px-4 py-2 bg-[#1a7a4a] text-white font-semibold rounded-lg hover:bg-[#0d4a2c] disabled:opacity-50">
+            {saving ? "Saving..." : "💾 Save Plan"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
