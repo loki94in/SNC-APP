@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { resolve } from "path";
 
 const app = new Hono();
 
@@ -7,7 +8,7 @@ const app = new Hono();
 app.use("/*", cors());
 
 // Read the HTML file
-const html = await Bun.file("/home/workspace/SNC APP/snc_dev_decoded.html").text();
+const html = await Bun.file(resolve(import.meta.dirname, "../snc_dev_decoded.html")).text();
 
 // SPA-style: serve the HTML for all GET routes
 app.get("*", async (c) => {

@@ -1,6 +1,7 @@
 // Serves the patched frontend HTML at GET /
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { resolve } from "path";
 
 const frontend = new Hono();
 
@@ -9,7 +10,7 @@ frontend.use("/*", cors());
 // Read the frontend HTML once at startup
 let frontendHtml = "";
 try {
-    const path = "/home/workspace/SNC APP/site/index.html";
+    const path = resolve(import.meta.dirname, "../../site/index.html");
     frontendHtml = await Bun.file(path).text();
     console.log(`Frontend HTML loaded: ${frontendHtml.length} chars`);
 } catch (e) {

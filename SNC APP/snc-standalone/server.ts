@@ -1,7 +1,8 @@
 import { serve } from "bun";
 import { readFileSync } from "fs";
+import { resolve } from "path";
 
-const html = readFileSync("/home/workspace/SNC APP/snc_dev_decoded.html", "utf-8");
+const html = readFileSync(resolve(__dirname, "../snc_dev_decoded.html"), "utf-8");
 
 const server = serve({
   port: 3000,
