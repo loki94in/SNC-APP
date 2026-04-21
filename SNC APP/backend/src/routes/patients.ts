@@ -56,16 +56,20 @@ patients.patch("/:id", async (c) => {
   const b = await c.req.json();
   const existing = db.prepare("SELECT id FROM patients WHERE id=?").get(c.req.param("id"));
   if (!existing) return c.json({ error: "Not found" }, 404);
-  const fields = [];
-  const vals = [];
-  const map: Record<string, string> = { name:"name", age:"age", sex:"sex", occupation:"occupation", address:"address", mobile:"mobile", telephone:"telephone", history:"history", active:"active" };
+  const fields: string[] = [];
+  const vals: any[] = [];
+  const map: Record<string, string> = {
+    regNo:"reg_no", name:"name", age:"age", sex:"sex", occupation:"occupation",
+    address:"address", mobile:"mobile", telephone:"telephone", history:"history", active:"active"
+  };
   for (const [k, col] of Object.entries(map)) {
     if (b[k] !== undefined) { fields.push(`${col}=?`); vals.push(b[k]); }
   }
-  if (b.conditions) { fields.push("conditions=?"); vals.push(JSON.stringify(b.conditions)); }
-  if (b.restrictions) { fields.push("restrictions=?"); vals.push(JSON.stringify(b.restrictions)); }
+  if (b.conditions !== undefined) { fields.push("conditions=?"); vals.push(JSON.stringify(b.conditions)); }
+  if (b.restrictions !== undefined) { fields.push("restrictions=?"); vals.push(JSON.stringify(b.restrictions)); }
   if (!fields.length) return c.json({ error: "No fields to update" }, 400);
-  fields.push("updated_at=?"); vals.push(now());
+  fields.push("updated_at=?");
+  vals.push(now());
   vals.push(c.req.param("id"));
   db.prepare(`UPDATE patients SET ${fields.join(",")} WHERE id=?`).run(...vals);
   audit("PATIENT_UPDATED", user.id, `Patient updated: ${c.req.param("id")}`);

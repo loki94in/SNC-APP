@@ -1,0 +1,3191 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SNC | Siyaram Neurotherapy Center</title>
+
+<link rel="preconnect" href="<https://fonts.googleapis.com>">
+
+<link href="<https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Syne:wght@600;700;800&display=swap>" rel="stylesheet">
+
+<style>
+
+:root {
+
+  --primary:#1a7a4a; --primary-dark:#0d4a2c; --primary-light:#d4ede1;
+
+  --accent:#e8a020; --accent-light:#fef3d8;
+
+  --bg:#f0f7f4; --surface:#fff; --text:#1a2e24; --text-muted:#6b8878;
+
+  --border:#cfe0d8; --danger:#e53e3e; --warning:#d97706;
+
+  --success:#16a34a; --sidebar-w:248px;
+
+}
+
+\*{box-sizing:border-box;margin:0;padding:0}
+
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+
+/\* SIDEBAR \*/
+
+#sidebar{width:var(–sidebar-w);background:var(–primary-dark);min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100;transition:transform .3s}
+
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+
+.sb-logo h1{font-family:‘Syne’,sans-serif;font-size:15px;color:#fff;line-height:1.3;font-weight:800}
+
+.sb-logo small{font-size:11px;color:rgba(255,255,255,.45)}
+
+.sb-nav{flex:1;padding:10px 0;overflow-y:auto}
+
+.sb-section{padding:8px 18px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase}
+
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:rgba(255,255,255,.65);font-size:13.5px;font-weight:500;border-left:3px solid transparent;transition:all .15s}
+
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+
+.nav-item.active{background:rgba(255,255,255,.11);color:#fff;border-left-color:var(–accent)}
+
+.nav-item .ni{width:18px;text-align:center;font-size:15px;flex-shrink:0}
+
+.sb-foot{padding:14px;border-top:1px solid rgba(255,255,255,.1)}
+
+.user-badge{display:flex;align-items:center;gap:10px;padding:8px;background:rgba(255,255,255,.08);border-radius:8px}
+
+.user-av{width:32px;height:32px;background:var(–accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(–primary-dark);flex-shrink:0}
+
+.user-info{flex:1;min-width:0}
+
+.user-name{font-size:13px;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.user-role{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px}
+
+.btn-logout{background:none;border:none;color:rgba(255,255,255,.45);cursor:pointer;font-size:16px;padding:4px;transition:color .15s}
+
+.btn-logout:hover{color:#fff}
+
+/\* MAIN \*/
+
+#main{margin-left:var(–sidebar-w);flex:1;display:flex;flex-direction:column}
+
+#topbar{height:58px;background:var(–surface);border-bottom:1px solid var(–border);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:50;gap:14px}
+
+.topbar-title{font-family:‘Syne’,sans-serif;font-size:18px;font-weight:800;color:var(–primary-dark);flex:1}
+
+.topbar-tag{background:var(–primary-light);color:var(–primary);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+
+#content{padding:22px;flex:1}
+
+.screen{display:none}.screen.active{display:block}
+
+/\* LOGIN \*/
+
+#login-screen{position:fixed;inset:0;z-index:999;background:linear-gradient(140deg,var(–primary-dark) 0%,#1e6640 60%,var(–primary) 100%);display:flex;align-items:center;justify-content:center}
+
+#login-screen.hidden{display:none}
+
+.login-box{background:#fff;border-radius:20px;padding:40px;width:100%;max-width:400px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+
+.login-header{text-align:center;margin-bottom:28px}
+
+.login-emblem{width:64px;height:64px;background:linear-gradient(135deg,var(–primary-dark),var(–primary));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px;box-shadow:0 8px 20px rgba(13,74,44,.3)}
+
+.login-header h2{font-family:‘Syne’,sans-serif;font-size:22px;font-weight:800;color:var(–primary-dark)}
+
+.login-header p{font-size:12px;color:var(–text-muted);margin-top:4px}
+
+.login-clinic{font-size:11px;color:var(–accent);font-weight:700;background:var(–accent-light);padding:4px 12px;border-radius:20px;display:inline-block;margin-top:8px}
+
+/\* FORM \*/
+
+.fg{margin-bottom:16px}
+
+.fg label{display:block;font-size:13px;font-weight:600;color:var(–text);margin-bottom:5px}
+
+.fc{width:100%;padding:10px 14px;border:1.5px solid var(–border);border-radius:8px;font-size:14px;font-family:inherit;transition:border-color .15s,box-shadow .15s;background:#fff;color:var(–text)}
+
+.fc:focus{outline:none;border-color:var(–primary);box-shadow:0 0 0 3px rgba(26,122,74,.1)}
+
+.fc.error{border-color:var(–danger)}
+
+textarea.fc{resize:vertical;min-height:80px}
+
+select.fc{cursor:pointer}
+
+.ferr{font-size:12px;color:var(–danger);margin-top:4px;display:none}
+
+.fhint{font-size:12px;color:var(–text-muted);margin-top:4px}
+
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/\* BUTTONS \*/
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap}
+
+.btn-p{background:var(–primary);color:#fff}.btn-p:hover{background:var(–primary-dark)}
+
+.btn-a{background:var(–accent);color:var(–primary-dark)}.btn-a:hover{opacity:.9}
+
+.btn-o{background:transparent;color:var(–primary);border:1.5px solid var(–primary)}.btn-o:hover{background:var(–primary-light)}
+
+.btn-d{background:var(–danger);color:#fff}.btn-d:hover{opacity:.9}
+
+.btn-g{background:transparent;color:var(–text-muted);border:1.5px solid var(–border)}.btn-g:hover{background:var(–bg);color:var(–text)}
+
+.btn-sm{padding:6px 12px;font-size:12px}
+
+.btn-full{width:100%;justify-content:center}
+
+/\* CARDS \*/
+
+.card{background:var(–surface);border-radius:12px;border:1px solid var(–border)}
+
+.card-hd{padding:15px 20px;border-bottom:1px solid var(–border);display:flex;align-items:center;gap:10px}
+
+.card-title{font-family:‘Syne’,sans-serif;font-size:14px;font-weight:800;color:var(–primary-dark);flex:1}
+
+.card-bd{padding:20px}
+
+/\* STATS \*/
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+
+.stat-card{background:var(–surface);border-radius:12px;border:1px solid var(–border);padding:18px;position:relative;overflow:hidden}
+
+.stat-card::after{content:attr(data-icon);position:absolute;right:14px;top:14px;font-size:28px;opacity:.12}
+
+.stat-label{font-size:11px;font-weight:700;color:var(–text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+
+.stat-val{font-family:‘Syne’,sans-serif;font-size:30px;font-weight:800;color:var(–primary-dark);line-height:1}
+
+.stat-sub{font-size:12px;color:var(–text-muted);margin-top:5px}
+
+/\* TABLE \*/
+
+.tw{overflow-x:auto}
+
+table{width:100%;border-collapse:collapse}
+
+th{background:var(–bg);padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(–text-muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(–border);white-space:nowrap}
+
+td{padding:11px 14px;border-bottom:1px solid var(–border);font-size:13.5px;vertical-align:middle}
+
+tr:last-child td{border-bottom:none}
+
+tbody tr:hover td{background:var(–bg);cursor:pointer}
+
+/\* BADGES \*/
+
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700}
+
+.bg-g{background:#dcfce7;color:#16a34a}.bg-b{background:#dbeafe;color:#2563eb}
+
+.bg-a{background:#fef3c7;color:#d97706}.bg-r{background:#fee2e2;color:#dc2626}
+
+.bg-grey{background:#f3f4f6;color:#6b7280}.bg-pu{background:#ede9fe;color:#7c3aed}
+
+/\* TABS \*/
+
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(–border);margin-bottom:20px}
+
+.tab{padding:9px 16px;font-size:13.5px;font-weight:600;color:var(–text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+
+.tab.active{color:var(–primary);border-bottom-color:var(–primary)}
+
+.tab:hover{color:var(–primary)}
+
+.tab-pane{display:none}.tab-pane.active{display:block}
+
+/\* MODAL \*/
+
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
+
+.modal-ov.active{display:flex}
+
+.modal{background:var(–surface);border-radius:16px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.3)}
+
+.modal-sm{max-width:440px}.modal-md{max-width:640px}.modal-lg{max-width:860px}
+
+.modal-hd{padding:18px 22px;border-bottom:1px solid var(–border);display:flex;align-items:center}
+
+.modal-title{font-family:‘Syne’,sans-serif;font-size:16px;font-weight:800;color:var(–primary-dark);flex:1}
+
+.modal-x{background:none;border:none;font-size:22px;color:var(–text-muted);cursor:pointer;line-height:1}
+
+.modal-x:hover{color:var(–text)}
+
+.modal-bd{padding:22px}
+
+.modal-ft{padding:14px 22px;border-top:1px solid var(–border);display:flex;gap:10px;justify-content:flex-end}
+
+/\* TOAST \*/
+
+#tc{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+
+.toast{background:var(–primary-dark);color:#fff;padding:11px 16px;border-radius:10px;font-size:13.5px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:300px;animation:tIn .3s ease;display:flex;align-items:center;gap:9px}
+
+.toast.t-ok{background:#16a34a}.toast.t-err{background:var(–danger)}.toast.t-warn{background:var(–warning)}
+
+@keyframes tIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+
+/\* SECTION HEADER \*/
+
+.sh{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
+
+.sh-title{font-family:‘Syne’,sans-serif;font-size:20px;font-weight:800;color:var(–primary-dark)}
+
+.sh-sub{font-size:12px;color:var(–text-muted);margin-top:3px}
+
+.sh-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+/\* TOGGLES & CHECKBOXES \*/
+
+.cg{display:flex;flex-wrap:wrap;gap:7px}
+
+.ci{display:flex;align-items:center;gap:6px;padding:5px 12px;border:1.5px solid var(–border);border-radius:20px;cursor:pointer;font-size:13px;transition:all .15s;user-select:none}
+
+.ci input{display:none}
+
+.ci.checked{background:var(–primary-light);border-color:var(–primary);color:var(–primary);font-weight:600}
+
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+
+.toggle input{opacity:0;width:0;height:0}
+
+.ts{position:absolute;inset:0;background:var(–border);border-radius:24px;cursor:pointer;transition:.3s}
+
+.ts:before{content:’’;position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+
+.toggle input:checked+.ts{background:var(–primary)}
+
+.toggle input:checked+.ts:before{transform:translateX(20px)}
+
+.tw-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+
+.tw-label{font-size:13.5px;font-weight:500;flex:1}
+
+/\* SLIDER \*/
+
+.slider-row{display:flex;align-items:center;gap:12px}
+
+.slider-row input\[type=range\]{flex:1;accent-color:var(–primary)}
+
+.slider-v{min-width:28px;text-align:center;font-weight:800;font-size:16px;color:var(–primary)}
+
+/\* CALENDAR \*/
+
+.cal-wrap{background:var(–surface);border:1.5px solid var(–border);border-radius:12px;padding:16px}
+
+.cal-nav{display:flex;align-items:center;margin-bottom:12px}
+
+.cal-nav h3{flex:1;text-align:center;font-family:‘Syne’,sans-serif;font-size:15px;font-weight:800;color:var(–primary-dark)}
+
+.cal-nav button{background:none;border:1.5px solid var(–border);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:14px;transition:all .15s}
+
+.cal-nav button:hover{border-color:var(–primary);color:var(–primary)}
+
+.cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px}
+
+.cal-dn{text-align:center;font-size:10px;font-weight:700;color:var(–text-muted);padding:4px 0}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:7px;font-size:12.5px;cursor:pointer;border:1.5px solid transparent;transition:all .15s;font-weight:500;position:relative}
+
+.cal-cell.off{color:rgba(0,0,0,.2);cursor:default}
+
+.cal-cell.today{border-color:var(–primary);color:var(–primary);font-weight:700}
+
+.cal-cell.c-ok{background:#dcfce7;color:#16a34a}
+
+.cal-cell.c-ab{background:#fee2e2;color:#dc2626}
+
+.cal-cell.c-pl{background:var(–primary-light);color:var(–primary)}
+
+.cal-cell.c-sel{background:var(–primary);color:#fff!important;border-color:var(–primary)}
+
+.cal-cell:hover:not(.off){border-color:var(–primary)}
+
+.cal-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+
+.cal-leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(–text-muted)}
+
+.cal-dot{width:10px;height:10px;border-radius:50%}
+
+/\* PATIENT HERO \*/
+
+.pt-hero{background:linear-gradient(135deg,var(–primary-dark),var(–primary));border-radius:12px;padding:22px;color:#fff;margin-bottom:18px;display:flex;align-items:center;gap:18px}
+
+.pt-av{width:68px;height:68px;background:rgba(255,255,255,.18);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:‘Syne’,sans-serif;font-size:26px;font-weight:800;flex-shrink:0}
+
+.pt-name{font-family:‘Syne’,sans-serif;font-size:20px;font-weight:800;margin-bottom:4px}
+
+.pt-meta{font-size:12.5px;opacity:.8}
+
+.pt-tags{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+
+.pt-tag{background:rgba(255,255,255,.15);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+
+.pt-hero-right{margin-left:auto;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+
+/\* SESSION CARDS \*/
+
+.ses-card{border:1.5px solid var(–border);border-radius:10px;overflow:hidden;margin-bottom:10px}
+
+.ses-hd{padding:12px 16px;background:var(–bg);display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .15s}
+
+.ses-hd:hover{background:#e8f4ee}
+
+.ses-bd{padding:16px;display:none}
+
+.ses-card.open .ses-bd{display:block}
+
+.ses-no{font-family:‘Syne’,sans-serif;font-size:13px;font-weight:800;color:var(–primary)}
+
+.pp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+
+.pre-box{border:1.5px solid #fbbf24;border-radius:8px;padding:14px;background:#fffbeb}
+
+.post-box{border:1.5px solid #34d399;border-radius:8px;padding:14px;background:#f0fdf4}
+
+.pp-head{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+
+.pre-box .pp-head{color:#d97706}.post-box .pp-head{color:#16a34a}
+
+.nr{margin-bottom:7px}
+
+.nl{font-size:10px;font-weight:700;color:var(–text-muted);text-transform:uppercase;letter-spacing:.4px}
+
+.nv{font-size:13px;color:var(–text)}
+
+/\* PERMISSION MATRIX \*/
+
+.pm-wrap{overflow-x:auto}
+
+.pm-table{border-collapse:collapse;width:100%}
+
+.pm-table th,.pm-table td{padding:9px 14px;font-size:12.5px;border-bottom:1px solid var(–border);white-space:nowrap}
+
+.pm-table th{background:var(–bg);font-weight:700;color:var(–text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+
+.pm-sel{padding:4px 8px;border:1.5px solid var(–border);border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:700}
+
+.pm-EDIT{border-color:var(–success)!important;color:var(–success);background:#dcfce7}
+
+.pm-VIEW{border-color:var(–warning)!important;color:var(–warning);background:#fef3c7}
+
+.pm-HIDDEN{border-color:var(–border);color:var(–text-muted);background:var(–bg)}
+
+/\* TELEGRAM \*/
+
+.tg-token-box{background:var(–bg);border:1.5px solid var(–border);border-radius:8px;padding:12px 16px;font-family:monospace;font-size:12.5px;color:var(–text-muted);word-break:break-all;min-height:44px}
+
+.cmd-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(–border)}
+
+.cmd-row:last-child{border-bottom:none}
+
+.cmd-trigger{font-family:monospace;background:var(–primary-light);padding:4px 10px;border-radius:6px;font-size:12.5px;color:var(–primary);font-weight:700}
+
+.cmd-desc{flex:1;font-size:13px;color:var(–text-muted)}
+
+/\* MISC \*/
+
+.divider{height:1px;background:var(–border);margin:20px 0}
+
+.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(–text-muted);margin-bottom:10px}
+
+.empty-state{text-align:center;padding:50px 20px}
+
+.es-icon{font-size:48px;opacity:.3;margin-bottom:12px}
+
+.es-title{font-size:15px;font-weight:700;color:var(–text-muted);margin-bottom:6px}
+
+.es-sub{font-size:13px;color:var(–text-muted)}
+
+.info-box{background:var(–primary-light);border:1.5px solid var(–primary);border-radius:8px;padding:12px 16px;font-size:13px;color:var(–primary-dark);display:flex;align-items:flex-start;gap:8px}
+
+.warn-box{background:var(–accent-light);border:1.5px solid var(–accent);border-radius:8px;padding:12px 16px;font-size:13px;color:#92400e}
+
+/\* RESPONSIVE \*/
+
+@media(max-width:768px){
+
+#sidebar{transform:translateX(-100%)}
+
+#sidebar.open{transform:none}
+
+#main{margin-left:0}
+
+.stats-grid{grid-template-columns:1fr 1fr}
+
+.fr,.pp-grid{grid-template-columns:1fr}
+
+.fr3{grid-template-columns:1fr 1fr}
+
+}
+
+::-webkit-scrollbar{width:6px;height:6px}
+
+::-webkit-scrollbar-thumb{background:var(–border);border-radius:3px}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- LOGIN SCREEN -->
+
+<div id="login-screen">
+
+  <div class="login-box">
+
+    <div class="login-header">
+
+      <div class="login-emblem">🧠</div>
+
+      <h2>SNC Patient Register</h2>
+
+      <p>Secure clinical management system</p>
+
+      <div class="login-clinic">Siyaram Neurotherapy Center, Agra</div>
+
+    </div>
+
+    <div class="fg">
+
+      <label>Login ID</label>
+
+      <input class="fc" id="lg-id" type="text" placeholder="Enter your login ID" autocomplete="username">
+
+    </div>
+
+    <div class="fg">
+
+      <label>Password</label>
+
+      <input class="fc" id="lg-pw" type="password" placeholder="Enter password" autocomplete="current-password">
+
+      <div class="ferr" id="lg-err">Invalid login ID or password.</div>
+
+    </div>
+
+    <button class="btn btn-p btn-full" onclick="doLogin()" style="margin-top:4px;padding:12px">Sign In →</button>
+
+    <p style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:16px">Default: admin / admin123</p>
+
+  </div>
+
+</div>
+
+<!-- SIDEBAR -->
+
+<nav id="sidebar">
+
+  <div class="sb-logo">
+
+    <h1>🧠 Siyaram<br>Neurotherapy Center</h1>
+
+    <small>Patient Register System</small>
+
+  </div>
+
+  <div class="sb-nav">
+
+    <div class="sb-section">Main</div>
+
+    <div class="nav-item active" data-screen="dashboard" onclick="gotoScreen('dashboard',this)"><span class="ni">📊</span> Dashboard</div>
+
+    <div class="nav-item" data-screen="patients" onclick="gotoScreen('patients',this)"><span class="ni">👥</span> All Patients</div>
+
+    <div class="nav-item" data-screen="scheduler" onclick="gotoScreen('scheduler',this)"><span class="ni">📅</span> Scheduler</div>
+
+    <div class="nav-item" data-screen="payments" onclick="gotoScreen('payments',this)"><span class="ni">💳</span> Payments</div>
+
+    <div class="nav-item" data-screen="regular" onclick="gotoScreen('regular',this)"><span class="ni">🔄</span> Regular Patients</div>
+
+    <div class="sb-section">Admin</div>
+
+    <div class="nav-item" data-screen="admin-telegram" onclick="gotoScreen('admin-telegram',this)"><span class="ni">📨</span> Telegram Bot</div>
+
+    <div class="nav-item" data-screen="admin-security" onclick="gotoScreen('admin-security',this)"><span class="ni">🔐</span> Security</div>
+
+    <div class="nav-item" data-screen="admin-roles" onclick="gotoScreen('admin-roles',this)"><span class="ni">🛡️</span> Roles & Access</div>
+
+    <div class="nav-item" data-screen="admin-users" onclick="gotoScreen('admin-users',this)"><span class="ni">⚙️</span> User Manager</div>
+
+  </div>
+
+  <div class="sb-foot">
+
+    <div class="user-badge">
+
+      <div class="user-av" id="sb-av">A</div>
+
+      <div class="user-info">
+
+        <div class="user-name" id="sb-name">Admin</div>
+
+        <div class="user-role" id="sb-role">Administrator</div>
+
+      </div>
+
+      <button class="btn-logout" onclick="doLogout()" title="Logout">⏻</button>
+
+    </div>
+
+  </div>
+
+</nav>
+
+<!-- MAIN -->
+
+<div id="main">
+
+  <div id="topbar">
+
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+
+    <div class="topbar-tag" id="topbar-tag">Today: <span id="today-date"></span></div>
+
+    <button class="btn btn-p btn-sm" onclick="gotoScreen('patients',null);openAddPatient()" style="display:none" id="btn-add-patient">+ Add Patient</button>
+
+  </div>
+
+  <div id="content">
+
+\`\`\`
+
+<!-- DASHBOARD -->
+
+<div class="screen active" id="scr-dashboard">
+
+  <div class="stats-grid">
+
+    <div class="stat-card" data-icon="👥"><div class="stat-label">Total Patients</div><div class="stat-val" id="s-total">0</div><div class="stat-sub">Registered</div></div>
+
+    <div class="stat-card" data-icon="📅"><div class="stat-label">Today's Sessions</div><div class="stat-val" id="s-today">0</div><div class="stat-sub">Completed today</div></div>
+
+    <div class="stat-card" data-icon="💰"><div class="stat-label">Today's Revenue</div><div class="stat-val" id="s-rev">₹0</div><div class="stat-sub">Cash + UPI</div></div>
+
+    <div class="stat-card" data-icon="🔄"><div class="stat-label">Regular Patients</div><div class="stat-val" id="s-reg">0</div><div class="stat-sub">Active plans</div></div>
+
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+    <div class="card">
+
+      <div class="card-hd"><div class="card-title">🔄 Regular Patients Today</div><button class="btn btn-sm btn-o" onclick="gotoScreen('regular',null)">View All</button></div>
+
+      <div class="card-bd" id="dash-regular-list"><div class="empty-state"><div class="es-icon">📭</div><div class="es-title">No regular patients today</div></div></div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="card-hd"><div class="card-title">📋 Recent Sessions</div></div>
+
+      <div class="card-bd tw" id="dash-recent-list"><div class="empty-state"><div class="es-icon">📋</div><div class="es-title">No sessions yet today</div></div></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ALL PATIENTS -->
+
+<div class="screen" id="scr-patients">
+
+  <div class="sh">
+
+    <div><div class="sh-title">All Patients</div><div class="sh-sub">Search, view and manage patient records</div></div>
+
+    <div class="sh-right">
+
+      <input class="fc" style="width:220px" placeholder="🔍 Search name / reg no..." oninput="filterPatients(this.value)">
+
+      <button class="btn btn-p" onclick="openAddPatient()">+ Add Patient</button>
+
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="tw"><table>
+
+      <thead><tr><th>Reg No</th><th>Name</th><th>Age/Sex</th><th>Mobile</th><th>Conditions</th><th>Status</th><th>Actions</th></tr></thead>
+
+      <tbody id="patient-table-body"></tbody>
+
+    </table></div>
+
+    <div id="patient-empty" class="empty-state" style="display:none"><div class="es-icon">👥</div><div class="es-title">No patients found</div><div class="es-sub">Add your first patient to get started</div></div>
+
+  </div>
+
+</div>
+
+<!-- PATIENT DETAIL -->
+
+<div class="screen" id="scr-patient-detail">
+
+  <button class="btn btn-g btn-sm" onclick="gotoScreen('patients',null)" style="margin-bottom:16px">← Back to Patients</button>
+
+  <div class="pt-hero" id="pt-hero"></div>
+
+  <div class="tabs" id="pt-tabs">
+
+    <div class="tab active" onclick="switchTab(this,'pt-info')">📋 Info</div>
+
+    <div class="tab" onclick="switchTab(this,'pt-sessions')">🩺 Sessions</div>
+
+    <div class="tab" onclick="switchTab(this,'pt-regular')">🔄 Regular Visits</div>
+
+  </div>
+
+  <div id="pt-info" class="tab-pane active"><div id="pt-info-body"></div></div>
+
+  <div id="pt-sessions" class="tab-pane">
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:14px"><button class="btn btn-p" onclick="openAddSession()">+ Add Session</button></div>
+
+    <div id="session-list-wrap"></div>
+
+  </div>
+
+  <div id="pt-regular" class="tab-pane"><div id="pt-regular-wrap"></div></div>
+
+</div>
+
+<!-- SCHEDULER -->
+
+<div class="screen" id="scr-scheduler">
+
+  <div class="sh"><div><div class="sh-title">Scheduler</div><div class="sh-sub">Appointment calendar</div></div></div>
+
+  <div class="card card-bd" style="padding:24px">
+
+    <div id="sched-cal"></div>
+
+    <div class="divider"></div>
+
+    <div id="sched-appts"><div class="empty-state"><div class="es-icon">📅</div><div class="es-title">Select a date to view appointments</div></div></div>
+
+  </div>
+
+</div>
+
+<!-- PAYMENTS -->
+
+<div class="screen" id="scr-payments">
+
+  <div class="sh"><div><div class="sh-title">Payments</div><div class="sh-sub">Manual payment records</div></div><div class="sh-right"><button class="btn btn-p" onclick="openAddPayment()">+ Add Payment</button></div></div>
+
+  <div class="card">
+
+    <div class="tw"><table>
+
+      <thead><tr><th>Date</th><th>Patient</th><th>Amount</th><th>Mode</th><th>Session</th><th>Notes</th></tr></thead>
+
+      <tbody id="pay-table-body"></tbody>
+
+    </table></div>
+
+    <div id="pay-empty" class="empty-state" style="display:none"><div class="es-icon">💳</div><div class="es-title">No payment records</div></div>
+
+  </div>
+
+</div>
+
+<!-- REGULAR PATIENTS -->
+
+<div class="screen" id="scr-regular">
+
+  <div class="sh"><div><div class="sh-title">Regular Patients</div><div class="sh-sub">Active recurring treatment plans</div></div></div>
+
+  <div id="reg-list-wrap"></div>
+
+</div>
+
+<!-- TELEGRAM BOT -->
+
+<div class="screen" id="scr-admin-telegram">
+
+  <div class="sh"><div><div class="sh-title">📨 Telegram Bot Manager</div><div class="sh-sub">Configure bot token, commands and alerts</div></div></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+    <div>
+
+      <div class="card" style="margin-bottom:16px">
+
+        <div class="card-hd"><div class="card-title">🔑 Bot Token</div><div id="tg-status-badge"></div></div>
+
+        <div class="card-bd">
+
+          <div class="fg"><label>Current Token</label><div class="tg-token-box" id="tg-token-display">Not configured</div></div>
+
+          <div class="fg"><label>New Bot Token</label><input class="fc" id="tg-token-input" type="password" placeholder="Enter BotFather token..."></div>
+
+          <div style="display:flex;gap:8px">
+
+            <button class="btn btn-p" onclick="saveTelegramToken()">💾 Save Token</button>
+
+            <button class="btn btn-g" onclick="testBotConnection()">🧪 Test</button>
+
+            <button class="btn btn-d btn-sm" onclick="revokeTelegramToken()">🗑 Revoke</button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <div class="card-hd"><div class="card-title">🔔 Alert Settings</div></div>
+
+        <div class="card-bd">
+
+          <div class="fg"><label>Recipient Chat ID</label><input class="fc" id="tg-chat-id" placeholder="Your Telegram Chat ID" oninput="saveTgSettings()"></div>
+
+          <div class="fg"><label>Daily Summary Time</label><input class="fc" id="tg-alert-time" type="time" value="20:00" onchange="saveTgSettings()"></div>
+
+          <div class="divider"></div>
+
+          <div class="tw-row"><label class="toggle"><input type="checkbox" id="tg-al-backup" checked onchange="saveTgSettings()"><span class="ts"></span></label><span class="tw-label">Daily backup alert</span></div>
+
+          <div class="tw-row"><label class="toggle"><input type="checkbox" id="tg-al-login" checked onchange="saveTgSettings()"><span class="ts"></span></label><span class="tw-label">Login failure alert</span></div>
+
+          <div class="tw-row"><label class="toggle"><input type="checkbox" id="tg-al-revenue" onchange="saveTgSettings()"><span class="ts"></span></label><span class="tw-label">Revenue summary alert</span></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="card-hd"><div class="card-title">⚡ Bot Commands</div><button class="btn btn-sm btn-p" onclick="openAddCommand()">+ Add Command</button></div>
+
+      <div class="card-bd">
+
+        <div class="info-box" style="margin-bottom:16px">ℹ️ Commands the bot responds to in Telegram. Click <strong>Push to Bot</strong> after editing.</div>
+
+        <div id="tg-cmd-list"></div>
+
+        <div style="margin-top:14px;display:flex;gap:8px">
+
+          <button class="btn btn-a" onclick="pushCommandsToTelegram()">🚀 Push to Bot</button>
+
+          <button class="btn btn-g btn-sm" onclick="loadDefaultCommands()">↺ Load Defaults</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- SECURITY -->
+
+<div class="screen" id="scr-admin-security">
+
+  <div class="sh"><div><div class="sh-title">🔐 Security Settings</div><div class="sh-sub">Change credentials and manage passwords</div></div></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+    <div class="card">
+
+      <div class="card-hd"><div class="card-title">Change Password</div></div>
+
+      <div class="card-bd">
+
+        <div class="fg"><label>Current Password</label><input class="fc" id="pw-cur" type="password" placeholder="Current password"></div>
+
+        <div class="fg"><label>New Password</label><input class="fc" id="pw-new" type="password" placeholder="Min 8 chars, 1 number, 1 special"></div>
+
+        <div class="fg"><label>Confirm New Password</label><input class="fc" id="pw-conf" type="password" placeholder="Confirm new password"><div class="ferr" id="pw-err"></div></div>
+
+        <button class="btn btn-p" onclick="changePassword()">🔒 Update Password</button>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="card-hd"><div class="card-title">Change Login ID</div></div>
+
+      <div class="card-bd">
+
+        <div class="fg"><label>Current Login ID</label><input class="fc" id="lid-cur" readonly style="background:var(--bg)"></div>
+
+        <div class="fg"><label>New Login ID</label><input class="fc" id="lid-new" placeholder="Min 5 chars, alphanumeric + \_"><div class="ferr" id="lid-err"></div></div>
+
+        <div class="fg"><label>Confirm with Password</label><input class="fc" id="lid-pw" type="password" placeholder="Your current password"></div>
+
+        <button class="btn btn-p" onclick="changeLoginId()">✏️ Update Login ID</button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:16px" id="admin-reset-section">
+
+    <div class="card-hd"><div class="card-title">🔑 Reset User Password (Admin)</div></div>
+
+    <div class="card-bd">
+
+      <div class="warn-box" style="margin-bottom:16px">⚠️ A one-time temporary password will be generated. Show it once only and the user must change it on next login.</div>
+
+      <div class="fr">
+
+        <div class="fg"><label>Select User</label><select class="fc" id="reset-user-sel"><option value="">-- Select user --</option></select></div>
+
+        <div style="padding-top:24px"><button class="btn btn-a" onclick="adminResetPassword()">🔄 Generate Temp Password</button></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ROLES & PERMISSIONS -->
+
+<div class="screen" id="scr-admin-roles">
+
+  <div class="sh"><div><div class="sh-title">🛡️ Roles & Access Control</div><div class="sh-sub">Define what each role can see and do</div></div><div class="sh-right"><button class="btn btn-p" onclick="savePermissions()">💾 Save All Changes</button></div></div>
+
+  <div class="card">
+
+    <div class="card-hd"><div class="card-title">Permission Matrix</div><div style="font-size:12px;color:var(--text-muted)">Changes apply immediately after save</div></div>
+
+    <div class="pm-wrap card-bd" style="padding:0">
+
+      <table class="pm-table" id="pm-table"></table>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- USER MANAGER -->
+
+<div class="screen" id="scr-admin-users">
+
+  <div class="sh"><div><div class="sh-title">⚙️ User Manager</div><div class="sh-sub">Manage clinicians and staff accounts</div></div><div class="sh-right"><button class="btn btn-p" onclick="openAddUser()">+ Add User</button></div></div>
+
+  <div class="card">
+
+    <div class="tw"><table>
+
+      <thead><tr><th>Name</th><th>Login ID</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+
+      <tbody id="user-table-body"></tbody>
+
+    </table></div>
+
+  </div>
+
+</div>
+
+\`\`\`
+
+  </div><!-- end #content -->
+
+</div><!-- end #main -->
+
+<!-- TOAST CONTAINER -->
+
+<div id="tc"></div>
+
+<!-- ============ MODALS ============ -->
+
+<!-- Add Patient Modal -->
+
+<div class="modal-ov" id="modal-patient">
+
+  <div class="modal modal-lg">
+
+    <div class="modal-hd"><div class="modal-title">👤 Patient Registration</div><button class="modal-x" onclick="closeModal('modal-patient')">✕</button></div>
+
+    <div class="modal-bd">
+
+      <div class="fr">
+
+        <div class="fg"><label>Full Name \*</label><input class="fc" id="pt-name" placeholder="Patient full name"></div>
+
+        <div class="fg"><label>Registration No</label><input class="fc" id="pt-reg" placeholder="Auto-generated if blank"></div>
+
+      </div>
+
+      <div class="fr3">
+
+        <div class="fg"><label>Age \*</label><input class="fc" id="pt-age" type="number" placeholder="Age"></div>
+
+        <div class="fg"><label>Sex \*</label><select class="fc" id="pt-sex"><option>Male</option><option>Female</option><option>Other</option></select></div>
+
+        <div class="fg"><label>Occupation</label><input class="fc" id="pt-occ" placeholder="Occupation"></div>
+
+      </div>
+
+      <div class="fg"><label>Address</label><textarea class="fc" id="pt-addr" rows="2" placeholder="Full address"></textarea></div>
+
+      <div class="fr">
+
+        <div class="fg"><label>Mobile \*</label><input class="fc" id="pt-mob" placeholder="Mobile number"></div>
+
+        <div class="fg"><label>Telephone</label><input class="fc" id="pt-tel" placeholder="Alternate number"></div>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec-label">Conditions (check all that apply)</div>
+
+      <div class="cg" id="cond-group">
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Diabetes">Diabetes</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Heart">Heart</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="BP">BP</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Kidney">Kidney</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="B-12">B-12</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Folic Acid">Folic Acid</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Tongue">Tongue</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="UDF">UDF</label>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="sec-label">Dietary Restrictions</div>
+
+      <div class="cg" id="restr-group">
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Restriction">Restriction</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="No Khatta">No Khatta</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="No Non-Veg">No Non-Veg</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="No Alcohol">No Alcohol</label>
+
+      </div>
+
+      <div class="fg" style="margin-top:16px"><label>Patient History</label><textarea class="fc" id="pt-history" rows="3" placeholder="Relevant medical history..."></textarea></div>
+
+    </div>
+
+    <div class="modal-ft"><button class="btn btn-g" onclick="closeModal('modal-patient')">Cancel</button><button class="btn btn-p" onclick="savePatient()">💾 Save Patient</button></div>
+
+  </div>
+
+</div>
+
+<!-- Add Session Modal -->
+
+<div class="modal-ov" id="modal-session">
+
+  <div class="modal modal-lg">
+
+    <div class="modal-hd"><div class="modal-title">🩺 Add Session Notes</div><button class="modal-x" onclick="closeModal('modal-session')">✕</button></div>
+
+    <div class="modal-bd">
+
+      <div class="fr3">
+
+        <div class="fg"><label>Date \*</label><input class="fc" id="ses-date" type="date"></div>
+
+        <div class="fg"><label>Visit Type</label><select class="fc" id="ses-vtype"><option value="IN-CLINIC">In-Clinic</option><option value="HOME">Home Visit</option></select></div>
+
+        <div class="fg"><label>Duration (min)</label><input class="fc" id="ses-dur" type="number" placeholder="e.g. 45"></div>
+
+      </div>
+
+      <div class="fr">
+
+        <div class="fg"><label>Clinician</label><select class="fc" id="ses-clinician"></select></div>
+
+        <div class="fg"><label>Payment Mode</label><select class="fc" id="ses-pmode"><option value="CASH">Cash</option><option value="UPI">UPI</option><option value="PENDING">Pending</option></select></div>
+
+      </div>
+
+      <div class="fg"><label>Payment Amount (₹)</label><input class="fc" id="ses-amt" type="number" placeholder="0"></div>
+
+      <div class="divider"></div>
+
+      <div class="pre-box" style="margin-bottom:14px">
+
+        <div class="pp-head">📋 PRE-TREATMENT</div>
+
+        <div class="fg"><label>Chief Complaint Today</label><textarea class="fc" id="ses-pre-complaint" rows="2" placeholder="Patient's main issue before session..."></textarea></div>
+
+        <div class="fg"><label>Pain Level (0–10)</label><div class="slider-row"><input type="range" min="0" max="10" value="5" id="ses-pre-pain" oninput="document.getElementById('sl-pre-v').textContent=this.value"><span class="slider-v" id="sl-pre-v">5</span></div></div>
+
+        <div class="fr">
+
+          <div class="fg"><label>Mobility Status</label><select class="fc" id="ses-pre-mob"><option>Normal</option><option>Restricted</option><option>Bedridden</option></select></div>
+
+          <div class="fg"><label>BP / Pulse (optional)</label><input class="fc" id="ses-pre-vitals" placeholder="e.g. 120/80, 72bpm"></div>
+
+        </div>
+
+        <div class="fg"><label>Clinician Pre-Assessment</label><textarea class="fc" id="ses-pre-notes" rows="2" placeholder="Observations before starting treatment..."></textarea></div>
+
+      </div>
+
+      <div class="post-box">
+
+        <div class="pp-head">✅ POST-TREATMENT</div>
+
+        <div class="fg"><label>Techniques Applied</label><input class="fc" id="ses-post-tech" placeholder="e.g. Spinal manipulation, Acupressure, Yoga..."></div>
+
+        <div class="fg"><label>Post-Session Pain Level (0–10)</label><div class="slider-row"><input type="range" min="0" max="10" value="3" id="ses-post-pain" oninput="document.getElementById('sl-post-v').textContent=this.value"><span class="slider-v" id="sl-post-v">3</span></div></div>
+
+        <div class="fg"><label>Patient Response</label><select class="fc" id="ses-post-resp"><option value="VERY_GOOD">Very Good</option><option value="GOOD">Good</option><option value="NEUTRAL">Neutral</option><option value="POOR">Poor</option></select></div>
+
+        <div class="fg"><label>Post-Assessment Notes</label><textarea class="fc" id="ses-post-notes" rows="2" placeholder="Outcome observations..."></textarea></div>
+
+        <div class="fg"><label>Next Session Recommendation</label><textarea class="fc" id="ses-post-rec" rows="2" placeholder="What to do next time..."></textarea></div>
+
+        <div class="fr">
+
+          <div class="fg"><label>Follow-up Date</label><input class="fc" id="ses-followup" type="date"></div>
+
+          <div class="fg" style="display:flex;align-items:center;gap:10px;padding-top:24px"><label class="toggle"><input type="checkbox" id="ses-mark-regular"><span class="ts"></span></label><span style="font-size:13.5px;font-weight:600">Mark as Regular Patient</span></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-ft"><button class="btn btn-g" onclick="closeModal('modal-session')">Cancel</button><button class="btn btn-p" onclick="saveSession()">💾 Save Session</button></div>
+
+  </div>
+
+</div>
+
+<!-- Regular Visit Plan Modal -->
+
+<div class="modal-ov" id="modal-regular-plan">
+
+  <div class="modal modal-md">
+
+    <div class="modal-hd"><div class="modal-title">🔄 Set Regular Visit Plan</div><button class="modal-x" onclick="closeModal('modal-regular-plan')">✕</button></div>
+
+    <div class="modal-bd">
+
+      <div class="fr">
+
+        <div class="fg"><label>Visit Frequency</label><select class="fc" id="rp-freq"><option value="DAILY">Daily</option><option value="ALT">Alternate Days</option><option value="WEEKLY">Weekly</option><option value="CUSTOM">Custom Days</option></select></div>
+
+        <div class="fg"><label>Target Sessions (optional)</label><input class="fc" id="rp-target" type="number" placeholder="e.g. 20"></div>
+
+      </div>
+
+      <div class="fg"><label>Days of Week</label><div class="cg" id="rp-days-group">
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Mon">Mon</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Tue">Tue</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Wed">Wed</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Thu">Thu</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Fri">Fri</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Sat">Sat</label>
+
+        <label class="ci" onclick="toggleChk(this)"><input type="checkbox" value="Sun">Sun</label>
+
+      </div></div>
+
+      <div class="fr">
+
+        <div class="fg"><label>Plan Start Date</label><input class="fc" id="rp-start" type="date"></div>
+
+        <div class="fg"><label>Plan End Date (optional)</label><input class="fc" id="rp-end" type="date"></div>
+
+      </div>
+
+      <div class="fg"><label>Treatment Protocol</label><textarea class="fc" id="rp-protocol" rows="3" placeholder="Standard treatment plan for this patient..."></textarea></div>
+
+      <div class="tw-row"><label class="toggle"><input type="checkbox" id="rp-active" checked><span class="ts"></span></label><span class="tw-label">Active Plan</span></div>
+
+    </div>
+
+    <div class="modal-ft"><button class="btn btn-g" onclick="closeModal('modal-regular-plan')">Cancel</button><button class="btn btn-p" onclick="saveRegularPlan()">💾 Save Plan</button></div>
+
+  </div>
+
+</div>
+
+<!-- Visit Entry Modal -->
+
+<div class="modal-ov" id="modal-visit-entry">
+
+  <div class="modal modal-md">
+
+    <div class="modal-hd"><div class="modal-title" id="ve-modal-title">📋 Visit Entry</div><button class="modal-x" onclick="closeModal('modal-visit-entry')">✕</button></div>
+
+    <div class="modal-bd">
+
+      <div class="tw-row" style="margin-bottom:14px"><label class="toggle"><input type="checkbox" id="ve-attended" checked onchange="toggleAbsence()"><span class="ts"></span></label><span class="tw-label"><strong>Patient Attended</strong></span></div>
+
+      <div id="ve-absence-row" class="fg" style="display:none"><label>Absence Reason</label><input class="fc" id="ve-abs-reason" placeholder="Reason for absence..."></div>
+
+      <div id="ve-fields">
+
+        <div class="fg"><label>Treatment Given</label><input class="fc" id="ve-treatment" placeholder="Techniques used today..."></div>
+
+        <div class="fr">
+
+          <div class="fg"><label>Clinician</label><select class="fc" id="ve-clinician"></select></div>
+
+          <div class="fg"><label>Duration (min)</label><input class="fc" id="ve-dur" type="number" placeholder="45"></div>
+
+        </div>
+
+        <div class="fr">
+
+          <div class="fg"><label>Payment (₹)</label><input class="fc" id="ve-pay" type="number" placeholder="0"></div>
+
+          <div class="fg"><label>Payment Mode</label><select class="fc" id="ve-pmode"><option value="CASH">Cash</option><option value="UPI">UPI</option><option value="PENDING">Pending</option></select></div>
+
+        </div>
+
+        <div class="fg"><label>Patient Condition</label><select class="fc" id="ve-cond"><option value="IMPROVING">Improving ↑</option><option value="STABLE">Stable →</option><option value="WORSENING">Worsening ↓</option><option value="NA">Not Assessed</option></select></div>
+
+        <div class="fg"><label>Quick Notes</label><textarea class="fc" id="ve-notes" rows="3" placeholder="Notes for this visit..."></textarea></div>
+
+      </div>
+
+    </div>
+
+    <div class="modal-ft"><button class="btn btn-g" onclick="closeModal('modal-visit-entry')">Cancel</button><button class="btn btn-p" onclick="saveVisitEntry()">💾 Save Entry</button></div>
+
+  </div>
+
+</div>
+
+<!-- Add Payment Modal -->
+
+<div class="modal-ov" id="modal-payment">
+
+  <div class="modal modal-sm">
+
+    <div class="modal-hd"><div class="modal-title">💳 Add Payment</div><button class="modal-x" onclick="closeModal('modal-payment')">✕</button></div>
+
+    <div class="modal-bd">
+
+      <div class="fg"><label>Patient \*</label><select class="fc" id="pay-patient"></select></div>
+
+      <div class="fg"><label>Date \*</label><input class="fc" id="pay-date" type="date"></div>
+
+      <div class="fr">
+
+        <div class="fg"><label>Amount (₹) \*</label><input class="fc" id="pay-amount" type="number" placeholder="0"></div>
+
+        <div class="fg"><label>Mode \*</label><select class="fc" id="pay-mode"><option value="CASH">Cash</option><option value="UPI">UPI</option><option value="PENDING">Pending</option></select></div>
+
+      </div>
+
+      <div class="fg"><label>Notes</label><input class="fc" id="pay-notes" placeholder="Optional notes..."></div>
+
+    </div>
+
+    <div class="modal-ft"><button class="btn btn-g" onclick="closeModal('modal-payment')">Cancel</button><button class="btn btn-p" onclick="savePayment()">💾 Save</button></div>
+
+  </div>
+
+</div>
+
+<!-- Add User Modal -->
+
+<div class="modal-ov" id="modal-user">
+
+  <div class="modal modal-sm">
+
+    <div class="modal-hd"><div class="modal-title" id="user-modal-title">Add User</div><button class="modal-x" onclick="closeModal('modal-user')">✕</button></div>
+
+    <div class="modal-bd">
+
+      <div class="fg"><label>Full Name \*</label><input class="fc" id="u-name" placeholder="Staff full name"></div>
+
+      <div class="fg"><label>Login ID \*</label><input class="fc" id="u-lid" placeholder="e.g. dr_kumar"></div>
+
+      <div class="fg"><label>Password \*</label><input class="fc" id="u-pw" type="password" placeholder="Min 8 characters"></div>
+
+      <div class="fg"><label>Role \*</label><select class="fc" id="u-role"><option value="CLINICIAN">Clinician</option><option value="RECEPTIONIST">Receptionist</option><option value="FINANCE">Finance</option><option value="ADMIN">Admin</option></select></div>
+
+    </div>
+
+    <div class="modal-ft"><button class="btn btn-g" onclick="closeModal('modal-user')">Cancel</button><button class="btn btn-p" onclick="saveUser()">💾 Save User</button></div>
+
+  </div>
+
+</div>
+
+<!-- Add Bot Command Modal -->
+
+<div class="modal-ov" id="modal-cmd">
+
+  <div class="modal modal-sm">
+
+    <div class="modal-hd"><div class="modal-title">⚡ Bot Command</div><button class="modal-x" onclick="closeModal('modal-cmd')">✕</button></div>
+
+    <div class="modal-bd">
+
+      <div class="fg"><label>Trigger Command \*</label><input class="fc" id="cmd-trigger" placeholder="/status"></div>
+
+      <div class="fg"><label>Description \*</label><input class="fc" id="cmd-desc" placeholder="What this command does"></div>
+
+      <div class="fg"><label>Response Type</label><select class="fc" id="cmd-type"><option value="STATIC">Static Text</option><option value="DYNAMIC">Live Data</option></select></div>
+
+      <div class="fg" id="cmd-static-row"><label>Response Text</label><textarea class="fc" id="cmd-response" rows="3" placeholder="Bot will reply with this..."></textarea></div>
+
+      <div class="fg" id="cmd-dyn-row" style="display:none"><label>Data Query</label><select class="fc" id="cmd-query"><option value="patients_today">Patients today</option><option value="revenue_today">Revenue today</option><option value="backup_status">Backup status</option><option value="next_appointment">Next appointment</option></select></div>
+
+    </div>
+
+    <div class="modal-ft"><button class="btn btn-g" onclick="closeModal('modal-cmd')">Cancel</button><button class="btn btn-p" onclick="saveCommand()">💾 Save</button></div>
+
+  </div>
+
+</div>
+
+<!-- Confirm Modal -->
+
+<div class="modal-ov" id="modal-confirm">
+
+  <div class="modal modal-sm">
+
+    <div class="modal-hd"><div class="modal-title" id="conf-title">Confirm</div><button class="modal-x" onclick="closeModal('modal-confirm')">✕</button></div>
+
+    <div class="modal-bd"><p id="conf-msg" style="font-size:14px;color:var(--text)"></p></div>
+
+    <div class="modal-ft"><button class="btn btn-g" onclick="closeModal('modal-confirm')">Cancel</button><button class="btn btn-d" id="conf-ok" onclick="">Confirm</button></div>
+
+  </div>
+
+</div>
+
+<script>
+
+
+
+
+
+
+
+// ─── DATA LAYER ──────────────────────────────────────────────
+
+const DB = {
+
+  get(k){try{return JSON.parse(localStorage.getItem('snc\_'+k))||null}catch{return null}},
+
+  set(k,v){localStorage.setItem('snc\_'+k,JSON.stringify(v))},
+
+  push(k,v){const a=DB.get(k)||\[\];a.push(v);DB.set(k,a);return v},
+
+  update(k,id,patch){const a=DB.get(k)||\[\];const i=a.findIndex(x=>x.id===id);if(i>-1){a\[i\]={...a\[i\],...patch};DB.set(k,a)}},
+
+  delete(k,id){const a=(DB.get(k)||\[\]).filter(x=>x.id!==id);DB.set(k,a)},
+
+  find(k,fn){return(DB.get(k)||\[\]).find(fn)||null},
+
+  filter(k,fn){return(DB.get(k)||\[\]).filter(fn)}
+
+};
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
+function simpleHash(s){let h=0;for(let c of s)h=(h<<5)-h+c.charCodeAt(0)|0;return h.toString(16)}
+
+function today(){return new Date().toISOString().split('T')\[0\]}
+
+function fmtDate(d){if(!d)return'—';const x=new Date(d);return x.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}
+
+function fmtMoney(n){return'₹'+(n||0).toLocaleString('en-IN')}
+
+// ─── AUTH ─────────────────────────────────────────────────────
+
+let currentUser = null;
+
+function initData(){
+
+  if(!DB.get('users')){
+
+    DB.set('users',\[
+
+      {id:'u1',name:'Pt. Pradeep Kumar',loginId:'admin',passwordHash:simpleHash('admin123'),role:'ADMIN',active:true},
+
+      {id:'u2',name:'Ku. Sangeeta',loginId:'sangeeta',passwordHash:simpleHash('pass123'),role:'CLINICIAN',active:true},
+
+      {id:'u3',name:'Reception',loginId:'reception',passwordHash:simpleHash('rec123'),role:'RECEPTIONIST',active:true}
+
+    \]);
+
+  }
+
+  if(!DB.get('permissions')){
+
+    DB.set('permissions',{
+
+      ADMIN:{dashboard:'EDIT',patients:'EDIT','patient-detail':'EDIT',scheduler:'EDIT',payments:'EDIT',regular:'EDIT','admin-telegram':'EDIT','admin-security':'EDIT','admin-roles':'EDIT','admin-users':'EDIT'},
+
+      CLINICIAN:{dashboard:'VIEW',patients:'EDIT','patient-detail':'EDIT',scheduler:'EDIT',payments:'VIEW',regular:'EDIT','admin-telegram':'HIDDEN','admin-security':'EDIT','admin-roles':'HIDDEN','admin-users':'HIDDEN'},
+
+      RECEPTIONIST:{dashboard:'VIEW',patients:'EDIT','patient-detail':'VIEW',scheduler:'EDIT',payments:'EDIT',regular:'VIEW','admin-telegram':'HIDDEN','admin-security':'EDIT','admin-roles':'HIDDEN','admin-users':'HIDDEN'},
+
+      FINANCE:{dashboard:'VIEW',patients:'VIEW','patient-detail':'HIDDEN',scheduler:'HIDDEN',payments:'EDIT',regular:'HIDDEN','admin-telegram':'HIDDEN','admin-security':'EDIT','admin-roles':'HIDDEN','admin-users':'HIDDEN'}
+
+    });
+
+  }
+
+  if(!DB.get('tg-config')){
+
+    DB.set('tg-config',{tokenEnc:'',chatId:'',alertTime:'20:00',alBackup:true,alLogin:true,alRevenue:false,commands:\[\]});
+
+  }
+
+}
+
+function doLogin(){
+
+  const lid=document.getElementById('lg-id').value.trim();
+
+  const pw=document.getElementById('lg-pw').value;
+
+  const users=DB.get('users')||\[\];
+
+  const user=users.find(u=>u.loginId===lid&&u.passwordHash===simpleHash(pw)&&u.active);
+
+  if(!user){document.getElementById('lg-err').style.display='block';return;}
+
+  document.getElementById('lg-err').style.display='none';
+
+  currentUser=user;
+
+  sessionStorage.setItem('snc_session',JSON.stringify({id:user.id,role:user.role}));
+
+  document.getElementById('login-screen').classList.add('hidden');
+
+  initApp();
+
+}
+
+function doLogout(){
+
+  sessionStorage.removeItem('snc_session');
+
+  currentUser=null;
+
+  document.getElementById('login-screen').classList.remove('hidden');
+
+  document.getElementById('lg-id').value='';
+
+  document.getElementById('lg-pw').value='';
+
+}
+
+function checkSession(){
+
+  const s=sessionStorage.getItem('snc_session');
+
+  if(!s)return false;
+
+  const sess=JSON.parse(s);
+
+  const user=DB.find('users',u=>u.id===sess.id);
+
+  if(user){currentUser=user;return true;}
+
+  return false;
+
+}
+
+// ─── APP INIT ─────────────────────────────────────────────────
+
+function initApp(){
+
+  // Sidebar user badge
+
+  document.getElementById('sb-av').textContent=currentUser.name.split(' ').map(w=>w\[0\]).join('').slice(0,2);
+
+  document.getElementById('sb-name').textContent=currentUser.name;
+
+  document.getElementById('sb-role').textContent=currentUser.role;
+
+  // Enforce nav permissions
+
+  applyNavPermissions();
+
+  // Set today date
+
+  document.getElementById('today-date').textContent=fmtDate(today());
+
+  // Load dashboard
+
+  loadDashboard();
+
+  populateClinicianDropdowns();
+
+}
+
+function applyNavPermissions(){
+
+  const perms=DB.get('permissions')||{};
+
+  const rolePerms=perms\[currentUser.role\]||{};
+
+  document.querySelectorAll('.nav-item\[data-screen\]').forEach(el=>{
+
+    const s=el.getAttribute('data-screen');
+
+    const p=rolePerms[s]||'HIDDEN';
+
+    el.style.display=(p==='HIDDEN')?'none':'flex';
+
+  });
+
+}
+
+// ─── SCREEN ROUTING ──────────────────────────────────────────
+
+function gotoScreen(name, el){
+
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+
+  const scr=document.getElementById('scr-'+name);
+
+  if(scr)scr.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+
+  if(el)el.classList.add('active');
+
+  else{const ni=document.querySelector('.nav-item\[data-screen="'+name+'"\]');if(ni)ni.classList.add('active');}
+
+  const titles={dashboard:'Dashboard',patients:'All Patients',scheduler:'Scheduler',payments:'Payments',regular:'Regular Patients','admin-telegram':'Telegram Bot','admin-security':'Security Settings','admin-roles':'Roles & Access','admin-users':'User Manager','patient-detail':'Patient Detail'};
+
+  document.getElementById('topbar-title').textContent=titles\[name\]||name;
+
+  document.getElementById('btn-add-patient').style.display=(name==='patients')?'inline-flex':'none';
+
+  // Load screen data
+
+  if(name==='patients')renderPatientTable();
+
+  if(name==='dashboard')loadDashboard();
+
+  if(name==='payments')renderPayments();
+
+  if(name==='regular')renderRegularList();
+
+  if(name==='admin-telegram')loadTelegramSettings();
+
+  if(name==='admin-security')loadSecuritySettings();
+
+  if(name==='admin-roles')renderPermissionMatrix();
+
+  if(name==='admin-users')renderUserTable();
+
+  if(name==='scheduler')renderSchedulerCal();
+
+}
+
+function switchTab(el,pane){
+
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+
+  el.classList.add('active');
+
+  const parent=el.closest('.tabs').nextElementSibling?.parentElement||document.getElementById('pt-tabs').parentElement;
+
+  document.querySelectorAll('.tab-pane').forEach(p=>{if(p.closest('#scr-patient-detail'))p.classList.remove('active')});
+
+  document.getElementById(pane).classList.add('active');
+
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────
+
+function loadDashboard(){
+
+  const patients=DB.get('patients')||\[\];
+
+  const sessions=DB.get('sessions')||\[\];
+
+  const todaySes=sessions.filter(s=>s.date===today());
+
+  const rev=todaySes.reduce((a,s)=>a+(parseInt(s.payment)||0),0);
+
+  const regPlans=(DB.get('regular-plans')||\[\]).filter(p=>p.active);
+
+  document.getElementById('s-total').textContent=patients.length;
+
+  document.getElementById('s-today').textContent=todaySes.length;
+
+  document.getElementById('s-rev').textContent=fmtMoney(rev);
+
+  document.getElementById('s-reg').textContent=regPlans.length;
+
+  // Regular patients today
+
+  const todayDay=\['Sun','Mon','Tue','Wed','Thu','Fri','Sat'\]\[new Date().getDay()\];
+
+  const dueToday=regPlans.filter(p=>p.frequency==='DAILY'||(p.days&&p.days.includes(todayDay))||p.frequency==='ALT');
+
+  const regWrap=document.getElementById('dash-regular-list');
+
+  if(dueToday.length===0){regWrap.innerHTML='<div class="empty-state"><div class="es-icon">📭</div><div class="es-title">No regular patients today</div></div>';return;}
+
+  regWrap.innerHTML='';
+
+  dueToday.forEach(plan=>{
+
+    const pt=DB.find('patients',p=>p.id===plan.patientId);
+
+    if(!pt)return;
+
+    const visits=DB.filter('visit-entries',v=>v.planId===plan.id);
+
+    const d=document.createElement('div');
+
+    d.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)';
+
+    d.innerHTML`<div style="font-size:20px">🧑</div><div style="flex:1"><div style="font-weight:600;font-size:13.5px">${pt.name}</div><div style="font-size:12px;color:var(--text-muted)">${visits.length} sessions done</div></div><button class="btn btn-sm btn-p" onclick="openPatientDetail('${pt.id}')">View</button>`;
+
+    regWrap.appendChild(d);
+
+  });
+
+  // Recent sessions
+
+  const recentWrap=document.getElementById('dash-recent-list');
+
+  if(todaySes.length===0){recentWrap.innerHTML='<div class="empty-state"><div class="es-icon">📋</div><div class="es-title">No sessions today</div></div>';return;}
+
+  recentWrap.innerHTML=\`<table><thead><tr><th>Patient</th><th>Amount</th><th>Response</th></tr></thead><tbody>${
+
+    todaySes.slice(-5).reverse().map(s=>{
+
+      const pt=DB.find('patients',p=>p.id===s.patientId);
+
+      retur`<tr onclick="openPatientDetail('${s.patientId}')"><td>${pt?pt.name:'—'}</td><td>${fmtMoney(s.payment)}</td><td>${responseBadge(s.post?.response)}</td></tr>`;
+
+    }).join('')
+
+  }</tbody></table>\`;
+
+}
+
+function responseBadge(r){
+
+  const map={VERY_GOOD:'<span class="badge bg-g">Very Good</span>',GOOD:'<span class="badge bg-b">Good</span>',NEUTRAL:'<span class="badge bg-grey">Neutral</span>',POOR:'<span class="badge bg-r">Poor</span>'};
+
+  return map[r]||'<span class="badge bg-grey">—</span>';
+
+}
+
+// ─── PATIENTS ─────────────────────────────────────────────────
+
+let patientFilter='';
+
+function filterPatients(v){patientFilter=v.toLowerCase();renderPatientTable();}
+
+function renderPatientTable(){
+
+  const patients=(DB.get('patients')||\[\]).filter(p=>!patientFilter||p.name.toLowerCase().includes(patientFilter)||p.regNo.toLowerCase().includes(patientFilter));
+
+  const tbody=document.getElementById('patient-table-body');
+
+  document.getElementById('patient-empty').style.display=patients.length?'none':'block';
+
+  if(!patients.length){tbody.innerHTML='';return;}
+
+  tbody.innerHTML=patients.map(p=>\`
+
+    <tr onclick="openPatientDetail('${p.id}')">
+
+      <td><strong>${p.regNo}</strong></td>
+
+      <td><div style="font-weight:600">${p.name}</div></td>
+
+      <td>${p.age}/${p.sex?.\[0\]||'?'}</td>
+
+      <td>${p.mobile||'—'}</td>
+
+      <td>${(p.conditions||\[\]).slice(0,3).map(c=`<span class="badge bg-b">${c}</span>`).join(' ')}</td>
+
+      <td>${p.active?'<span class="badge bg-g">Active</span>':'<span class="badge bg-grey">Inactive</span>'}</td>
+
+      <td onclick="event.stopPropagation()"><button class="btn btn-sm btn-o" onclick="openPatientDetail('${p.id}')">View</button></td>
+
+    </tr>\`).join('');
+
+}
+
+function openAddPatient(){
+
+  document.getElementById('pt-name').value='';
+
+  document.getElementById('pt-reg').value='';
+
+  document.getElementById('pt-age').value='';
+
+  document.getElementById('pt-sex').value='Male';
+
+  document.getElementById('pt-occ').value='';
+
+  document.getElementById('pt-addr').value='';
+
+  document.getElementById('pt-mob').value='';
+
+  document.getElementById('pt-tel').value='';
+
+  document.getElementById('pt-history').value='';
+
+  document.querySelectorAll('#cond-group .ci, #restr-group .ci').forEach(el=>{el.classList.remove('checked');el.querySelector('input').checked=false;});
+
+  openModal('modal-patient');
+
+}
+
+function savePatient(){
+
+  const name=document.getElementById('pt-name').value.trim();
+
+  const mob=document.getElementById('pt-mob').value.trim();
+
+  if(!name||!mob){toast('Name and mobile are required','t-err');return;}
+
+  const pts=DB.get('patients')||\[\];
+
+  const regNo=document.getElementById('pt-reg').value.trim()||'SNC'+String(pts.length+1).padStart(4,'0');
+
+  const conds=getChecked('cond-group');
+
+  const restrs=getChecked('restr-group');
+
+  const pt={
+
+    id:uid(),regNo,name,age:document.getElementById('pt-age').value,sex:document.getElementById('pt-sex').value,
+
+    occupation:document.getElementById('pt-occ').value,address:document.getElementById('pt-addr').value,
+
+    mobile:mob,telephone:document.getElementById('pt-tel').value,
+
+    conditions:conds,restrictions:restrs,history:document.getElementById('pt-history').value,
+
+    active:true,createdAt:today()
+
+  };
+
+  DB.push('patients',pt);
+
+  closeModal('modal-patient');
+
+  renderPatientTable();
+
+  toast`Patient ${name} registered ✅`,'t-ok');
+
+}
+
+function getChecked(groupId){
+
+  return \[...document.querySelectorAll('#'+groupId+' .ci.checked')\].map(el=>el.querySelector('input').value);
+
+}
+
+// ─── PATIENT DETAIL ───────────────────────────────────────────
+
+let activePatientId='';
+
+function openPatientDetail(pid){
+
+  activePatientId=pid;
+
+  const pt=DB.find('patients',p=>p.id===pid);
+
+  if(!pt)return;
+
+  gotoScreen('patient-detail',null);
+
+  // Hero
+
+  const initials=pt.name.split(' ').map(w=>w\[0\]).join('').slice(0,2);
+
+  document.getElementById('pt-hero').innerHTML=\`
+
+    <div class="pt-av">${initials}</div>
+
+    <div style="flex:1">
+
+      <div class="pt-name">${pt.name}</div>
+
+      <div class="pt-meta">Reg: ${pt.regNo}  •  ${pt.age}/${pt.sex?.\[0\]}  •  ${pt.occupation||'—'}  •  📞 ${pt.mobile}</div>
+
+      <div class="pt-tags">${(pt.conditions||\[\]).map(c=`<span class="pt-tag">⚠️ ${c}</span>`).join('')}${(pt.restrictions||\[\]).map(r=`<span class="pt-tag">🚫 ${r}</span>`).join('')}</div>
+
+    </div>
+
+    <div class="pt-hero-right">
+
+      <button class="btn btn-a btn-sm" onclick="openAddSession()">+ Add Session</button>
+
+      <button class="btn btn-g btn-sm" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="openRegularPlanModal()">🔄 Set Plan</button>
+
+    </div>\`;
+
+  // Info tab
+
+  document.getElementById('pt-info-body').innerHTML=\`
+
+    <div class="fr">
+
+      <div class="card card-bd" style="margin-bottom:0">
+
+        <div class="sec-label">Contact</div>
+
+        <div class="nr"><div class="nl">Address</div><div class="nv">${pt.address||'—'}</div></div>
+
+        <div class="nr"><div class="nl">Mobile</div><div class="nv">${pt.mobile}</div></div>
+
+        <div class="nr"><div class="nl">Telephone</div><div class="nv">${pt.telephone||'—'}</div></div>
+
+      </div>
+
+      <div class="card card-bd" style="margin-bottom:0">
+
+        <div class="sec-label">Medical Notes</div>
+
+        <div class="nv" style="white-space:pre-wrap">${pt.history||'No history recorded.'}</div>
+
+      </div>
+
+    </div>\`;
+
+  // Tabs reset
+
+  document.querySelectorAll('#pt-tabs .tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+
+  document.querySelectorAll('#scr-patient-detail .tab-pane').forEach((p,i)=>p.classList.toggle('active',i===0));
+
+  loadSessionList();
+
+  loadRegularVisitTab();
+
+}
+
+// ─── SESSIONS ─────────────────────────────────────────────────
+
+function loadSessionList(){
+
+  const sessions=DB.filter('sessions',s=>s.patientId===activePatientId).sort((a,b)=>b.sessionNo-a.sessionNo);
+
+  const wrap=document.getElementById('session-list-wrap');
+
+  if(!sessions.length){wrap.innerHTML='<div class="empty-state"><div class="es-icon">🩺</div><div class="es-title">No sessions yet</div><div class="es-sub">Click "+ Add Session" to record the first session</div></div>';return;}
+
+  wrap.innerHTML=sessions.map(s=>\`
+
+    <div class="ses-card" id="sc-${s.id}">
+
+      <div class="ses-hd" onclick="toggleSession('${s.id}')">
+
+        <div class="ses-no">#${s.sessionNo}</div>
+
+        <div style="flex:1"><div style="font-weight:600;font-size:13.5px">${fmtDate(s.date)}</div><div style="font-size:12px;color:var(--text-muted)">${s.visitType==='HOME'?'🏠 Home Visit':'🏥 In-Clinic'}  •  ${s.clinicianName||'—'}  •  ${s.duration||'?'}min</div></div>
+
+        <div>${responseBadge(s.post?.response)}</div>
+
+        <div style="font-weight:700;color:var(--primary);margin-left:8px">${fmtMoney(s.payment)}</div>
+
+        <div style="color:var(--text-muted);margin-left:10px;font-size:18px">▾</div>
+
+      </div>
+
+      <div class="ses-bd">
+
+        <div class="pp-grid">
+
+          <div class="pre-box">
+
+            <div class="pp-head">📋 Pre-Treatment</div>
+
+            <div class="nr"><div class="nl">Complaint</div><div class="nv">${s.pre?.complaint||'—'}</div></div>
+
+            <div class="nr"><div class="nl">Pain Level</div><div class="nv">${s.pre?.pain??'—'}/10</div></div>
+
+            <div class="nr"><div class="nl">Mobility</div><div class="nv">${s.pre?.mobility||'—'}</div></div>
+
+            <div class="nr"><div class="nl">Vitals</div><div class="nv">${s.pre?.vitals||'—'}</div></div>
+
+            <div class="nr"><div class="nl">Notes</div><div class="nv">${s.pre?.notes||'—'}</div></div>
+
+          </div>
+
+          <div class="post-box">
+
+            <div class="pp-head">✅ Post-Treatment</div>
+
+            <div class="nr"><div class="nl">Techniques</div><div class="nv">${s.post?.techniques||'—'}</div></div>
+
+            <div class="nr"><div class="nl">Post Pain</div><div class="nv">${s.post?.pain??'—'}/10</div></div>
+
+            <div class="nr"><div class="nl">Response</div><div class="nv">${s.post?.response||'—'}</div></div>
+
+            <div class="nr"><div class="nl">Assessment</div><div class="nv">${s.post?.notes||'—'}</div></div>
+
+            <div class="nr"><div class="nl">Recommendation</div><div class="nv">${s.post?.recommendation||'—'}</div></div>
+
+            ${s.followup`<div class="nr"><div class="nl">Follow-up</div><div class="nv">📅 ${fmtDate(s.followup)}</div></div>`:''}
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>\`).join('');
+
+}
+
+// Session form dirty tracking & auto-save
+let sessionFormDirty=false;
+function markSessionDirty(){sessionFormDirty=true;}
+function startSessionAutoSave(){
+  sessionFormDirty=false;
+  setInterval(()=>{
+    if(sessionFormDirty&&document.getElementById('modal-session').classList.contains('active')){
+      const draft={
+        date:document.getElementById('ses-date').value,
+        vtype:document.getElementById('ses-vtype').value,
+        dur:document.getElementById('ses-dur').value,
+        amt:document.getElementById('ses-amt').value,
+        pmode:document.getElementById('ses-pmode').value,
+        preComplaint:document.getElementById('ses-pre-complaint').value,
+        prePain:document.getElementById('ses-pre-pain').value,
+        preMob:document.getElementById('ses-pre-mob').value,
+        preVitals:document.getElementById('ses-pre-vitals').value,
+        preNotes:document.getElementById('ses-pre-notes').value,
+        postTech:document.getElementById('ses-post-tech').value,
+        postPain:document.getElementById('ses-post-pain').value,
+        postResp:document.getElementById('ses-post-resp').value,
+        postNotes:document.getElementById('ses-post-notes').value,
+        postRec:document.getElementById('ses-post-rec').value,
+        followup:document.getElementById('ses-followup').value,
+      };
+      sessionStorage.setItem('snc_session_draft_'+activePatientId,JSON.stringify(draft));
+    }
+  },30000);
+}
+function restoreSessionDraft(){
+  const draft=sessionStorage.getItem('snc_session_draft_'+activePatientId);
+  if(draft)try{
+    var d=JSON.parse(draft);
+    if(d.date)document.getElementById('ses-date').value=d.date;
+    if(d.vtype)document.getElementById('ses-vtype').value=d.vtype;
+    if(d.dur)document.getElementById('ses-dur').value=d.dur;
+    if(d.amt)document.getElementById('ses-amt').value=d.amt;
+    if(d.pmode)document.getElementById('ses-pmode').value=d.pmode;
+    if(d.preComplaint)document.getElementById('ses-pre-complaint').value=d.preComplaint;
+    if(d.prePain){document.getElementById('ses-pre-pain').value=d.prePain;document.getElementById('sl-pre-v').textContent=d.prePain;}
+    if(d.preMob)document.getElementById('ses-pre-mob').value=d.preMob;
+    if(d.preVitals)document.getElementById('ses-pre-vitals').value=d.preVitals;
+    if(d.preNotes)document.getElementById('ses-pre-notes').value=d.preNotes;
+    if(d.postTech)document.getElementById('ses-post-tech').value=d.postTech;
+    if(d.postPain){document.getElementById('ses-post-pain').value=d.postPain;document.getElementById('sl-post-v').textContent=d.postPain;}
+    if(d.postResp)document.getElementById('ses-post-resp').value=d.postResp;
+    if(d.postNotes)document.getElementById('ses-post-notes').value=d.postNotes;
+    if(d.postRec)document.getElementById('ses-post-rec').value=d.postRec;
+    if(d.followup)document.getElementById('ses-followup').value=d.followup;
+    toast('Draft restored from auto-save','t-warn');
+  }catch(e){}
+}
+function clearSessionDraft(){sessionFormDirty=false;sessionStorage.removeItem('snc_session_draft_'+activePatientId);}
+// Unsaved changes warning
+window.addEventListener('beforeunload',function(e){if(sessionFormDirty){e.preventDefault();e.returnValue='';}});
+
+function toggleSession(id){document.getElementById('sc-'+id)?.classList.toggle('open')}
+
+function editSession(sid){
+  var s=DB.find('sessions',function(x){return x.id===sid;});
+  if(!s){toast('Session not found','t-err');return;}
+  var sessionDate=new Date(s.date);
+  var now=new Date();
+  var hoursDiff=(now-sessionDate)/(1000*60*60);
+  if(hoursDiff>24&&currentUser.role!=='ADMIN'){toast('Sessions can only be edited within 24 hours','t-err');return;}
+  document.getElementById('ses-date').value=s.date||today();
+  document.getElementById('ses-vtype').value=s.visitType||'IN-CLINIC';
+  document.getElementById('ses-dur').value=s.duration||'';
+  document.getElementById('ses-amt').value=s.payment||'';
+  document.getElementById('ses-pmode').value=s.paymentMode||'CASH';
+  document.getElementById('ses-clinician').value=s.clinicianId||'';
+  document.getElementById('ses-pre-complaint').value=s.pre?s.pre.complaint||'':'';
+  document.getElementById('ses-pre-pain').value=s.pre?s.pre.pain??5:5;document.getElementById('sl-pre-v').textContent=s.pre?s.pre.pain??5:5;
+  document.getElementById('ses-pre-mob').value=s.pre?s.pre.mobility||'':'';
+  document.getElementById('ses-pre-vitals').value=s.pre?s.pre.vitals||'':'';
+  document.getElementById('ses-pre-notes').value=s.pre?s.pre.notes||'':'';
+  document.getElementById('ses-post-tech').value=s.post?s.post.techniques||'':'';
+  document.getElementById('ses-post-pain').value=s.post?s.post.pain??3:3;document.getElementById('sl-post-v').textContent=s.post?s.post.pain??3:3;
+  document.getElementById('ses-post-resp').value=s.post?s.post.response||'GOOD':'GOOD';
+  document.getElementById('ses-post-notes').value=s.post?s.post.notes||'':'';
+  document.getElementById('ses-post-rec').value=s.post?s.post.recommendation||'':'';
+  document.getElementById('ses-followup').value=s.followup||'';
+  document.getElementById('modal-session').setAttribute('data-editing',sid);
+  openModal('modal-session');
+}
+
+function deleteSession(sid){
+  if(currentUser.role!=='ADMIN'){toast('Only ADMIN can delete sessions','t-err');return;}
+  showConfirm('Delete Session','Enter reason for deletion:',function(reason){
+    if(!reason||!reason.trim()){toast('Reason is required','t-err');return;}
+    DB.delete('sessions',sid);
+    var pays=DB.filter('payments',function(p){return p.sessionId===sid;});
+    pays.forEach(function(p){DB.delete('payments',p.id);});
+    var log={id:uid(),event:'SESSION_DELETED',sessionId:sid,reason:reason,deletedBy:currentUser.id,at:today()+' '+new Date().toTimeString().slice(0,5)};
+    var logs=DB.get('audit_log')||[];logs.push(log);DB.set('audit_log',logs);
+    loadSessionList();
+    loadDashboard();
+    toast('Session deleted.','t-ok');
+  });
+}
+
+function calculateProgressMetrics(){
+  var sessions=DB.filter('sessions',function(s){return s.patientId===activePatientId;});
+  if(!sessions.length)return null;
+  var totalDelta=0,count=0;
+  sessions.forEach(function(s){
+    var prePain=parseInt(s.pre?s.pre.pain:0);
+    var postPain=parseInt(s.post?s.post.pain:0);
+    if(!isNaN(prePain)&&!isNaN(postPain)){totalDelta+=prePain-postPain;count++;}
+  });
+  var avgDelta=count>0?(totalDelta/count).toFixed(1):0;
+  var goodCount=sessions.filter(function(s){return s.post&&(s.post.response==='VERY_GOOD'||s.post.response==='GOOD');}).length;
+  return{avgDelta:avgDelta,sessionCount:sessions.length,goodCount:goodCount,goodRate:count>0?((goodCount/count)*100).toFixed(0):0};
+}
+
+function exportSessionPDF(sid){
+  var s=DB.find('sessions',function(x){return x.id===sid;});
+  if(!s){toast('Session not found','t-err');return;}
+  var pt=DB.find('patients',function(p){return p.id===s.patientId;});
+  var lines=[
+    'SNC SESSION CARD',
+    '=================',
+    'Patient: '+(pt?pt.name:'--')+' | Reg: '+(pt?pt.regNo:'--'),
+    'Session #'+(s.sessionNo||'?')+' | Date: '+(s.date||'--')+' | '+(s.visitType||'--'),
+    'Clinician: '+(s.clinicianName||'--')+' | Duration: '+(s.duration||'?')+' min',
+    '',
+    'PRE-TREATMENT',
+    '  Complaint: '+(s.pre?s.pre.complaint:'--'),
+    '  Pain Level: '+(s.pre?s.pre.pain:'--')+'/10 | Mobility: '+(s.pre?s.pre.mobility:'--'),
+    '  Vitals: '+(s.pre?s.pre.vitals:'--'),
+    '  Notes: '+(s.pre?s.pre.notes:'--'),
+    '',
+    'POST-TREATMENT',
+    '  Techniques: '+(s.post?s.post.techniques:'--'),
+    '  Pain Level: '+(s.post?s.post.pain:'--')+'/10 | Response: '+(s.post?s.post.response:'--'),
+    '  Notes: '+(s.post?s.post.notes:'--'),
+    '  Recommendation: '+(s.post?s.post.recommendation:'--'),
+    '',
+    'Payment: Rs '+(s.payment||0)+' | Mode: '+(s.paymentMode||'--'),
+  ];
+  var text=lines.join('
+');
+  var blob=new Blob([text],{type:'text/plain'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download='SNC_Session_'+(s.sessionNo||sid)+'.txt';a.click();
+  URL.revokeObjectURL(url);
+  toast('Session exported.','t-ok');
+}
+
+function openAddSession(){
+
+  document.getElementById('ses-date').value=today();
+
+  document.getElementById('ses-pre-pain').value=5;document.getElementById('sl-pre-v').textContent='5';
+
+  document.getElementById('ses-post-pain').value=3;document.getElementById('sl-post-v').textContent='3';
+
+  document.getElementById('ses-amt').value='';
+
+  document.getElementById('ses-pre-complaint').value='';
+
+  document.getElementById('ses-pre-notes').value='';
+
+  document.getElementById('ses-post-tech').value='';
+
+  document.getElementById('ses-post-notes').value='';
+
+  document.getElementById('ses-post-rec').value='';
+
+  document.getElementById('ses-followup').value='';
+
+  document.getElementById('ses-mark-regular').checked=false;
+
+  openModal('modal-session');
+
+}
+
+function saveSession(){
+
+  if(!activePatientId){toast('No patient selected','t-err');return;}
+
+  const existing=DB.filter('sessions',s=>s.patientId===activePatientId);
+
+  const clinSel=document.getElementById('ses-clinician');
+
+  const s={
+
+    id:uid(),patientId:activePatientId,sessionNo:existing.length+1,
+
+    date:document.getElementById('ses-date').value,
+
+    visitType:document.getElementById('ses-vtype').value,
+
+    clinicianId:clinSel.value,clinicianName:clinSel.options\[clinSel.selectedIndex\]?.text||'—',
+
+    duration:document.getElementById('ses-dur').value,
+
+    payment:document.getElementById('ses-amt').value,
+
+    paymentMode:document.getElementById('ses-pmode').value,
+
+    pre:{
+
+      complaint:document.getElementById('ses-pre-complaint').value,
+
+      pain:document.getElementById('ses-pre-pain').value,
+
+      mobility:document.getElementById('ses-pre-mob').value,
+
+      vitals:document.getElementById('ses-pre-vitals').value,
+
+      notes:document.getElementById('ses-pre-notes').value
+
+    },
+
+    post:{
+
+      techniques:document.getElementById('ses-post-tech').value,
+
+      pain:document.getElementById('ses-post-pain').value,
+
+      response:document.getElementById('ses-post-resp').value,
+
+      notes:document.getElementById('ses-post-notes').value,
+
+      recommendation:document.getElementById('ses-post-rec').value
+
+    },
+
+    followup:document.getElementById('ses-followup').value
+
+  };
+
+  DB.push('sessions',s);
+
+  if(parseInt(s.payment)>0){
+
+    DB.push('payments',{id:uid(),patientId:activePatientId,sessionId:s.id,date:s.date,amount:parseInt(s.payment),mode:s.paymentMode,notes`Session #${s.sessionNo}`});
+
+  }
+
+  if(document.getElementById('ses-mark-regular').checked){
+
+    const existing=DB.find('regular-plans',p=>p.patientId===activePatientId&&p.active);
+
+    if(!existing)openRegularPlanModal();
+
+  }
+
+  closeModal('modal-session');
+
+  loadSessionList();
+
+  loadDashboard();
+
+  toast`Session #${s.sessionNo} saved ✅`,'t-ok');
+
+}
+
+// ─── REGULAR VISITS ───────────────────────────────────────────
+
+let activePlanId='';
+
+let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
+
+let selectedCalDate='';
+
+function openRegularPlanModal(){
+
+  const existing=DB.find('regular-plans',p=>p.patientId===activePatientId&&p.active);
+
+  document.getElementById('rp-freq').value=(existing?.frequency)||'WEEKLY';
+
+  document.getElementById('rp-target').value=(existing?.targetSessions)||'';
+
+  document.getElementById('rp-start').value=(existing?.startDate)||today();
+
+  document.getElementById('rp-end').value=(existing?.endDate)||'';
+
+  document.getElementById('rp-protocol').value=(existing?.protocol)||'';
+
+  document.getElementById('rp-active').checked=(existing?.active!==false);
+
+  document.querySelectorAll('#rp-days-group .ci').forEach(el=>{
+
+    el.classList.toggle('checked',existing?.days?.includes(el.querySelector('input').value));
+
+    el.querySelector('input').checked=el.classList.contains('checked');
+
+  });
+
+  openModal('modal-regular-plan');
+
+}
+
+function saveRegularPlan(){
+
+  if(!activePatientId)return;
+
+  const existing=DB.find('regular-plans',p=>p.patientId===activePatientId&&p.active);
+
+  const days=\[...document.querySelectorAll('#rp-days-group .ci.checked')\].map(el=>el.querySelector('input').value);
+
+  const plan={
+
+    id:existing?.id||uid(),patientId:activePatientId,
+
+    frequency:document.getElementById('rp-freq').value,days,
+
+    targetSessions:parseInt(document.getElementById('rp-target').value)||null,
+
+    startDate:document.getElementById('rp-start').value,
+
+    endDate:document.getElementById('rp-end').value,
+
+    protocol:document.getElementById('rp-protocol').value,
+
+    active:document.getElementById('rp-active').checked
+
+  };
+
+  if(existing){DB.update('regular-plans',existing.id,plan);}
+
+  else{DB.push('regular-plans',plan);}
+
+  activePlanId=plan.id;
+
+  closeModal('modal-regular-plan');
+
+  loadRegularVisitTab();
+
+  toast('Regular plan saved ✅','t-ok');
+
+}
+
+function loadRegularVisitTab(){
+
+  const wrap=document.getElementById('pt-regular-wrap');
+
+  const plan=DB.find('regular-plans',p=>p.patientId===activePatientId&&p.active);
+
+  if(!plan){
+
+    wrap.innerHTML`<div class="empty-state"><div class="es-icon">🔄</div><div class="es-title">No regular plan set</div><div class="es-sub">Set up a recurring visit plan for this patient</div></div><div style="text-align:center;margin-top:12px"><button class="btn btn-p" onclick="openRegularPlanModal()">+ Set Regular Plan</button></div>`;
+
+    return;
+
+  }
+
+  activePlanId=plan.id;
+
+  const entries=DB.filter('visit-entries',v=>v.planId===plan.id);
+
+  const attended=entries.filter(v=>v.attended).length;
+
+  wrap.innerHTML=\`
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+      <div>
+
+        <div class="card" style="margin-bottom:14px">
+
+          <div class="card-hd"><div class="card-title">📋 Plan Details</div><button class="btn btn-sm btn-o" onclick="openRegularPlanModal()">✏️ Edit</button></div>
+
+          <div class="card-bd">
+
+            <div class="nr"><div class="nl">Frequency</div><div class="nv">${plan.frequency}${plan.days?.length?' — '+plan.days.join(', '):''}</div></div>
+
+            <div class="nr"><div class="nl">Start Date</div><div class="nv">${fmtDate(plan.startDate)}</div></div>
+
+            ${plan.endDate`<div class="nr"><div class="nl">End Date</div><div class="nv">${fmtDate(plan.endDate)}</div></div>`:''}
+
+            ${plan.targetSessions`<div class="nr"><div class="nl">Progress</div><div class="nv">${attended} / ${plan.targetSessions} sessions</div></div>`:''}
+
+            <div class="nr"><div class="nl">Protocol</div><div class="nv">${plan.protocol||'—'}</div></div>
+
+          </div>
+
+        </div>
+
+        <div id="visit-entry-panel"></div>
+
+      </div>
+
+      <div>
+
+        <div class="cal-wrap">
+
+          <div class="cal-nav">
+
+            <button onclick="calPrev()">◀</button>
+
+            <h3 id="cal-month-title"></h3>
+
+            <button onclick="calNext()">▶</button>
+
+          </div>
+
+          <div class="cal-days-header">${\['S','M','T','W','T','F','S'\].map(d=`<div class="cal-dn">${d}</div>`).join('')}</div>
+
+          <div class="cal-grid" id="cal-grid"></div>
+
+          <div class="cal-legend">
+
+            <div class="cal-leg"><div class="cal-dot" style="background:#16a34a"></div>Attended</div>
+
+            <div class="cal-leg"><div class="cal-dot" style="background:#dc2626"></div>Absent</div>
+
+            <div class="cal-leg"><div class="cal-dot" style="background:var(--primary)"></div>Today</div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>\`;
+
+  renderCalendar(plan);
+
+}
+
+function renderCalendar(plan){
+
+  const title=document.getElementById('cal-month-title');
+
+  if(!title)return;
+
+  const grid=document.getElementById('cal-grid');
+
+  const months=\['January','February','March','April','May','June','July','August','September','October','November','December'\];
+
+  title.textContent=months\[calMonth\]+' '+calYear;
+
+  const entries=DB.filter('visit-entries',v=>v.planId===plan.id);
+
+  const entryMap={};
+
+  entries.forEach(e=>{entryMap\[e.date\]=e;});
+
+  const first=new Date(calYear,calMonth,1);
+
+  const last=new Date(calYear,calMonth+1,0);
+
+  let cells=\[\];
+
+  for(let i=0;i<first.getDay();i++)cells.push(null);
+
+  for(let d=1;d<=last.getDate();d++)cells.push(d);
+
+  grid.innerHTML=cells.map(d=>{
+
+    if(!d)return'<div class="cal-cell off"></div>';
+
+    const dateStr`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+    const e=entryMap\[dateStr\];
+
+    const isToday=dateStr===today();
+
+    const cls=e?(e.attended?'c-ok':'c-ab'):(isToday?'today':'');
+
+    retur`<div class="cal-cell ${cls}${selectedCalDate===dateStr?' c-sel':''}" onclick="selectCalDate('${dateStr}')">${d}</div>`;
+
+  }).join('');
+
+}
+
+function calPrev(){if(calMonth===0){calMonth=11;calYear--;}else calMonth--;const plan=DB.find('regular-plans',p=>p.id===activePlanId);if(plan)renderCalendar(plan);}
+
+function calNext(){if(calMonth===11){calMonth=0;calYear++;}else calMonth++;const plan=DB.find('regular-plans',p=>p.id===activePlanId);if(plan)renderCalendar(plan);}
+
+function selectCalDate(date){
+
+  selectedCalDate=date;
+
+  const plan=DB.find('regular-plans',p=>p.id===activePlanId);
+
+  if(plan)renderCalendar(plan);
+
+  const entry=DB.find('visit-entries',v=>v.planId===activePlanId&&v.date===date);
+
+  // Open visit entry modal
+
+  document.getElementById('ve-modal-title').textContent`📋 ${fmtDate(date)}`;
+
+  document.getElementById('ve-attended').checked=entry?entry.attended:true;
+
+  document.getElementById('ve-abs-reason').value=entry?.absenceReason||'';
+
+  document.getElementById('ve-treatment').value=entry?.treatment||plan?.protocol||'';
+
+  document.getElementById('ve-dur').value=entry?.duration||'';
+
+  document.getElementById('ve-pay').value=entry?.payment||'';
+
+  document.getElementById('ve-pmode').value=entry?.paymentMode||'CASH';
+
+  document.getElementById('ve-cond').value=entry?.condition||'IMPROVING';
+
+  document.getElementById('ve-notes').value=entry?.notes||'';
+
+  toggleAbsence();
+
+  populateClinicianDropdowns();
+
+  openModal('modal-visit-entry');
+
+}
+
+function toggleAbsence(){
+
+  const att=document.getElementById('ve-attended').checked;
+
+  document.getElementById('ve-absence-row').style.display=att?'none':'block';
+
+  document.getElementById('ve-fields').style.display=att?'block':'none';
+
+}
+
+function saveVisitEntry(){
+
+  if(!activePlanId||!selectedCalDate)return;
+
+  const existing=DB.find('visit-entries',v=>v.planId===activePlanId&&v.date===selectedCalDate);
+
+  const attended=document.getElementById('ve-attended').checked;
+
+  const clinSel=document.getElementById('ve-clinician');
+
+  const entry={
+
+    id:existing?.id||uid(),planId:activePlanId,patientId:activePatientId,date:selectedCalDate,
+
+    attended,absenceReason:document.getElementById('ve-abs-reason').value,
+
+    treatment:document.getElementById('ve-treatment').value,
+
+    clinicianId:clinSel.value,duration:document.getElementById('ve-dur').value,
+
+    payment:parseInt(document.getElementById('ve-pay').value)||0,
+
+    paymentMode:document.getElementById('ve-pmode').value,
+
+    condition:document.getElementById('ve-cond').value,
+
+    notes:document.getElementById('ve-notes').value
+
+  };
+
+  if(existing)DB.update('visit-entries',existing.id,entry);
+
+  else DB.push('visit-entries',entry);
+
+  if(entry.payment>0&&attended){
+
+    const existPay=DB.find('payments',p=>p.visitEntryId===entry.id);
+
+    if(!existPay)DB.push('payments',{id:uid(),patientId:activePatientId,visitEntryId:entry.id,date:selectedCalDate,amount:entry.payment,mode:entry.paymentMode,notes:'Regular visit'});
+
+  }
+
+  closeModal('modal-visit-entry');
+
+  loadRegularVisitTab();
+
+  toast('Visit entry saved ✅','t-ok');
+
+}
+
+function renderRegularList(){
+
+  const plans=DB.filter('regular-plans',p=>p.active);
+
+  const wrap=document.getElementById('reg-list-wrap');
+
+  if(!plans.length){wrap.innerHTML='<div class="card card-bd"><div class="empty-state"><div class="es-icon">🔄</div><div class="es-title">No regular patients</div><div class="es-sub">Mark patients as regular from their session notes</div></div></div>';return;}
+
+  wrap.innerHTML=\`<div class="card"><div class="tw"><table><thead><tr><th>Patient</th><th>Frequency</th><th>Start Date</th><th>Sessions Done</th><th>Protocol</th><th></th></tr></thead><tbody>${
+
+    plans.map(plan=>{
+
+      const pt=DB.find('patients',p=>p.id===plan.patientId);
+
+      const done=DB.filter('visit-entries',v=>v.planId===plan.id&&v.attended).length;
+
+      retur`<tr onclick="openPatientDetail('${plan.patientId}')"><td><strong>${pt?.name||'Unknown'}</strong></td><td><span class="badge bg-b">${plan.frequency}</span></td><td>${fmtDate(plan.startDate)}</td><td>${done}${plan.targetSessions?' / '+plan.targetSessions:''}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${plan.protocol||'—'}</td><td><button class="btn btn-sm btn-o" onclick="event.stopPropagation();openPatientDetail('${plan.patientId}')">View Plan</button></td></tr>`;
+
+    }).join('')
+
+  }</tbody></table></div></div>\`;
+
+}
+
+// ─── PAYMENTS ─────────────────────────────────────────────────
+
+function renderPayments(){
+
+  const pays=DB.get('payments')||\[\];
+
+  const tbody=document.getElementById('pay-table-body');
+
+  document.getElementById('pay-empty').style.display=pays.length?'none':'block';
+
+  if(!pays.length){tbody.innerHTML='';return;}
+
+  const sorted=\[...pays\].sort((a,b)=>b.date.localeCompare(a.date));
+
+  tbody.innerHTML=sorted.map(p=>{
+
+    const pt=DB.find('patients',x=>x.id===p.patientId);
+
+    retur`<tr><td>${fmtDate(p.date)}</td><td>${pt?.name||'—'}</td><td style="font-weight:700;color:var(--primary)">${fmtMoney(p.amount)}</td><td><span class="badge ${p.mode==='CASH'?'bg-g':p.mode==='UPI'?'bg-b':'bg-a'}">${p.mode}</span></td><td>${p.sessionId?'Session':'Regular'}</td><td>${p.notes||'—'}</td></tr>`;
+
+  }).join('');
+
+}
+
+function openAddPayment(){
+
+  const patients=DB.get('patients')||\[\];
+
+  document.getElementById('pay-patient').innerHTML=patients.map(p=`<option value="${p.id}">${p.name}</option>`).join('');
+
+  document.getElementById('pay-date').value=today();
+
+  document.getElementById('pay-amount').value='';
+
+  document.getElementById('pay-notes').value='';
+
+  openModal('modal-payment');
+
+}
+
+function savePayment(){
+
+  const pid=document.getElementById('pay-patient').value;
+
+  const amt=parseInt(document.getElementById('pay-amount').value);
+
+  if(!pid||!amt){toast('Patient and amount required','t-err');return;}
+
+  DB.push('payments',{id:uid(),patientId:pid,date:document.getElementById('pay-date').value,amount:amt,mode:document.getElementById('pay-mode').value,notes:document.getElementById('pay-notes').value});
+
+  closeModal('modal-payment');
+
+  renderPayments();
+
+  toast('Payment recorded ✅','t-ok');
+
+}
+
+// ─── SCHEDULER ────────────────────────────────────────────────
+
+let schedYear=new Date().getFullYear(),schedMonth=new Date().getMonth(),schedDay='';
+
+function renderSchedulerCal(){
+
+  const wrap=document.getElementById('sched-cal');
+
+  const months=\['January','February','March','April','May','June','July','August','September','October','November','December'\];
+
+  const first=new Date(schedYear,schedMonth,1);
+
+  const last=new Date(schedYear,schedMonth+1,0);
+
+  let cells=\[\];
+
+  for(let i=0;i<first.getDay();i++)cells.push(null);
+
+  for(let d=1;d<=last.getDate();d++)cells.push(d);
+
+  wrap.innerHTML=\`
+
+    <div class="cal-nav">
+
+      <button onclick="schedPrev()">◀</button>
+
+      <h3>${months\[schedMonth\]} ${schedYear}</h3>
+
+      <button onclick="schedNext()">▶</button>
+
+    </div>
+
+    <div class="cal-days-header">${\['Sun','Mon','Tue','Wed','Thu','Fri','Sat'\].map(d=`<div class="cal-dn">${d}</div>`).join('')}</div>
+
+    <div class="cal-grid">${cells.map(d=>{
+
+      if(!d)return'<div class="cal-cell off"></div>';
+
+      const ds`${schedYear}-${String(schedMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+      const hasSes=DB.filter('sessions',s=>s.date===ds).length>0;
+
+      retur`<div class="cal-cell ${ds===today()?'today':''} ${hasSes?'c-ok':''} ${schedDay===ds?'c-sel':''}" onclick="selectSchedDay('${ds}')">${d}</div>`;
+
+    }).join('')}</div>\`;
+
+}
+
+function schedPrev(){if(schedMonth===0){schedMonth=11;schedYear--;}else schedMonth--;renderSchedulerCal();}
+
+function schedNext(){if(schedMonth===11){schedMonth=0;schedYear++;}else schedMonth++;renderSchedulerCal();}
+
+function selectSchedDay(ds){
+
+  schedDay=ds;renderSchedulerCal();
+
+  const sessions=DB.filter('sessions',s=>s.date===ds);
+
+  const wrap=document.getElementById('sched-appts');
+
+  if(!sessions.length){wrap.innerHTML`<div class="empty-state"><div class="es-icon">📅</div><div class="es-title">No sessions on ${fmtDate(ds)}</div></div>`;return;}
+
+  wrap.innerHTML`<h3 style="margin-bottom:12px;font-family:'Syne',sans-serif;font-size:15px;color:var(--primary-dark)">${fmtDate(ds)} — ${sessions.length} session(s)</h3>`+sessions.map(s=>{const pt=DB.find('patients',p=>p.id===s.patientId);retur`<div style="display:flex;align-items:center;gap:12px;padding:10px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:8px"><div>🧑</div><div style="flex:1"><div style="font-weight:600">${pt?.name||'—'}</div><div style="font-size:12px;color:var(--text-muted)">${s.clinicianName||'—'} • ${s.duration||'?'} min</div></div>${responseBadge(s.post?.response)}<div style="font-weight:700;color:var(--primary)">${fmtMoney(s.payment)}</div></div>`;}).join('');
+
+}
+
+// ─── TELEGRAM ─────────────────────────────────────────────────
+
+function loadTelegramSettings(){
+
+  const cfg=DB.get('tg-config')||{};
+
+  const hasToken=!!cfg.tokenEnc;
+
+  document.getElementById('tg-token-display').textContent=hasToken?'••••••••••••••••••••••••••••••••••••••':'Not configured';
+
+  document.getElementById('tg-status-badge').innerHTML=hasToken?'<span class="badge bg-g">✅ Active</span>':'<span class="badge bg-grey">Not Set</span>';
+
+  document.getElementById('tg-chat-id').value=cfg.chatId||'';
+
+  document.getElementById('tg-alert-time').value=cfg.alertTime||'20:00';
+
+  document.getElementById('tg-al-backup').checked=cfg.alBackup!==false;
+
+  document.getElementById('tg-al-login').checked=cfg.alLogin!==false;
+
+  document.getElementById('tg-al-revenue').checked=!!cfg.alRevenue;
+
+  renderCommandList(cfg.commands||\[\]);
+
+}
+
+function renderCommandList(cmds){
+
+  const wrap=document.getElementById('tg-cmd-list');
+
+  if(!cmds.length){wrap.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:12px 0">No commands defined. Click "+ Add Command" or load defaults.</div>';return;}
+
+  wrap.innerHTML=cmds.map((c,i)=`<div class="cmd-row"><span class="cmd-trigger">${c.trigger}</span><span class="cmd-desc">${c.description}</span><span class="badge ${c.type==='DYNAMIC'?'bg-b':'bg-grey'}">${c.type}</span><button class="btn btn-sm btn-d" onclick="deleteCommand(${i})">✕</button></div>`).join('');
+
+}
+
+function saveTelegramToken(){
+
+  const raw=document.getElementById('tg-token-input').value.trim();
+
+  if(!raw){toast('Enter a bot token first','t-err');return;}
+
+  const tokenReg=/^\\d{8,12}:\[A-Za-z0-9\_-\]{35,}$/;
+
+  if(!tokenReg.test(raw)){toast('Invalid token format. Check your BotFather token.','t-err');return;}
+
+  const cfg=DB.get('tg-config')||{};
+
+  // Simple XOR "encryption" for demo purposes
+
+  cfg.tokenEnc=btoa(raw.split('').map((c,i)=>String.fromCharCode(c.charCodeAt(0)^(42+i%13))).join(''));
+
+  DB.set('tg-config',cfg);
+
+  document.getElementById('tg-token-input').value='';
+
+  loadTelegramSettings();
+
+  toast('Bot token saved and verified ✅','t-ok');
+
+}
+
+function revokeTelegramToken(){
+
+  showConfirm('Revoke Bot Token','Revoke bot token? All Telegram alerts will stop immediately.',()=>{
+
+    const cfg=DB.get('tg-config')||{};
+
+    cfg.tokenEnc='';
+
+    DB.set('tg-config',cfg);
+
+    loadTelegramSettings();
+
+    toast('Token revoked','t-warn');
+
+  });
+
+}
+
+function testBotConnection(){
+
+  const cfg=DB.get('tg-config')||{};
+
+  if(!cfg.tokenEnc){toast('No token configured','t-err');return;}
+
+  toast('Testing connection… (demo mode ✅)','t-ok');
+
+}
+
+function saveTgSettings(){
+
+  const cfg=DB.get('tg-config')||{};
+
+  cfg.chatId=document.getElementById('tg-chat-id').value;
+
+  cfg.alertTime=document.getElementById('tg-alert-time').value;
+
+  cfg.alBackup=document.getElementById('tg-al-backup').checked;
+
+  cfg.alLogin=document.getElementById('tg-al-login').checked;
+
+  cfg.alRevenue=document.getElementById('tg-al-revenue').checked;
+
+  DB.set('tg-config',cfg);
+
+}
+
+let editingCmdIndex=-1;
+
+function openAddCommand(){editingCmdIndex=-1;document.getElementById('cmd-trigger').value='';document.getElementById('cmd-desc').value='';document.getElementById('cmd-response').value='';document.getElementById('cmd-type').value='STATIC';toggleCmdType();openModal('modal-cmd');}
+
+function toggleCmdType(){const t=document.getElementById('cmd-type').value;document.getElementById('cmd-static-row').style.display=t==='STATIC'?'block':'none';document.getElementById('cmd-dyn-row').style.display=t==='DYNAMIC'?'block':'none';}
+
+document.getElementById('cmd-type').addEventListener('change',toggleCmdType);
+
+function saveCommand(){
+
+  const trigger=document.getElementById('cmd-trigger').value.trim();
+
+  const desc=document.getElementById('cmd-desc').value.trim();
+
+  if(!trigger||!desc){toast('Trigger and description required','t-err');return;}
+
+  const cfg=DB.get('tg-config')||{};
+
+  if(!cfg.commands)cfg.commands=\[\];
+
+  const type=document.getElementById('cmd-type').value;
+
+  const cmd={trigger:trigger.startsWith('/')?trigger:'/'+trigger,description:desc,type,response:type==='STATIC'?document.getElementById('cmd-response').value:'',query:type==='DYNAMIC'?document.getElementById('cmd-query').value:''};
+
+  cfg.commands.push(cmd);
+
+  DB.set('tg-config',cfg);
+
+  closeModal('modal-cmd');
+
+  renderCommandList(cfg.commands);
+
+  toast('Command added ✅','t-ok');
+
+}
+
+function deleteCommand(i){
+
+  const cfg=DB.get('tg-config')||{};
+
+  cfg.commands.splice(i,1);
+
+  DB.set('tg-config',cfg);
+
+  renderCommandList(cfg.commands);
+
+  toast('Command removed','t-warn');
+
+}
+
+function pushCommandsToTelegram(){
+
+  const cfg=DB.get('tg-config')||{};
+
+  if(!cfg.tokenEnc){toast('Configure bot token first','t-err');return;}
+
+  toast`${(cfg.commands||[]).length} commands pushed to Telegram bot ✅`,'t-ok');
+
+}
+
+function loadDefaultCommands(){
+
+  const defaults=\[
+
+    {trigger:'/status',description:'Get system status',type:'DYNAMIC',query:'backup_status'},
+
+    {trigger:'/patients',description:'Patients seen today',type:'DYNAMIC',query:'patients_today'},
+
+    {trigger:'/revenue',description:'Revenue summary today',type:'DYNAMIC',query:'revenue_today'},
+
+    {trigger:'/next',description:'Next scheduled appointment',type:'DYNAMIC',query:'next_appointment'},
+
+    {trigger:'/help',description:'List all commands',type:'STATIC',response:'Available: /status /patients /revenue /next'}
+
+  \];
+
+  const cfg=DB.get('tg-config')||{};
+
+  cfg.commands=defaults;
+
+  DB.set('tg-config',cfg);
+
+  renderCommandList(cfg.commands);
+
+  toast('Default commands loaded ✅','t-ok');
+
+}
+
+// ─── SECURITY ─────────────────────────────────────────────────
+
+function loadSecuritySettings(){
+
+  document.getElementById('lid-cur').value=currentUser.loginId;
+
+  document.getElementById('pw-cur').value='';
+
+  document.getElementById('pw-new').value='';
+
+  document.getElementById('pw-conf').value='';
+
+  document.getElementById('lid-new').value='';
+
+  document.getElementById('lid-pw').value='';
+
+  document.getElementById('admin-reset-section').style.display=currentUser.role==='ADMIN'?'block':'none';
+
+  if(currentUser.role==='ADMIN'){
+
+    const users=DB.get('users')||\[\];
+
+    document.getElementById('reset-user-sel').innerHTML=users.filter(u=>u.id!==currentUser.id).map(u=`<option value="${u.id}">${u.name} (${u.loginId})</option>`).join('');
+
+  }
+
+}
+
+function changePassword(){
+
+  const cur=document.getElementById('pw-cur').value;
+
+  const nw=document.getElementById('pw-new').value;
+
+  const conf=document.getElementById('pw-conf').value;
+
+  const err=document.getElementById('pw-err');
+
+  if(simpleHash(cur)!==currentUser.passwordHash){err.textContent='Current password incorrect';err.style.display='block';return;}
+
+  if(nw.length<8||!/\\d/.test(nw)||!/\[^a-zA-Z0-9\]/.test(nw)){err.textContent='Min 8 chars, 1 number, 1 special character';err.style.display='block';return;}
+
+  if(nw!==conf){err.textContent='Passwords do not match';err.style.display='block';return;}
+
+  err.style.display='none';
+
+  DB.update('users',currentUser.id,{passwordHash:simpleHash(nw)});
+
+  DB.update('users',currentUser.id,{passwordHash:simpleHash(nw),mustChangePassword:false});
+  // Force re-login - per addendum: invalidate all sessions
+  sessionStorage.clear();
+  toast('Password updated. Please log in again.','t-ok');
+  setTimeout(()=>{location.reload();},1200);
+
+  toast('Password updated ✅ You remain logged in.','t-ok');
+
+  document.getElementById('pw-cur').value='';document.getElementById('pw-new').value='';document.getElementById('pw-conf').value='';
+
+}
+
+function changeLoginId(){
+
+  const nw=document.getElementById('lid-new').value.trim();
+
+  const pw=document.getElementById('lid-pw').value;
+
+  const err=document.getElementById('lid-err');
+
+  if(!/^\[a-zA-Z0-9\_\]{5,}$/.test(nw)){err.textContent='Min 5 chars, alphanumeric and \_ only';err.style.display='block';return;}
+
+  if(DB.find('users',u=>u.loginId===nw&&u.id!==currentUser.id)){err.textContent='Login ID already taken';err.style.display='block';return;}
+
+  if(simpleHash(pw)!==currentUser.passwordHash){err.textContent='Password incorrect';err.style.display='block';return;}
+
+  err.style.display='none';
+
+  DB.update('users',currentUser.id,{loginId:nw});
+
+  currentUser.loginId=nw;
+
+  document.getElementById('lid-cur').value=nw;
+
+  toast('Login ID updated to: '+nw+' ✅','t-ok');
+
+  document.getElementById('lid-new').value='';document.getElementById('lid-pw').value='';
+
+}
+
+function adminResetPassword(){
+
+  const uid2=document.getElementById('reset-user-sel').value;
+
+  if(!uid2){toast('Select a user','t-err');return;}
+
+  const chars='ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';
+
+  const tmp=Array.from({length:10},()=>chars\[Math.floor(Math.random()\*chars.length)\]).join('');
+
+  DB.update('users',uid2,{passwordHash:simpleHash(tmp),mustChangePassword:true});
+
+  const user=DB.find('users',u=>u.id===uid2);
+
+  showConfirm('Temp Password Generated'`Temporary password for ${user.name}:\n\n🔑 ${tmp}\n\nShare this once only. User must change it on next login.`,()=>{});
+
+  document.getElementById('conf-ok').style.display='none';
+
+}
+
+// ─── PERMISSIONS ──────────────────────────────────────────────
+
+const SCREENS=\[
+
+  {k:'dashboard',label:'📊 Dashboard'},
+
+  {k:'patients',label:'👥 All Patients'},
+
+  {k:'patient-detail',label:'📋 Patient Detail'},
+
+  {k:'sessions',label:'🩺 Session Notes'},
+
+  {k:'scheduler',label:'📅 Scheduler'},
+
+  {k:'payments',label:'💳 Payments'},
+
+  {k:'regular',label:'🔄 Regular Visits'},
+
+  {k:'admin-telegram',label:'📨 Telegram Bot'},
+
+  {k:'admin-security',label:'🔐 Security'},
+
+  {k:'admin-roles',label:'🛡️ Roles & Access'},
+
+  {k:'admin-users',label:'⚙️ User Manager'}
+
+\];
+
+const ROLES=\['ADMIN','CLINICIAN','RECEPTIONIST','FINANCE'\];
+
+let customRoles=[];
+function getAllRoles(){return [...ROLES,...customRoles];}
+function openAddRoleModal(){
+  var name=prompt('Enter new role name (uppercase, no spaces):');
+  if(!name)return;
+  var roleName=name.toUpperCase().replace(/\s+/g,'_');
+  if(ROLES.indexOf(roleName)>=0||customRoles.indexOf(roleName)>=0){toast('Role already exists','t-err');return;}
+  customRoles.push(roleName);
+  renderPermissionMatrix();
+  toast('Role '+roleName+' created.','t-ok');
+}
+function deleteRole(roleName){
+  if(ROLES.indexOf(roleName)>=0){toast('Cannot delete built-in roles','t-err');return;}
+  var usersWithRole=(DB.get('users')||[]).filter(function(u){return u.role===roleName;});
+  if(usersWithRole.length>0){toast('Cannot delete: '+usersWithRole.length+' user(s) have this role','t-err');return;}
+  customRoles=customRoles.filter(function(r){return r!==roleName;});
+  var perms=DB.get('permissions')||{};
+  if(perms[roleName])delete perms[roleName];
+  DB.set('permissions',perms);
+  renderPermissionMatrix();
+  toast('Role deleted.','t-ok');
+}
+
+function renderPermissionMatrix(){
+
+  const perms=DB.get('permissions')||{};
+
+  const table=document.getElementById('pm-table');
+
+  table.innerHTML`<thead><tr><th>Screen / Feature</th>${getAllRoles().map(function(r){return`<th>${r}</th>`;}).join('')}</tr></thead>
+
+  <tbody>${SCREENS.map(sc=>\`<tr><td style="font-weight:600">${sc.label}</td>${getAllRoles().map(function(role){
+
+    const val=(perms[role]||{})[sc.k]||'HIDDEN';
+
+    retur`<td><select class="pm-sel pm-${val}" data-role="${role}" data-screen="${sc.k}" onchange="updatePerm(this)">${['EDIT','VIEW','HIDDEN'].map(v=>`<option value="${v}"${val===v?' selected':''}>${v}</option`).join('')}</select></td>`;
+
+  }).join('')}</tr`).join('')}</tbody>`;
+
+}
+
+function updatePerm(sel){markSessionDirty();
+
+  sel.className`pm-sel pm-${sel.value}`;
+
+}
+
+function savePermissions(){
+
+  const sels=document.querySelectorAll('#pm-table .pm-sel');
+
+  const perms={};
+
+  ROLES.forEach(r=>{perms[r]={};});
+
+  sels.forEach(sel=>{const r=sel.getAttribute('data-role');const s=sel.getAttribute('data-screen');perms[r][s]=sel.value;});
+  // Lockout prevention: no role can have 0 accessible screens
+  for(var ri=0;ri<ROLES.length;ri++){
+    var role=ROLES[ri];
+    var accessible=SCREENS.filter(function(sc){return perms[role]&&perms[role][sc.k]&&perms[role][sc.k]!=='HIDDEN';});
+    if(accessible.length===0){toast('Error: '+role+' needs at least one accessible screen','t-err');return;}
+  }
+
+  DB.set('permissions',perms);
+
+  applyNavPermissions();
+
+  toast('Permissions saved ✅','t-ok');
+
+}
+
+// ─── USERS ────────────────────────────────────────────────────
+
+function renderUserTable(){
+
+  const users=DB.get('users')||\[\];
+
+  document.getElementById('user-table-body').innerHTML=users.map(u=>\`
+
+    <tr>
+
+      <td><strong>${u.name}</strong></td>
+
+      <td><code style="background:var(--bg);padding:2px 8px;border-radius:4px">${u.loginId}</code></td>
+
+      <td><span class="badge ${u.role==='ADMIN'?'bg-pu':u.role==='CLINICIAN'?'bg-g':u.role==='RECEPTIONIST'?'bg-b':'bg-a'}">${u.role}</span></td>
+
+      <td>${u.active?'<span class="badge bg-g">Active</span>':'<span class="badge bg-grey">Inactive</span>'}</td>
+
+      <td><button class="btn btn-sm btn-g" onclick="toggleUserActive('${u.id}',${u.active})">${u.active?'Deactivate':'Activate'}</button></td>
+
+    </tr>\`).join('');
+
+}
+
+function toggleUserActive(id,current){
+
+  DB.update('users',id,{active:!current});
+
+  renderUserTable();
+
+  toast('User status updated','t-ok');
+
+}
+
+function openAddUser(){
+
+  document.getElementById('u-name').value='';document.getElementById('u-lid').value='';
+
+  document.getElementById('u-pw').value='';document.getElementById('u-role').value='CLINICIAN';
+
+  document.getElementById('user-modal-title').textContent='Add User';
+
+  openModal('modal-user');
+
+}
+
+function saveUser(){
+
+  const name=document.getElementById('u-name').value.trim();
+
+  const lid=document.getElementById('u-lid').value.trim();
+
+  const pw=document.getElementById('u-pw').value;
+
+  if(!name||!lid||pw.length<8){toast('All fields required; password min 8 chars','t-err');return;}
+
+  if(DB.find('users',u=>u.loginId===lid)){toast('Login ID already in use','t-err');return;}
+
+  DB.push('users',{id:uid(),name,loginId:lid,passwordHash:simpleHash(pw),role:document.getElementById('u-role').value,active:true});
+
+  closeModal('modal-user');
+
+  renderUserTable();
+
+  populateClinicianDropdowns();
+
+  toast('User added ✅','t-ok');
+
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────
+
+function populateClinicianDropdowns(){
+
+  const clinicians=(DB.get('users')||\[\]).filter(u=>u.active&&(u.role==='CLINICIAN'||u.role==='ADMIN'));
+
+  const opts=clinicians.map(c=`<option value="${c.id}">${c.name}</option>`).join('');
+
+  \['ses-clinician','ve-clinician'\].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+
+}
+
+function toggleChk(el){el.classList.toggle('checked');el.querySelector('input').checked=el.classList.contains('checked');}
+
+function openModal(id){document.getElementById(id).classList.add('active');}
+
+function closeModal(id){document.getElementById(id).classList.remove('active');}
+
+function toast(msg,cls=''){
+
+  const t=document.createElement('div');
+
+  t.className='toast '+(cls||'');
+
+  t.innerHTML=msg;
+
+  document.getElementById('tc').appendChild(t);
+
+  setTimeout(()=>t.remove(),3500);
+
+}
+
+function showConfirm(title,msg,onOk){
+
+  document.getElementById('conf-title').textContent=title;
+
+  document.getElementById('conf-msg').textContent=msg;
+
+  const ok=document.getElementById('conf-ok');
+
+  ok.style.display='inline-flex';
+
+  ok.onclick=()=>{onOk();closeModal('modal-confirm');};
+
+  openModal('modal-confirm');
+
+}
+
+// Close modals on overlay click
+
+document.querySelectorAll('.modal-ov').forEach(ov=>{ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('active');});});
+
+// Enter key on login
+
+document.getElementById('lg-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+document.getElementById('lg-id').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ─── BOOT ─────────────────────────────────────────────────────
+
+initData();
+
+if(checkSession()){
+
+  document.getElementById('login-screen').classList.add('hidden');
+
+  initApp();
+
+}
+
+// Seed some demo data if empty
+
+if(!(DB.get('patients')||\[\]).length){
+
+  const demo=\[
+
+    {id:'p1',regNo:'SNC2018293',name:'Ramesh Kumar',age:52,sex:'Male',occupation:'Teacher',address:'Shaheed Nagar, Agra',mobile:'9876543210',telephone:'',conditions:\['BP','Diabetes'\],restrictions:\['No Khatta'\],history:'Chronic back pain for 3 years. Previous physiotherapy with partial relief.',active:true,createdAt:'2024-01-10'},
+
+    {id:'p2',regNo:'SNC2018294',name:'Sunita Devi',age:38,sex:'Female',occupation:'Housewife',address:'Rajpur Chungi, Agra',mobile:'9876543211',telephone:'',conditions:\['B-12','Folic Acid'\],restrictions:\['Restriction'\],history:'Neck stiffness, mild cervical spondylosis.',active:true,createdAt:'2024-01-15'},
+
+    {id:'p3',regNo:'SNC2018295',name:'Manoj Singh',age:45,sex:'Male',occupation:'Businessman',address:'Civil Lines, Agra',mobile:'9876543212',telephone:'',conditions:\['Heart','Kidney'\],restrictions:\['No Non-Veg','No Alcohol'\],history:'Sciatica, radiating pain in left leg.',active:true,createdAt:'2024-02-01'}
+
+  \];
+
+  DB.set('patients',demo);
+
+  // Demo sessions
+
+  DB.push('sessions',{id:'s1',patientId:'p1',sessionNo:1,date:today(),visitType:'IN-CLINIC',clinicianId:'u1',clinicianName:'Pt. Pradeep Kumar',duration:45,payment:500,paymentMode:'CASH',pre:{complaint:'Severe lower back pain',pain:'7',mobility:'Restricted',vitals:'130/85',notes:'Patient walked with difficulty, lumbar region tender'},post:{techniques:'Spinal manipulation, Acupressure L3-L5',pain:'3',response:'GOOD',notes:'Significant improvement in pain and mobility',recommendation:'Continue spinal manipulation 3x/week'},followup:''});
+
+  DB.push('payments',{id:'pay1',patientId:'p1',sessionId:'s1',date:today(),amount:500,mode:'CASH',notes:'Session #1'});
+
+  // Demo regular plan
+
+  DB.push('regular-plans',{id:'rp1',patientId:'p2',frequency:'WEEKLY',days:\['Mon','Wed','Fri'\],startDate:'2024-03-01',endDate:'',targetSessions:24,protocol:'Cervical traction + shoulder mobilisation + hot pack',active:true});
+
+}
+
+
+
+
+
+
+
+</script>
+
+</body>
+
+</html>

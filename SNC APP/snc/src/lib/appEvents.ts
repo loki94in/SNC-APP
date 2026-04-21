@@ -7,7 +7,9 @@ export type AppEvent =
   | "app:logout"
   | "app:patients-changed"
   | "app:sessions-changed"
-  | "app:payments-changed";
+  | "app:payments-changed"
+  | "app:users-changed"
+  | "app:permissions-changed";
 
 const listeners = new Map<AppEvent, Set<() => void>>();
 

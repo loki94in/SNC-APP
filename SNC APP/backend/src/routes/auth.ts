@@ -58,6 +58,20 @@ auth.post("/change-password", async (c) => {
   return c.json({ ok: true });
 });
 
+auth.put("/login-id", async (c) => {
+  const user = c.get("user") as any;
+  const { newLoginId, password } = await c.req.json();
+  if (!newLoginId || !password) return c.json({ error: "New login ID and password required" }, 400);
+  if (newLoginId.length < 5) return c.json({ error: "Login ID must be at least 5 characters" }, 400);
+  if (!/^[a-zA-Z0-9_]+$/.test(newLoginId)) return c.json({ error: "Login ID can only contain letters, numbers, and underscores" }, 400);
+  if (!compareSync(password, user.password_hash)) return c.json({ error: "Password incorrect" }, 400);
+  const taken = db.prepare("SELECT id FROM users WHERE login_id = ? AND id != ?").get(newLoginId, user.id) as any;
+  if (taken) return c.json({ error: "Login ID already taken" }, 400);
+  db.prepare("UPDATE users SET login_id=?, updated_at=? WHERE id=?").run(newLoginId, now(), user.id);
+  audit("LOGIN_ID_CHANGED", user.id, `Changed login ID to: ${newLoginId}`);
+  return c.json({ ok: true });
+});
+
 auth.post("/users", async (c) => {
   const user = c.get("user") as any;
   if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
@@ -96,6 +110,33 @@ auth.delete("/users/:id", async (c) => {
   if (id === user.id) return c.json({ error: "Cannot delete yourself" }, 400);
   db.prepare("UPDATE users SET active=0, updated_at=? WHERE id=?").run(now(), id);
   audit("USER_DELETED", user.id, `Deleted user: ${id}`);
+  return c.json({ ok: true });
+});
+
+auth.post("/roles", async (c) => {
+  const user = c.get("user") as any;
+  if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
+  const { role } = await c.req.json();
+  if (!role) return c.json({ error: "Role name required" }, 400);
+  if (!/^[A-Z][A-Z0-9_]*$/.test(role)) return c.json({ error: "Role name must be uppercase with underscores" }, 400);
+  const existing = db.prepare("SELECT DISTINCT role FROM permissions WHERE role=?").get(role);
+  if (existing) return c.json({ error: "Role already exists" }, 400);
+  const defaultScreens = db.prepare("SELECT screen FROM permissions WHERE role='RECEPTIONIST'").all() as any[];
+  const insertPerm = db.prepare("INSERT OR IGNORE INTO permissions (id, role, screen, level) VALUES (?, ?, ?, ?)");
+  for (const s of defaultScreens) insertPerm.run(uid(), role, s.screen, "HIDDEN");
+  audit("ROLE_CREATED", user.id, `Created role: ${role}`);
+  return c.json({ ok: true }, 201);
+});
+
+auth.delete("/roles/:role", async (c) => {
+  const user = c.get("user") as any;
+  if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
+  const { role } = c.req.param();
+  if (["ADMIN", "CLINICIAN", "RECEPTIONIST", "FINANCE"].includes(role)) return c.json({ error: "Cannot delete built-in roles" }, 400);
+  const usersWithRole = db.prepare("SELECT id FROM users WHERE role=? AND active=1").get(role);
+  if (usersWithRole) return c.json({ error: "Cannot delete role with assigned users" }, 400);
+  db.prepare("DELETE FROM permissions WHERE role=?").run(role);
+  audit("ROLE_DELETED", user.id, `Deleted role: ${role}`);
   return c.json({ ok: true });
 });
 

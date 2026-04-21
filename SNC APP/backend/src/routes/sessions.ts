@@ -17,6 +17,7 @@ sessions.get("/", async (c) => {
 sessions.get("/by-patient/:patientId", async (c) => {
   return c.json({ sessions: db.prepare("SELECT * FROM sessions WHERE patient_id=? ORDER BY session_no DESC").all(c.req.param("patientId")) });
 });
+
 sessions.post("/", async (c) => {
   const user = c.get("user") as any;
   const b = await c.req.json();
@@ -36,17 +37,41 @@ sessions.post("/", async (c) => {
   audit("SESSION_CREATED", user.id, `Session #${sessionNo} for patient ${b.patientId}`);
   return c.json({ ok: true, id, sessionNo }, 201);
 });
+
 sessions.put("/:id", async (c) => {
   const user = c.get("user") as any;
   const b = await c.req.json();
-  db.prepare(`UPDATE sessions SET date=?,visit_type=?,clinician_id=?,clinician_name=?,duration=?,payment=?,payment_mode=?,pre_complaint=?,pre_pain=?,pre_mobility=?,pre_vitals=?,pre_notes=?,post_techniques=?,post_pain=?,post_response=?,post_notes=?,post_recommendation=?,followup=?,updated_at=? WHERE id=?`).run(
+  const sessionId = c.req.param("id");
+  const session = db.prepare("SELECT * FROM sessions WHERE id=?").get(sessionId) as any;
+  if (!session) return c.json({ error: "Session not found" }, 404);
+  db.prepare(`UPDATE sessions SET
+    date=?, visit_type=?, clinician_id=?, clinician_name=?, duration=?, payment=?, payment_mode=?,
+    pre_complaint=?, pre_pain=?, pre_mobility=?, pre_vitals=?, pre_notes=?,
+    post_techniques=?, post_pain=?, post_response=?, post_notes=?, post_recommendation=?, followup=?,
+    updated_at=? WHERE id=?`).run(
     b.date, b.visitType||"IN-CLINIC", b.clinicianId||"", b.clinicianName||"", b.duration||0, b.payment||0, b.paymentMode||"CASH",
-    b.pre?.complaint||"", b.pre?.pain||0, b.pre?.mobility||"", b.pre?.vitals||"", b.pre?.notes||"",
-    b.post?.techniques||"", b.post?.pain||0, b.post?.response||"", b.post?.notes||"", b.post?.recommendation||"", b.followup||"", now(), c.req.param("id")
+    b.pre?.complaint||"", b.pre?.pain??0, b.pre?.mobility||"", b.pre?.vitals||"", b.pre?.notes||"",
+    b.post?.techniques||"", b.post?.pain??0, b.post?.response||"", b.post?.notes||"", b.post?.recommendation||"", b.followup||"",
+    now(), sessionId
   );
-  audit("SESSION_UPDATED", user.id, `Updated session: ${c.req.param("id")}`);
+  // Sync payment record when session payment changes
+  if (b.payment != null) {
+    const existingPayment = db.prepare("SELECT id FROM payments WHERE session_id=?").get(sessionId) as any;
+    if (existingPayment) {
+      if (parseFloat(b.payment) > 0) {
+        db.prepare("UPDATE payments SET amount=?, mode=? WHERE session_id=?").run(b.payment, b.paymentMode||"CASH", sessionId);
+      } else {
+        db.prepare("DELETE FROM payments WHERE session_id=?").run(sessionId);
+      }
+    } else if (parseFloat(b.payment) > 0) {
+      db.prepare("INSERT INTO payments (id,patient_id,session_id,amount,mode,notes,recorded_by,created_at) VALUES (?,?,?,?,?,?,?,?)").run(
+        uid(), session.patient_id, sessionId, b.payment, b.paymentMode||"CASH", `Session #${session.session_no}`, user.id, now());
+    }
+  }
+  audit("SESSION_UPDATED", user.id, `Updated session: ${sessionId}`);
   return c.json({ ok: true });
 });
+
 sessions.delete("/:id", async (c) => {
   const user = c.get("user") as any;
   if (user.role !== "ADMIN") return c.json({ error: "Only ADMIN can delete sessions" }, 403);
@@ -56,4 +81,5 @@ sessions.delete("/:id", async (c) => {
   audit("SESSION_DELETED", user.id, `Session deleted: ${c.req.param("id")}. Reason: ${body.reason||"none"}`);
   return c.json({ ok: true });
 });
+
 export default sessions;

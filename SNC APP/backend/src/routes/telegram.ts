@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { db, now } from "../db.js";
 import { v4 as uid } from "uuid";
 import { audit } from "../audit.js";
-import { getTelegramConfig, saveTelegramToken, revokeTelegramToken, testTelegramConnection } from "../telegram.js";
+import { getTelegramConfig, saveTelegramToken, revokeTelegramToken, testTelegramConnection, decryptToken } from "../telegram.js";
 const tg = new Hono();
 
 tg.get("/config", async (c) => {
@@ -60,8 +60,9 @@ tg.post("/commands/push", async (c) => {
   const config = getTelegramConfig() as any;
   if (!config?.bot_token_enc) return c.json({ error: "No bot token configured" }, 400);
   try {
+    const token = decryptToken(config.bot_token_enc);
     const tgCmds = cmds.map((cmd: any) => ({ command: cmd.trigger, description: cmd.description }));
-    await fetch(`https://api.telegram.org/bot${config.bot_token_enc}/setMyCommands`, {
+    await fetch(`https://api.telegram.org/bot${token}/setMyCommands`, {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ commands: tgCmds }),
     });

@@ -13,6 +13,7 @@ interface Stats {
   todaySessions: number;
   monthRevenue: number;
   activePlans: number;
+  todayRevenue: number;
 }
 
 interface ChartData {
@@ -43,7 +44,7 @@ function DataError({ onRetry }: { onRetry: () => void }) {
 }
 
 export default function Dashboard() {
-  const [stats, setStats] = useState<Stats>({ totalPatients: 0, todaySessions: 0, monthRevenue: 0, activePlans: 0 });
+  const [stats, setStats] = useState<Stats>({ totalPatients: 0, todaySessions: 0, monthRevenue: 0, activePlans: 0, todayRevenue: 0 });
   const [recentPatients, setRecentPatients] = useState<any[]>([]);
   const [renderData, setRenderData] = useState<RenderData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,7 +58,7 @@ export default function Dashboard() {
       api<ChartData>("/api/dashboard/charts"),
     ])
       .then(([dashData, chartRes]) => {
-        setStats(dashData.stats || { totalPatients: 0, todaySessions: 0, monthRevenue: 0, activePlans: 0 });
+        setStats(dashData.stats || { totalPatients: 0, todaySessions: 0, monthRevenue: 0, activePlans: 0, todayRevenue: 0 });
         setRecentPatients(dashData.recentPatients || []);
         const raw: ChartData = chartRes;
         if (!raw.months || raw.months.length !== 6) { setLoadError(true); return; }
@@ -77,17 +78,24 @@ export default function Dashboard() {
       onAppEvent("app:patients-changed", loadData),
       onAppEvent("app:sessions-changed", loadData),
       onAppEvent("app:payments-changed", loadData),
+      onAppEvent("app:regular-visits-changed", loadData),
     ];
     return () => cleanups.forEach(fn => fn());
   }, []);
 
   useEffect(() => { loadData(); }, []);
 
+  // Listen for payments changes too
+  useEffect(() => {
+    const cleanups = [onAppEvent("app:payments-changed", loadData)];
+    return () => cleanups.forEach(fn => fn());
+  }, [loadData]);
+
   const statCards = [
     { label: "Total Patients", value: stats.totalPatients, icon: IconUsers, color: "#1a7a4a" },
     { label: "Today's Sessions", value: stats.todaySessions, icon: IconClock, color: "#2563eb" },
     { label: "Monthly Revenue", value: `₹${(stats.monthRevenue || 0).toLocaleString()}`, icon: IconReceipt, color: "#16a34a" },
-    { label: "Regular Patients", value: stats.activePlans, icon: IconTrendingUp, color: "#e8a020" },
+    { label: "Today's Revenue", value: `₹${(stats.todayRevenue || 0).toLocaleString()}`, icon: IconReceipt, color: "#16a34a" },
   ];
 
   return (

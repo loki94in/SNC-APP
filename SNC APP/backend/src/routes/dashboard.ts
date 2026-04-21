@@ -4,6 +4,7 @@ const dashboard = new Hono();
 
 dashboard.get("/", async (c) => {
   const today = new Date().toISOString().slice(0,10);
+  const todayRevenue = db.prepare("SELECT COALESCE(SUM(amount),0) as t FROM payments WHERE DATE(created_at)=?").get(today) as any;
   const totalPatients = db.prepare("SELECT COUNT(*) as c FROM patients WHERE active=1").get() as any;
   const todaySessions = db.prepare("SELECT COUNT(*) as c FROM sessions WHERE date=?").get(today) as any;
   const monthRevenue = db.prepare("SELECT COALESCE(SUM(amount),0) as total FROM payments WHERE created_at >= ?").get(today.slice(0,7) + "-01") as any;
@@ -13,6 +14,7 @@ dashboard.get("/", async (c) => {
     stats: {
       totalPatients: totalPatients.c,
       todaySessions: todaySessions.c,
+      todayRevenue: todayRevenue.t,
       monthRevenue: monthRevenue.total,
       activePlans: activePlans.c,
     },
@@ -57,6 +59,18 @@ dashboard.get("/audit-log", async (c) => {
   if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
   const logs = db.prepare("SELECT * FROM audit_log ORDER BY created_at DESC LIMIT 100").all();
   return c.json({ logs });
+});
+
+dashboard.get("/daily-revenue", async (c) => {
+  const today = new Date().toISOString().slice(0,10);
+  const todayRevenue = db.prepare("SELECT COALESCE(SUM(amount),0) as t FROM payments WHERE DATE(created_at)=?").get(today) as any;
+  const dailyRevenue = db.prepare("SELECT COALESCE(SUM(amount),0) as total FROM payments WHERE created_at >= ? AND created_at < ?").get(today, today + " 23:59:59") as any;
+  return c.json({ todayRevenue: todayRevenue.t, dailyRevenue: dailyRevenue.total });
+});
+
+dashboard.get("/recent-patients", async (c) => {
+  const recentPatients = db.prepare("SELECT * FROM patients WHERE active=1 ORDER BY created_at DESC LIMIT 5").all();
+  return c.json({ recentPatients });
 });
 
 export default dashboard;

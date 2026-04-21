@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { usePermission } from "@/App";
-import { onAppEvent } from "@/lib/appEvents";
+import { onAppEvent, emitAppEvent } from "@/lib/appEvents";
 import NoAccess from "@/components/NoAccess";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -13,8 +13,12 @@ interface Session {
   patient_name?: string;
   date: string;
   clinician_name: string;
+  visit_type: string;
+  session_no: number;
   post_response: string;
   payment: number;
+  pre_complaint?: string;
+  post_notes?: string;
 }
 
 function DataError({ onRetry }: { onRetry: () => void }) {
@@ -48,7 +52,6 @@ export default function Calendar() {
       .finally(() => setLoading(false));
   };
 
-  // Reload whenever any session mutation occurs elsewhere
   useEffect(() => {
     const cleanups = [
       onAppEvent("app:sessions-changed", loadSessions),
@@ -57,7 +60,6 @@ export default function Calendar() {
     return () => cleanups.forEach(fn => fn());
   }, []);
 
-  // Initial load
   useEffect(() => { loadSessions(); }, []);
 
   const year = currentDate.getFullYear();
@@ -83,6 +85,12 @@ export default function Calendar() {
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
 
+  const getResponseColor = (response: string) => {
+    if (response === "VERY_GOOD" || response === "GOOD") return "#16a34a";
+    if (response === "POOR") return "#dc2626";
+    return "#6b7280";
+  };
+
   if (!canView) return <NoAccess message="Access Restricted" detail="You do not have permission to view calendar." />;
 
   const selectedDaySessions = selectedDate ? getSessionsForDate(selectedDate) : [];
@@ -93,7 +101,7 @@ export default function Calendar() {
       <div>
         <h1 className="font-['Syne'] text-xl font-extrabold text-[#0d4a2c]">Calendar</h1>
         <p className="text-sm text-[#6b8878] mt-1">
-          {loading ? "Loading..." : loadError ? "Load failed" : `${monthSessionCount} session${monthSessionCount !== 1 ? "s" : ""} loaded`}
+          {loading ? "Loading..." : loadError ? "Load failed" : `${monthSessionCount} session${monthSessionCount !== 1 ? "s" : ""} this month`}
         </p>
       </div>
 
@@ -127,11 +135,17 @@ export default function Calendar() {
                   <div className={`text-sm font-bold ${isToday ? "text-[#1a7a4a]" : "text-[#1a2e24]"}`}>{day}</div>
                   {daySessions.length > 0 && (
                     <div className="mt-1 flex flex-col gap-0.5 overflow-hidden">
-                      {daySessions.slice(0, 2).map(s => (
-                        <div key={s.id} className="text-[10px] bg-[#1a7a4a] text-white rounded px-1 truncate">
-                          {s.clinician_name || "Session"}
-                        </div>
-                      ))}
+                      {daySessions.slice(0, 2).map(s => {
+                        const color = getResponseColor(s.post_response || "");
+                        return (
+                          <div key={s.id} className="text-[10px] rounded px-1 truncate font-medium"
+                            style={{ backgroundColor: color + "20", color }}
+                            title={s.patient_name || s.patient_id}
+                          >
+                            {s.patient_name ? s.patient_name.slice(0, 8) : s.clinician_name || "S"}
+                          </div>
+                        );
+                      })}
                       {daySessions.length > 2 && (
                         <div className="text-[10px] text-[#6b8878]">+{daySessions.length - 2} more</div>
                       )}
@@ -145,8 +159,10 @@ export default function Calendar() {
       )}
 
       {selectedDate && (
-        <div className="bg-white rounded-xl border border-[#cfe0c8] p-5">
-          <h3 className="font-semibold text-[#0d4a2c] mb-3">Sessions on {selectedDate}</h3>
+        <div className="bg-white rounded-xl border border-[#cfe0d8] p-5">
+          <h3 className="font-semibold text-[#0d4a2c] mb-3">
+            Sessions on {selectedDate}
+          </h3>
           {selectedDaySessions.length === 0 ? (
             <p className="text-sm text-[#6b8878]">No sessions scheduled for this date.</p>
           ) : (
@@ -154,18 +170,22 @@ export default function Calendar() {
               {selectedDaySessions.map(s => (
                 <div key={s.id} className="flex items-center gap-3 p-3 rounded-lg border border-[#cfe0d8]">
                   <div className="w-10 h-10 bg-[#d4ede1] rounded-full flex items-center justify-center font-bold text-[#1a7a4a]">
-                    {s.clinician_name?.charAt(0) || "S"}
+                    {s.patient_name ? s.patient_name.charAt(0).toUpperCase() : "S"}
                   </div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm">{s.clinician_name || "Session"}</div>
-                    <div className="text-xs text-[#6b8878]">Patient: {s.patient_name || s.patient_id}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-sm">{s.patient_name || s.patient_id}</div>
+                    <div className="text-xs text-[#6b8878]">
+                      {s.clinician_name ? `Dr. ${s.clinician_name}` : "—"} · {s.visit_type || "In-Clinic"} · #{s.session_no}
+                    </div>
+                    {s.pre_complaint && (
+                      <div className="text-xs text-[#6b8878] mt-0.5 truncate">Pre: {s.pre_complaint}</div>
+                    )}
                   </div>
-                  <div className="text-right">
-                    <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                      s.post_response === "VERY_GOOD" || s.post_response === "GOOD" ? "bg-[#dcfce7] text-[#16a34a]"
-                      : s.post_response === "POOR" ? "bg-[#fee2e2] text-[#dc2626]"
-                      : "bg-[#f3f4f6] text-[#6b7280]"
-                    }`}>{s.post_response || "—"}</span>
+                  <div className="text-right shrink-0">
+                    <span className="text-[11px] font-bold"
+                      style={{ color: getResponseColor(s.post_response || "") }}>
+                      {s.post_response || "—"}
+                    </span>
                     {s.payment > 0 && (
                       <div className="text-xs font-bold text-[#1a7a4a] mt-1">₹{s.payment}</div>
                     )}

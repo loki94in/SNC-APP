@@ -17,6 +17,11 @@ interface Plan {
   patient_name?: string;
 }
 
+const MONTHS_ARR = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
 function DataError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="col-span-3 bg-white rounded-xl border border-[#fee2e2] p-8 text-center">
@@ -30,7 +35,7 @@ function DataError({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-export default function RegularVisits() {
+export default function Regular() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [patients, setPatients] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);

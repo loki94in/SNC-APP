@@ -11,10 +11,11 @@ import Calendar from '@/pages/Calendar';
 import AdminTelegram from '@/pages/admin/Telegram';
 import AdminSecurity from '@/pages/admin/Security';
 import AdminRoles from '@/pages/admin/Roles';
+import AdminUsers from '@/pages/admin/Users';
 import Login from '@/pages/Login';
 import { useEffect, useState, createContext, useContext, useCallback } from 'react';
 import { api } from '@/lib/api';
-import { emitAppEvent, clearAllAppListeners } from "@/lib/appEvents";
+import { emitAppEvent, clearAllAppListeners, onAppEvent } from "@/lib/appEvents";
 
 // ─── Auth Context ────────────────────────────────────────────────────────────
 
@@ -92,6 +93,13 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
       });
   }, []);
 
+  useEffect(() => {
+    const cleanups = [
+      onAppEvent('app:permissions-changed', reload),
+    ];
+    return () => cleanups.forEach(fn => fn());
+  }, [reload]);
+
   useEffect(() => { reload(); }, [reload]);
 
   if (state.loading) {
@@ -140,6 +148,7 @@ export default function App() {
             <Route path='admin/telegram' element={<AdminTelegram />} />
             <Route path='admin/security' element={<AdminSecurity />} />
             <Route path='admin/roles' element={<AdminRoles />} />
+            <Route path='admin/users' element={<AdminUsers />} />
           </Route>
           <Route path='*' element={<Navigate to='/' />} />
         </Routes>

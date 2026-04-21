@@ -11,9 +11,22 @@ interface Session {
   session_no: number;
   date: string;
   visit_type: string;
+  clinician_id: string;
   clinician_name: string;
+  duration: number;
   payment: number;
+  payment_mode: string;
+  pre_complaint: string;
+  pre_pain: number;
+  pre_mobility: string;
+  pre_vitals: string;
+  pre_notes: string;
+  post_techniques: string;
+  post_pain: number;
   post_response: string;
+  post_notes: string;
+  post_recommendation: string;
+  followup: string;
 }
 
 function DataError({ onRetry }: { onRetry: () => void }) {
@@ -160,7 +173,12 @@ export default function Sessions() {
         <SessionEditModal
           session={editingSession}
           onClose={() => setEditingSession(null)}
-          onSaved={() => { setEditingSession(null); loadSessions(); onAppEvent("app:sessions-changed"); }}
+          onSaved={() => {
+            setEditingSession(null);
+            loadSessions();
+            emitAppEvent("app:sessions-changed");
+            emitAppEvent("app:payments-changed");
+          }}
         />
       )}
 
@@ -213,11 +231,26 @@ function SessionEditModal({ session, onClose, onSaved }: SessionEditModalProps) 
     date: session.date,
     visitType: session.visit_type || "IN-CLINIC",
     clinicianName: session.clinician_name || "",
+    duration: String(session.duration || ""),
     payment: String(session.payment || ""),
-    paymentMode: "CASH",
+    paymentMode: session.payment_mode || "CASH",
+    preComplaint: session.pre_complaint || "",
+    prePain: session.pre_pain ?? 0,
+    preMobility: session.pre_mobility || "Normal",
+    preVitals: session.pre_vitals || "",
+    preNotes: session.pre_notes || "",
+    postTechniques: session.post_techniques || "",
+    postPain: session.post_pain ?? 0,
+    postResponse: session.post_response || "GOOD",
+    postNotes: session.post_notes || "",
+    postRecommendation: session.post_recommendation || "",
+    followup: session.followup || "",
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const set = (field: string) => (e: any) =>
+    setForm((prev: any) => ({ ...prev, [field]: e.target.value }));
 
   const handleSave = async () => {
     if (!form.date) { setError("Date is required"); return; }
@@ -230,8 +263,24 @@ function SessionEditModal({ session, onClose, onSaved }: SessionEditModalProps) 
           date: form.date,
           visitType: form.visitType,
           clinicianName: form.clinicianName,
+          duration: form.duration ? parseInt(form.duration) : 0,
           payment: form.payment ? parseFloat(form.payment) : 0,
           paymentMode: form.paymentMode,
+          pre: {
+            complaint: form.preComplaint,
+            pain: form.prePain,
+            mobility: form.preMobility,
+            vitals: form.preVitals,
+            notes: form.preNotes,
+          },
+          post: {
+            techniques: form.postTechniques,
+            pain: form.postPain,
+            response: form.postResponse,
+            notes: form.postNotes,
+            recommendation: form.postRecommendation,
+          },
+          followup: form.followup,
         },
       });
       onSaved();
@@ -244,54 +293,137 @@ function SessionEditModal({ session, onClose, onSaved }: SessionEditModalProps) 
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl">
         <div className="px-6 py-4 border-b border-[#cfe0d8] flex items-center justify-between">
           <h2 className="font-['Syne'] text-base font-extrabold text-[#0d4a2c]">Edit Session #{session.session_no}</h2>
           <button onClick={onClose} className="text-xl text-[#6b8878] hover:text-[#1a2e24]">✕</button>
         </div>
-        <div className="p-6 space-y-4">
+        <div className="p-6 space-y-5">
           {error && <div className="text-sm text-[#dc2626] bg-[#fee2e2] px-4 py-2 rounded-lg">{error}</div>}
-          <div className="grid grid-cols-2 gap-4">
+
+          {/* Row 1: Date + Visit Type + Duration */}
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-semibold mb-1.5">Date *</label>
               <input type="date" value={form.date}
-                onChange={e => setForm({ ...form, date: e.target.value })}
+                onChange={set("date")}
                 className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]" />
             </div>
             <div>
               <label className="block text-sm font-semibold mb-1.5">Visit Type</label>
-              <select value={form.visitType}
-                onChange={e => setForm({ ...form, visitType: e.target.value })}
+              <select value={form.visitType} onChange={set("visitType")}
                 className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]">
                 <option value="IN-CLINIC">In-Clinic</option>
                 <option value="HOME">Home Visit</option>
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-semibold mb-1.5">Duration (min)</label>
+              <input type="number" value={form.duration}
+                onChange={set("duration")}
+                placeholder="e.g. 45"
+                className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]" />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-semibold mb-1.5">Clinician Name</label>
-            <input value={form.clinicianName}
-              onChange={e => setForm({ ...form, clinicianName: e.target.value })}
-              className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]"
-              placeholder="e.g. Dr. Siyaram" />
-          </div>
+
+          {/* Payment */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold mb-1.5">Payment (₹)</label>
               <input type="number" value={form.payment}
-                onChange={e => setForm({ ...form, payment: e.target.value })}
+                onChange={set("payment")}
                 className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]"
                 placeholder="0" />
             </div>
             <div>
               <label className="block text-sm font-semibold mb-1.5">Payment Mode</label>
-              <select value={form.paymentMode}
-                onChange={e => setForm({ ...form, paymentMode: e.target.value })}
+              <select value={form.paymentMode} onChange={set("paymentMode")}
                 className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]">
                 <option value="CASH">Cash</option>
                 <option value="UPI">UPI</option>
                 <option value="PENDING">Pending</option>
               </select>
+            </div>
+          </div>
+
+          {/* Pre-Treatment */}
+          <div className="border-t-2 border-[#fef3c7] pt-4">
+            <div className="text-xs font-bold text-[#d97706] uppercase tracking-wide mb-3">📋 Pre-Treatment</div>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Chief Complaint</label>
+                <textarea value={form.preComplaint} onChange={set("preComplaint")} rows={2}
+                  placeholder="Patient's main issue before session..."
+                  className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a] resize-none" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Pain Level: {form.prePain}/10</label>
+                <input type="range" min="0" max="10" value={form.prePain}
+                  onChange={e => setForm((_: any) => ({ ..._, prePain: parseInt(e.target.value) }))}
+                  className="w-full accent-[#d97706]" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Mobility</label>
+                  <select value={form.preMobility} onChange={set("preMobility")}
+                    className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]">
+                    <option>Normal</option><option>Restricted</option><option>Bedridden</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">BP / Pulse</label>
+                  <input value={form.preVitals} onChange={set("preVitals")} placeholder="e.g. 120/80"
+                    className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Post-Treatment */}
+          <div className="border-t-2 border-[#dcfce7] pt-4">
+            <div className="text-xs font-bold text-[#16a34a] uppercase tracking-wide mb-3">✅ Post-Treatment</div>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Techniques Applied</label>
+                <input value={form.postTechniques} onChange={set("postTechniques")}
+                  placeholder="e.g. Spinal manipulation, Acupressure..."
+                  className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Post Pain: {form.postPain}/10</label>
+                <input type="range" min="0" max="10" value={form.postPain}
+                  onChange={e => setForm(prev => ({ ...prev, postPain: parseInt(e.target.value) }))}
+                  className="w-full accent-[#16a34a]" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Response</label>
+                  <select value={form.postResponse} onChange={set("postResponse")}
+                    className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]">
+                    <option value="VERY_GOOD">Very Good</option>
+                    <option value="GOOD">Good</option>
+                    <option value="NEUTRAL">Neutral</option>
+                    <option value="POOR">Poor</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Follow-up Date</label>
+                  <input type="date" value={form.followup} onChange={set("followup")}
+                    className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Post-Notes</label>
+                <textarea value={form.postNotes} onChange={set("postNotes")} rows={2}
+                  placeholder="Outcome observations..."
+                  className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a] resize-none" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1.5">Recommendation</label>
+                <textarea value={form.postRecommendation} onChange={set("postRecommendation")} rows={2}
+                  placeholder="What to do next time..."
+                  className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a] resize-none" />
+              </div>
             </div>
           </div>
         </div>

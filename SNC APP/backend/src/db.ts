@@ -50,7 +50,8 @@ db.exec(`
     id TEXT PRIMARY KEY, plan_id TEXT NOT NULL, patient_id TEXT NOT NULL, visit_date TEXT NOT NULL,
     attended INTEGER NOT NULL DEFAULT 0, absence_reason TEXT, treatment TEXT,
     clinician_id TEXT, duration INTEGER, notes TEXT, session_id TEXT,
-    payment REAL, payment_mode TEXT, condition_status TEXT, created_at TEXT NOT NULL
+    payment REAL, payment_mode TEXT, condition_status TEXT DEFAULT 'NOT_ASSESSED', updated_at TEXT,
+    created_at TEXT NOT NULL
   );
   CREATE TABLE IF NOT EXISTS permissions (
     id TEXT PRIMARY KEY, role TEXT NOT NULL, screen TEXT NOT NULL,
@@ -75,6 +76,25 @@ db.exec(`
     id TEXT PRIMARY KEY, status TEXT NOT NULL, file_path TEXT, size_bytes INTEGER,
     error_message TEXT, created_at TEXT NOT NULL
   );
+`);
+
+// ─── Performance Indexes ────────────────────────────────────────────────────
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_sessions_patient ON sessions(patient_id);
+  CREATE INDEX IF NOT EXISTS idx_sessions_date ON sessions(date);
+  CREATE INDEX IF NOT EXISTS idx_patients_active ON patients(active);
+  CREATE INDEX IF NOT EXISTS idx_patients_mobile ON patients(mobile);
+  CREATE INDEX IF NOT EXISTS idx_payments_patient ON payments(patient_id);
+  CREATE INDEX IF NOT EXISTS idx_payments_created ON payments(created_at);
+  CREATE INDEX IF NOT EXISTS idx_regular_plans_patient ON regular_plans(patient_id);
+  CREATE INDEX IF NOT EXISTS idx_regular_plans_active ON regular_plans(active);
+  CREATE INDEX IF NOT EXISTS idx_regular_visits_plan ON regular_visits(plan_id);
+  CREATE INDEX IF NOT EXISTS idx_regular_visits_date ON regular_visits(visit_date);
+  CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_log(user_id);
+  CREATE INDEX IF NOT EXISTS idx_audit_event ON audit_log(event);
+  CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log(created_at);
+  CREATE INDEX IF NOT EXISTS idx_users_login ON users(login_id);
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_perms_role_screen ON permissions(role, screen);
 `);
 
 // Seed default permissions

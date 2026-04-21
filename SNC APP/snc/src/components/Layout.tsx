@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { IconDashboard, IconUsers, IconCalendar, IconReceipt, IconReport, IconSettings, IconShield, IconMessage, IconListCheck } from "@tabler/icons-react";
+import { IconDashboard, IconUsers, IconCalendar, IconReceipt, IconReport, IconSettings, IconShield, IconMessage, IconListCheck, IconUser } from "@tabler/icons-react";
 import { clearAuth, api } from "@/lib/api";
 import { useAuth } from "@/App";
 import { usePermission } from "@/App";
@@ -52,22 +52,24 @@ function MainNav() {
 
 function AdminNav() {
   const { permissions } = useAuth();
-  if (permissions["admin-telegram"] !== "EDIT" &&
-      permissions["admin-security"] !== "EDIT" &&
-      permissions["admin-roles"] !== "EDIT") {
-    return null;
-  }
-
   const adminItems = [
     { to: "/admin/telegram", icon: IconMessage, label: "Telegram" },
     { to: "/admin/security", icon: IconShield, label: "Security" },
     { to: "/admin/roles", icon: IconSettings, label: "Roles" },
+    { to: "/admin/users", icon: IconUser, label: "Users" },
   ];
+
+  const visibleItems = adminItems.filter(item => {
+    const key = item.to.replace("/admin/", "admin-");
+    return permissions[key] === "EDIT";
+  });
+
+  if (visibleItems.length === 0) return null;
 
   return (
     <>
       <div className="px-4 py-2 mt-4 text-[10px] font-bold text-white/30 tracking-widest uppercase">Admin</div>
-      {adminItems.map((item) => (
+      {visibleItems.map((item) => (
         <NavLink
           key={item.to}
           to={item.to}
@@ -99,6 +101,7 @@ const PAGE_LABELS: Record<string, string> = {
   "/admin/telegram": "Telegram",
   "/admin/security": "Security",
   "/admin/roles": "Roles",
+  "/admin/users": "Users",
 };
 
 const DEFAULT_LABEL = "Dashboard";
