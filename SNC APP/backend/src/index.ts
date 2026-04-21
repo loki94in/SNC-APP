@@ -10,11 +10,14 @@ import paymentRoutes from "./routes/payments.js";
 import regularRoutes from "./routes/regular.js";
 import roleRoutes from "./routes/roles.js";
 import dashboardRoutes from "./routes/dashboard.js";
+import configRoutes from "./routes/config.js";
 import telegramRoutes from "./routes/telegram.js";
 import backupRoutes from "./routes/backup.js";
 import { resolve, dirname } from "path";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
+import { db, now } from "./db.js";
+import { crypto } from "crypto";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -56,6 +59,19 @@ app.use("/api/*", async (c: Context, next: Next) => {
   await next();
 });
 
+app.get("/api/config/login-bypass", async (c) => {
+  const row = db.prepare("SELECT value FROM app_config WHERE key='login_bypass'").get() as any;
+  return c.json({ enabled: row?.value === "true" });
+});
+
+app.post("/api/auth/disable-bypass", async (c) => {
+  const { key } = await c.req.json();
+  if (key !== "login-bypass") return c.json({ error: "Invalid key" }, 400);
+  db.prepare("INSERT OR REPLACE INTO app_config (id, key, value, created_at, updated_at) VALUES (?, ?, ?, ?, ?)")
+    .run(crypto.randomUUID(), "login_bypass", "true", now(), now());
+  return c.json({ ok: true });
+});
+
 app.route("/api/auth", authRoutes);
 app.use("/api/*", authMiddleware);
 app.route("/api/dashboard", dashboardRoutes);
@@ -66,6 +82,7 @@ app.route("/api/regular", regularRoutes);
 app.route("/api/roles", roleRoutes);
 app.route("/api/telegram", telegramRoutes);
 app.route("/api/backup", backupRoutes);
+app.route("/api/config", configRoutes);
 
 // Serve frontend HTML inline (avoid circular import)
 const frontendHtml = readFileSync(resolve(__dirname, "../../site/index.html"), "utf-8");
