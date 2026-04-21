@@ -1,19 +1,17 @@
-import Database from "better-sqlite3";
-import pkg from "bcryptjs";
+import { Database } from "bun:sqlite";
+import { hashSync } from "bcryptjs";
 import { v4 as uid } from "uuid";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
-import { mkdirSync } from "fs";
 
 // Resolve DB path relative to this file's directory
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = resolve(__dirname, "../../data");
-mkdirSync(DATA_DIR, { recursive: true });
 const DB_PATH = resolve(DATA_DIR, "snc.db");
 
 export const db = new Database(DB_PATH);
-db.pragma("journal_mode = WAL");
-db.pragma("foreign_keys = ON");
+db.exec("PRAGMA journal_mode = WAL");
+db.exec("PRAGMA foreign_keys = ON");
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -117,7 +115,7 @@ const adminExists = db.prepare("SELECT id FROM users WHERE login_id = ?").get("a
 if (!adminExists) {
   db.prepare(`INSERT INTO users (id, login_id, password_hash, name, role, active, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-  ).run(uid(), "admin", pkg.hashSync("admin123"), "System Admin", "ADMIN", 1,
+  ).run(uid(), "admin", hashSync("admin123"), "System Admin", "ADMIN", 1,
     new Date().toISOString(), new Date().toISOString());
 }
 

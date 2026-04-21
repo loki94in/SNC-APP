@@ -60,6 +60,27 @@ export function usePermission(screen: string): { level: string; canView: boolean
   };
 }
 
+// ─── Auto-login for development ─────────────────────────────────────────────
+
+const AUTO_LOGIN_ENABLED = true; // Set to false to disable
+const AUTO_LOGIN_CREDS = { loginId: 'admin', password: 'admin123' };
+
+async function attemptAutoLogin(): Promise<boolean> {
+  if (localStorage.getItem('snc_token')) return false;
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(AUTO_LOGIN_CREDS),
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    localStorage.setItem('snc_token', data.token);
+    localStorage.setItem('snc_user', JSON.stringify(data.user));
+    return true;
+  } catch { return false; }
+}
+
 // ─── Auth Guard (validates token with backend, fetches user + permissions) ──
 
 function AuthGuard({ children }: { children: React.ReactNode }) {
@@ -99,6 +120,15 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
     ];
     return () => cleanups.forEach(fn => fn());
   }, [reload]);
+
+  useEffect(() => {
+    const doReload = () => { /* nop — reload captured in closure */ };
+    if (AUTO_LOGIN_ENABLED) {
+      attemptAutoLogin().then(ok => ok && reload()).catch(() => reload());
+    } else {
+      reload();
+    }
+  }, []);
 
   useEffect(() => { reload(); }, [reload]);
 
