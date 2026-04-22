@@ -9,6 +9,31 @@ const { compareSync, hashSync } = pkg;
 const JWT_SECRET = process.env.JWT_SECRET || "snc-secret-key-change-in-production";
 const auth = new Hono();
 
+// Helper: get authenticated user from context OR decode JWT directly as fallback
+function getAuthUser(c: any): any {
+  const ctxUser = c.get("user");
+  if (ctxUser && ctxUser.id) return ctxUser;
+  const header = c.req.header("Authorization");
+  if (header?.startsWith("Bearer ")) {
+    try {
+      const payload = jwt.verify(header.slice(7), JWT_SECRET) as any;
+      // JWT only has id/login_id/name/role — fetch full user from DB
+      return db.prepare("SELECT * FROM users WHERE id = ? AND active = 1").get(payload.id) as any;
+    } catch { /* let handlers deal with missing user */ }
+  }
+  return null;
+}
+
+// Helper: get user from DB for operations that need password_hash (not in JWT)
+function getFullUser(c: any): any {
+  const header = c.req.header("Authorization");
+  if (!header?.startsWith("Bearer ")) return null;
+  try {
+    const payload = jwt.verify(header.slice(7), JWT_SECRET) as any;
+    return db.prepare("SELECT * FROM users WHERE id = ? AND active = 1").get(payload.id) as any;
+  } catch { return null; }
+}
+
 auth.post("/login", async (c) => {
   const { loginId, password } = await c.req.json();
   if (!loginId || !password) return c.json({ error: "Missing credentials" }, 400);
@@ -35,12 +60,13 @@ auth.post("/logout", async (c) => {
 });
 
 auth.get("/me", async (c) => {
-  const user = c.get("user") as any;
+  const user = getAuthUser(c);
   return c.json({ user });
 });
 
 auth.get("/permissions", async (c) => {
-  const user = c.get("user") as any;
+  const user = getAuthUser(c);
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
   const perms = db.prepare("SELECT screen, level FROM permissions WHERE role = ?").all(user.role) as any[];
   const map: Record<string, string> = {};
   for (const p of perms) map[p.screen] = p.level;
@@ -48,7 +74,8 @@ auth.get("/permissions", async (c) => {
 });
 
 auth.post("/change-password", async (c) => {
-  const user = c.get("user") as any;
+  const user = getFullUser(c);
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
   const { currentPassword, newPassword } = await c.req.json();
   if (!compareSync(currentPassword, user.password_hash)) return c.json({ error: "Current password incorrect" }, 400);
   if (newPassword.length < 8) return c.json({ error: "Min 8 characters" }, 400);
@@ -59,7 +86,8 @@ auth.post("/change-password", async (c) => {
 });
 
 auth.put("/login-id", async (c) => {
-  const user = c.get("user") as any;
+  const user = getFullUser(c);
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
   const { newLoginId, password } = await c.req.json();
   if (!newLoginId || !password) return c.json({ error: "New login ID and password required" }, 400);
   if (newLoginId.length < 5) return c.json({ error: "Login ID must be at least 5 characters" }, 400);
@@ -73,7 +101,8 @@ auth.put("/login-id", async (c) => {
 });
 
 auth.post("/users", async (c) => {
-  const user = c.get("user") as any;
+  const user = getAuthUser(c);
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
   if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
   const { loginId, password, name, role } = await c.req.json();
   if (!loginId || !password || !name) return c.json({ error: "Missing fields" }, 400);
@@ -86,14 +115,16 @@ auth.post("/users", async (c) => {
 });
 
 auth.get("/users", async (c) => {
-  const user = c.get("user") as any;
+  const user = getAuthUser(c);
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
   if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
   const users = db.prepare("SELECT id, login_id, name, role, active, must_change_password, created_at FROM users").all();
   return c.json({ users });
 });
 
 auth.post("/users/:id/reset-password", async (c) => {
-  const user = c.get("user") as any;
+  const user = getAuthUser(c);
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
   if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
   const { id } = c.req.param();
   const temp = "SNC" + Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -104,7 +135,8 @@ auth.post("/users/:id/reset-password", async (c) => {
 });
 
 auth.delete("/users/:id", async (c) => {
-  const user = c.get("user") as any;
+  const user = getAuthUser(c);
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
   if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
   const { id } = c.req.param();
   if (id === user.id) return c.json({ error: "Cannot delete yourself" }, 400);
@@ -114,7 +146,8 @@ auth.delete("/users/:id", async (c) => {
 });
 
 auth.post("/roles", async (c) => {
-  const user = c.get("user") as any;
+  const user = getAuthUser(c);
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
   if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
   const { role } = await c.req.json();
   if (!role) return c.json({ error: "Role name required" }, 400);
@@ -129,7 +162,8 @@ auth.post("/roles", async (c) => {
 });
 
 auth.delete("/roles/:role", async (c) => {
-  const user = c.get("user") as any;
+  const user = getAuthUser(c);
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
   if (user.role !== "ADMIN") return c.json({ error: "Forbidden" }, 403);
   const { role } = c.req.param();
   if (["ADMIN", "CLINICIAN", "RECEPTIONIST", "FINANCE"].includes(role)) return c.json({ error: "Cannot delete built-in roles" }, 400);

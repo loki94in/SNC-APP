@@ -17,7 +17,7 @@ import { resolve, dirname } from "path";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { db, now } from "./db.js";
-import { crypto } from "crypto";
+import { randomUUID } from "crypto";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -68,7 +68,7 @@ app.post("/api/auth/disable-bypass", async (c) => {
   const { key } = await c.req.json();
   if (key !== "login-bypass") return c.json({ error: "Invalid key" }, 400);
   db.prepare("INSERT OR REPLACE INTO app_config (id, key, value, created_at, updated_at) VALUES (?, ?, ?, ?, ?)")
-    .run(crypto.randomUUID(), "login_bypass", "true", now(), now());
+    .run(randomUUID(), "login_bypass", "true", now(), now());
   return c.json({ ok: true });
 });
 
