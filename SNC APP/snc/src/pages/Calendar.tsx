@@ -3,6 +3,7 @@ import { api } from "@/lib/api";
 import { usePermission } from "@/App";
 import { onAppEvent, emitAppEvent } from "@/lib/appEvents";
 import NoAccess from "@/components/NoAccess";
+import { Link } from "react-router-dom";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -173,7 +174,9 @@ export default function Calendar() {
                     {s.patient_name ? s.patient_name.charAt(0).toUpperCase() : "S"}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-sm">{s.patient_name || s.patient_id}</div>
+                    <div className="font-semibold text-sm">
+                      <Link to={`/patients/${s.patient_id}`} className="font-semibold text-sm hover:text-[#1a7a4a] cursor-pointer transition-colors">{s.patient_name || s.patient_id}</Link>
+                    </div>
                     <div className="text-xs text-[#6b8878]">
                       {s.clinician_name ? `Dr. ${s.clinician_name}` : "—"} · {s.visit_type || "In-Clinic"} · #{s.session_no}
                     </div>

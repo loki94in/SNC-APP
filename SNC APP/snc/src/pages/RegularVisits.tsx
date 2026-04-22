@@ -51,7 +51,7 @@ export default function Regular() {
     ])
       .then(([ptData, planData]) => {
         setPatients(ptData.patients || []);
-        setPlans(planData || []);
+        setPlans(Array.isArray(planData) ? planData : []);
       })
       .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
