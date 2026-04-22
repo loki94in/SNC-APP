@@ -65,8 +65,8 @@ Source: "launch.bat";     DestDir: "{app}"; Flags: ignoreversion
 Source: "routes\*";       DestDir: "{app}\routes"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "public\*";       DestDir: "{app}\public"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; ── Empty data/logs folders ─────────────────────────────
-Source: "data\*";         DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs; Only if does not exist
-Source: "logs\*";         DestDir: "{app}\logs"; Flags: ignoreversion recursesubdirs createallsubdirs; Only if does not exist
+Source: "data\*";         DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs; ifdoesntexist
+Source: "logs\*";         DestDir: "{app}\logs"; Flags: ignoreversion recursesubdirs createallsubdirs; ifdoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}";             Filename: "{app}\launch.bat"; WorkingDir: "{app}"
