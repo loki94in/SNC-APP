@@ -5,9 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "node app.js",
-    "build:frontend": "cd snc && npm install && npm run build",
-    "package": "electron-builder --win --x64"
+    "dev": "node app.js"
   },
   "keywords": ["clinic", "patient", "management"],
   "author": "Siyaram Neurotherapy Center",

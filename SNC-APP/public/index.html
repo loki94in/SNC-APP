@@ -1,0 +1,3046 @@
+&lt;!DOCTYPE html&gt;
+
+&lt;html lang=&quot;en&quot;&gt;
+
+&lt;head&gt;
+
+&lt;meta charset=&quot;UTF-8&quot;&gt;
+
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+&lt;title&gt;SNC | Siyaram Neurotherapy Center&lt;/title&gt;
+
+&lt;link rel=&quot;preconnect&quot; href=&quot;&lt;https://fonts.googleapis.com&gt;&quot;&gt;
+
+&lt;link href=&quot;&lt;https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&amp;family=Syne:wght@600;700;800&amp;display=swap&gt;&quot; rel=&quot;stylesheet&quot;&gt;
+
+&lt;style&gt;
+
+:root {
+
+  --primary:#1a7a4a; --primary-dark:#0d4a2c; --primary-light:#d4ede1;
+
+  --accent:#e8a020; --accent-light:#fef3d8;
+
+  --bg:#f0f7f4; --surface:#fff; --text:#1a2e24; --text-muted:#6b8878;
+
+  --border:#cfe0d8; --danger:#e53e3e; --warning:#d97706;
+
+  --success:#16a34a; --sidebar-w:248px;
+
+}
+
+\*{box-sizing:border-box;margin:0;padding:0}
+
+body{font-family:&#x27;DM Sans&#x27;,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+
+/\* SIDEBAR \*/
+
+#sidebar{width:var(–sidebar-w);background:var(–primary-dark);min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100;transition:transform .3s}
+
+.sb-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+
+.sb-logo h1{font-family:‘Syne’,sans-serif;font-size:15px;color:#fff;line-height:1.3;font-weight:800}
+
+.sb-logo small{font-size:11px;color:rgba(255,255,255,.45)}
+
+.sb-nav{flex:1;padding:10px 0;overflow-y:auto}
+
+.sb-section{padding:8px 18px 4px;font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;text-transform:uppercase}
+
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;cursor:pointer;color:rgba(255,255,255,.65);font-size:13.5px;font-weight:500;border-left:3px solid transparent;transition:all .15s}
+
+.nav-item:hover{background:rgba(255,255,255,.07);color:#fff}
+
+.nav-item.active{background:rgba(255,255,255,.11);color:#fff;border-left-color:var(–accent)}
+
+.nav-item .ni{width:18px;text-align:center;font-size:15px;flex-shrink:0}
+
+.sb-foot{padding:14px;border-top:1px solid rgba(255,255,255,.1)}
+
+.user-badge{display:flex;align-items:center;gap:10px;padding:8px;background:rgba(255,255,255,.08);border-radius:8px}
+
+.user-av{width:32px;height:32px;background:var(–accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:var(–primary-dark);flex-shrink:0}
+
+.user-info{flex:1;min-width:0}
+
+.user-name{font-size:13px;color:#fff;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.user-role{font-size:10px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px}
+
+.btn-logout{background:none;border:none;color:rgba(255,255,255,.45);cursor:pointer;font-size:16px;padding:4px;transition:color .15s}
+
+.btn-logout:hover{color:#fff}
+
+/\* MAIN \*/
+
+#main{margin-left:var(–sidebar-w);flex:1;display:flex;flex-direction:column}
+
+#topbar{height:58px;background:var(–surface);border-bottom:1px solid var(–border);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:50;gap:14px}
+
+.topbar-title{font-family:‘Syne’,sans-serif;font-size:18px;font-weight:800;color:var(–primary-dark);flex:1}
+
+.topbar-tag{background:var(–primary-light);color:var(–primary);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+
+#content{padding:22px;flex:1}
+
+.screen{display:none}.screen.active{display:block}
+
+/\* LOGIN \*/
+
+#login-screen{position:fixed;inset:0;z-index:999;background:linear-gradient(140deg,var(–primary-dark) 0%,#1e6640 60%,var(–primary) 100%);display:flex;align-items:center;justify-content:center}
+
+#login-screen.hidden{display:none}
+
+.login-box{background:#fff;border-radius:20px;padding:40px;width:100%;max-width:400px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+
+.login-header{text-align:center;margin-bottom:28px}
+
+.login-emblem{width:64px;height:64px;background:linear-gradient(135deg,var(–primary-dark),var(–primary));border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px;box-shadow:0 8px 20px rgba(13,74,44,.3)}
+
+.login-header h2{font-family:‘Syne’,sans-serif;font-size:22px;font-weight:800;color:var(–primary-dark)}
+
+.login-header p{font-size:12px;color:var(–text-muted);margin-top:4px}
+
+.login-clinic{font-size:11px;color:var(–accent);font-weight:700;background:var(–accent-light);padding:4px 12px;border-radius:20px;display:inline-block;margin-top:8px}
+
+/\* FORM \*/
+
+.fg{margin-bottom:16px}
+
+.fg label{display:block;font-size:13px;font-weight:600;color:var(–text);margin-bottom:5px}
+
+.fc{width:100%;padding:10px 14px;border:1.5px solid var(–border);border-radius:8px;font-size:14px;font-family:inherit;transition:border-color .15s,box-shadow .15s;background:#fff;color:var(–text)}
+
+.fc:focus{outline:none;border-color:var(–primary);box-shadow:0 0 0 3px rgba(26,122,74,.1)}
+
+.fc.error{border-color:var(–danger)}
+
+textarea.fc{resize:vertical;min-height:80px}
+
+select.fc{cursor:pointer}
+
+.ferr{font-size:12px;color:var(–danger);margin-top:4px;display:none}
+
+.fhint{font-size:12px;color:var(–text-muted);margin-top:4px}
+
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/\* BUTTONS \*/
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s;white-space:nowrap}
+
+.btn-p{background:var(–primary);color:#fff}.btn-p:hover{background:var(–primary-dark)}
+
+.btn-a{background:var(–accent);color:var(–primary-dark)}.btn-a:hover{opacity:.9}
+
+.btn-o{background:transparent;color:var(–primary);border:1.5px solid var(–primary)}.btn-o:hover{background:var(–primary-light)}
+
+.btn-d{background:var(–danger);color:#fff}.btn-d:hover{opacity:.9}
+
+.btn-g{background:transparent;color:var(–text-muted);border:1.5px solid var(–border)}.btn-g:hover{background:var(–bg);color:var(–text)}
+
+.btn-sm{padding:6px 12px;font-size:12px}
+
+.btn-full{width:100%;justify-content:center}
+
+/\* CARDS \*/
+
+.card{background:var(–surface);border-radius:12px;border:1px solid var(–border)}
+
+.card-hd{padding:15px 20px;border-bottom:1px solid var(–border);display:flex;align-items:center;gap:10px}
+
+.card-title{font-family:‘Syne’,sans-serif;font-size:14px;font-weight:800;color:var(–primary-dark);flex:1}
+
+.card-bd{padding:20px}
+
+/\* STATS \*/
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+
+.stat-card{background:var(–surface);border-radius:12px;border:1px solid var(–border);padding:18px;position:relative;overflow:hidden}
+
+.stat-card::after{content:attr(data-icon);position:absolute;right:14px;top:14px;font-size:28px;opacity:.12}
+
+.stat-label{font-size:11px;font-weight:700;color:var(–text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+
+.stat-val{font-family:‘Syne’,sans-serif;font-size:30px;font-weight:800;color:var(–primary-dark);line-height:1}
+
+.stat-sub{font-size:12px;color:var(–text-muted);margin-top:5px}
+
+/\* TABLE \*/
+
+.tw{overflow-x:auto}
+
+table{width:100%;border-collapse:collapse}
+
+th{background:var(–bg);padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(–text-muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(–border);white-space:nowrap}
+
+td{padding:11px 14px;border-bottom:1px solid var(–border);font-size:13.5px;vertical-align:middle}
+
+tr:last-child td{border-bottom:none}
+
+tbody tr:hover td{background:var(–bg);cursor:pointer}
+
+/\* BADGES \*/
+
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700}
+
+.bg-g{background:#dcfce7;color:#16a34a}.bg-b{background:#dbeafe;color:#2563eb}
+
+.bg-a{background:#fef3c7;color:#d97706}.bg-r{background:#fee2e2;color:#dc2626}
+
+.bg-grey{background:#f3f4f6;color:#6b7280}.bg-pu{background:#ede9fe;color:#7c3aed}
+
+/\* TABS \*/
+
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(–border);margin-bottom:20px}
+
+.tab{padding:9px 16px;font-size:13.5px;font-weight:600;color:var(–text-muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s}
+
+.tab.active{color:var(–primary);border-bottom-color:var(–primary)}
+
+.tab:hover{color:var(–primary)}
+
+.tab-pane{display:none}.tab-pane.active{display:block}
+
+/\* MODAL \*/
+
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
+
+.modal-ov.active{display:flex}
+
+.modal{background:var(–surface);border-radius:16px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.3)}
+
+.modal-sm{max-width:440px}.modal-md{max-width:640px}.modal-lg{max-width:860px}
+
+.modal-hd{padding:18px 22px;border-bottom:1px solid var(–border);display:flex;align-items:center}
+
+.modal-title{font-family:‘Syne’,sans-serif;font-size:16px;font-weight:800;color:var(–primary-dark);flex:1}
+
+.modal-x{background:none;border:none;font-size:22px;color:var(–text-muted);cursor:pointer;line-height:1}
+
+.modal-x:hover{color:var(–text)}
+
+.modal-bd{padding:22px}
+
+.modal-ft{padding:14px 22px;border-top:1px solid var(–border);display:flex;gap:10px;justify-content:flex-end}
+
+/\* TOAST \*/
+
+#tc{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+
+.toast{background:var(–primary-dark);color:#fff;padding:11px 16px;border-radius:10px;font-size:13.5px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:300px;animation:tIn .3s ease;display:flex;align-items:center;gap:9px}
+
+.toast.t-ok{background:#16a34a}.toast.t-err{background:var(–danger)}.toast.t-warn{background:var(–warning)}
+
+@keyframes tIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+
+/\* SECTION HEADER \*/
+
+.sh{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
+
+.sh-title{font-family:‘Syne’,sans-serif;font-size:20px;font-weight:800;color:var(–primary-dark)}
+
+.sh-sub{font-size:12px;color:var(–text-muted);margin-top:3px}
+
+.sh-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+
+/\* TOGGLES &amp; CHECKBOXES \*/
+
+.cg{display:flex;flex-wrap:wrap;gap:7px}
+
+.ci{display:flex;align-items:center;gap:6px;padding:5px 12px;border:1.5px solid var(–border);border-radius:20px;cursor:pointer;font-size:13px;transition:all .15s;user-select:none}
+
+.ci input{display:none}
+
+.ci.checked{background:var(–primary-light);border-color:var(–primary);color:var(–primary);font-weight:600}
+
+.toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+
+.toggle input{opacity:0;width:0;height:0}
+
+.ts{position:absolute;inset:0;background:var(–border);border-radius:24px;cursor:pointer;transition:.3s}
+
+.ts:before{content:’’;position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s}
+
+.toggle input:checked+.ts{background:var(–primary)}
+
+.toggle input:checked+.ts:before{transform:translateX(20px)}
+
+.tw-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+
+.tw-label{font-size:13.5px;font-weight:500;flex:1}
+
+/\* SLIDER \*/
+
+.slider-row{display:flex;align-items:center;gap:12px}
+
+.slider-row input\[type=range\]{flex:1;accent-color:var(–primary)}
+
+.slider-v{min-width:28px;text-align:center;font-weight:800;font-size:16px;color:var(–primary)}
+
+/\* CALENDAR \*/
+
+.cal-wrap{background:var(–surface);border:1.5px solid var(–border);border-radius:12px;padding:16px}
+
+.cal-nav{display:flex;align-items:center;margin-bottom:12px}
+
+.cal-nav h3{flex:1;text-align:center;font-family:‘Syne’,sans-serif;font-size:15px;font-weight:800;color:var(–primary-dark)}
+
+.cal-nav button{background:none;border:1.5px solid var(–border);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:14px;transition:all .15s}
+
+.cal-nav button:hover{border-color:var(–primary);color:var(–primary)}
+
+.cal-days-header{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px}
+
+.cal-dn{text-align:center;font-size:10px;font-weight:700;color:var(–text-muted);padding:4px 0}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:7px;font-size:12.5px;cursor:pointer;border:1.5px solid transparent;transition:all .15s;font-weight:500;position:relative}
+
+.cal-cell.off{color:rgba(0,0,0,.2);cursor:default}
+
+.cal-cell.today{border-color:var(–primary);color:var(–primary);font-weight:700}
+
+.cal-cell.c-ok{background:#dcfce7;color:#16a34a}
+
+.cal-cell.c-ab{background:#fee2e2;color:#dc2626}
+
+.cal-cell.c-pl{background:var(–primary-light);color:var(–primary)}
+
+.cal-cell.c-sel{background:var(–primary);color:#fff!important;border-color:var(–primary)}
+
+.cal-cell:hover:not(.off){border-color:var(–primary)}
+
+.cal-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+
+.cal-leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(–text-muted)}
+
+.cal-dot{width:10px;height:10px;border-radius:50%}
+
+/\* PATIENT HERO \*/
+
+.pt-hero{background:linear-gradient(135deg,var(–primary-dark),var(–primary));border-radius:12px;padding:22px;color:#fff;margin-bottom:18px;display:flex;align-items:center;gap:18px}
+
+.pt-av{width:68px;height:68px;background:rgba(255,255,255,.18);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:‘Syne’,sans-serif;font-size:26px;font-weight:800;flex-shrink:0}
+
+.pt-name{font-family:‘Syne’,sans-serif;font-size:20px;font-weight:800;margin-bottom:4px}
+
+.pt-meta{font-size:12.5px;opacity:.8}
+
+.pt-tags{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+
+.pt-tag{background:rgba(255,255,255,.15);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+
+.pt-hero-right{margin-left:auto;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+
+/\* SESSION CARDS \*/
+
+.ses-card{border:1.5px solid var(–border);border-radius:10px;overflow:hidden;margin-bottom:10px}
+
+.ses-hd{padding:12px 16px;background:var(–bg);display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .15s}
+
+.ses-hd:hover{background:#e8f4ee}
+
+.ses-bd{padding:16px;display:none}
+
+.ses-card.open .ses-bd{display:block}
+
+.ses-no{font-family:‘Syne’,sans-serif;font-size:13px;font-weight:800;color:var(–primary)}
+
+.pp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+
+.pre-box{border:1.5px solid #fbbf24;border-radius:8px;padding:14px;background:#fffbeb}
+
+.post-box{border:1.5px solid #34d399;border-radius:8px;padding:14px;background:#f0fdf4}
+
+.pp-head{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+
+.pre-box .pp-head{color:#d97706}.post-box .pp-head{color:#16a34a}
+
+.nr{margin-bottom:7px}
+
+.nl{font-size:10px;font-weight:700;color:var(–text-muted);text-transform:uppercase;letter-spacing:.4px}
+
+.nv{font-size:13px;color:var(–text)}
+
+/\* PERMISSION MATRIX \*/
+
+.pm-wrap{overflow-x:auto}
+
+.pm-table{border-collapse:collapse;width:100%}
+
+.pm-table th,.pm-table td{padding:9px 14px;font-size:12.5px;border-bottom:1px solid var(–border);white-space:nowrap}
+
+.pm-table th{background:var(–bg);font-weight:700;color:var(–text-muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+
+.pm-sel{padding:4px 8px;border:1.5px solid var(–border);border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:700}
+
+.pm-EDIT{border-color:var(–success)!important;color:var(–success);background:#dcfce7}
+
+.pm-VIEW{border-color:var(–warning)!important;color:var(–warning);background:#fef3c7}
+
+.pm-HIDDEN{border-color:var(–border);color:var(–text-muted);background:var(–bg)}
+
+/\* TELEGRAM \*/
+
+.tg-token-box{background:var(–bg);border:1.5px solid var(–border);border-radius:8px;padding:12px 16px;font-family:monospace;font-size:12.5px;color:var(–text-muted);word-break:break-all;min-height:44px}
+
+.cmd-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(–border)}
+
+.cmd-row:last-child{border-bottom:none}
+
+.cmd-trigger{font-family:monospace;background:var(–primary-light);padding:4px 10px;border-radius:6px;font-size:12.5px;color:var(–primary);font-weight:700}
+
+.cmd-desc{flex:1;font-size:13px;color:var(–text-muted)}
+
+/\* MISC \*/
+
+.divider{height:1px;background:var(–border);margin:20px 0}
+
+.sec-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(–text-muted);margin-bottom:10px}
+
+.empty-state{text-align:center;padding:50px 20px}
+
+.es-icon{font-size:48px;opacity:.3;margin-bottom:12px}
+
+.es-title{font-size:15px;font-weight:700;color:var(–text-muted);margin-bottom:6px}
+
+.es-sub{font-size:13px;color:var(–text-muted)}
+
+.info-box{background:var(–primary-light);border:1.5px solid var(–primary);border-radius:8px;padding:12px 16px;font-size:13px;color:var(–primary-dark);display:flex;align-items:flex-start;gap:8px}
+
+.warn-box{background:var(–accent-light);border:1.5px solid var(–accent);border-radius:8px;padding:12px 16px;font-size:13px;color:#92400e}
+
+/\* RESPONSIVE \*/
+
+@media(max-width:768px){
+
+#sidebar{transform:translateX(-100%)}
+
+#sidebar.open{transform:none}
+
+#main{margin-left:0}
+
+.stats-grid{grid-template-columns:1fr 1fr}
+
+.fr,.pp-grid{grid-template-columns:1fr}
+
+.fr3{grid-template-columns:1fr 1fr}
+
+}
+
+::-webkit-scrollbar{width:6px;height:6px}
+
+::-webkit-scrollbar-thumb{background:var(–border);border-radius:3px}
+
+&lt;/style&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+&lt;!-- LOGIN SCREEN --&gt;
+
+&lt;div id=&quot;login-screen&quot;&gt;
+
+  &lt;div class=&quot;login-box&quot;&gt;
+
+    &lt;div class=&quot;login-header&quot;&gt;
+
+      &lt;div class=&quot;login-emblem&quot;&gt;🧠&lt;/div&gt;
+
+      &lt;h2&gt;SNC Patient Register&lt;/h2&gt;
+
+      &lt;p&gt;Secure clinical management system&lt;/p&gt;
+
+      &lt;div class=&quot;login-clinic&quot;&gt;Siyaram Neurotherapy Center, Agra&lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;fg&quot;&gt;
+
+      &lt;label&gt;Login ID&lt;/label&gt;
+
+      &lt;input class=&quot;fc&quot; id=&quot;lg-id&quot; type=&quot;text&quot; placeholder=&quot;Enter your login ID&quot; autocomplete=&quot;username&quot;&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;fg&quot;&gt;
+
+      &lt;label&gt;Password&lt;/label&gt;
+
+      &lt;input class=&quot;fc&quot; id=&quot;lg-pw&quot; type=&quot;password&quot; placeholder=&quot;Enter password&quot; autocomplete=&quot;current-password&quot;&gt;
+
+      &lt;div class=&quot;ferr&quot; id=&quot;lg-err&quot;&gt;Invalid login ID or password.&lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;button class=&quot;btn btn-p btn-full&quot; onclick=&quot;doLogin()&quot; style=&quot;margin-top:4px;padding:12px&quot;&gt;Sign In →&lt;/button&gt;
+
+    &lt;p style=&quot;text-align:center;font-size:11px;color:var(--text-muted);margin-top:16px&quot;&gt;Default: admin / admin123&lt;/p&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- SIDEBAR --&gt;
+
+&lt;nav id=&quot;sidebar&quot;&gt;
+
+  &lt;div class=&quot;sb-logo&quot;&gt;
+
+    &lt;h1&gt;🧠 Siyaram&lt;br&gt;Neurotherapy Center&lt;/h1&gt;
+
+    &lt;small&gt;Patient Register System&lt;/small&gt;
+
+  &lt;/div&gt;
+
+  &lt;div class=&quot;sb-nav&quot;&gt;
+
+    &lt;div class=&quot;sb-section&quot;&gt;Main&lt;/div&gt;
+
+    &lt;div class=&quot;nav-item active&quot; data-screen=&quot;dashboard&quot; onclick=&quot;gotoScreen(&#x27;dashboard&#x27;,this)&quot;&gt;&lt;span class=&quot;ni&quot;&gt;📊&lt;/span&gt; Dashboard&lt;/div&gt;
+
+    &lt;div class=&quot;nav-item&quot; data-screen=&quot;patients&quot; onclick=&quot;gotoScreen(&#x27;patients&#x27;,this)&quot;&gt;&lt;span class=&quot;ni&quot;&gt;👥&lt;/span&gt; All Patients&lt;/div&gt;
+
+    &lt;div class=&quot;nav-item&quot; data-screen=&quot;scheduler&quot; onclick=&quot;gotoScreen(&#x27;scheduler&#x27;,this)&quot;&gt;&lt;span class=&quot;ni&quot;&gt;📅&lt;/span&gt; Scheduler&lt;/div&gt;
+
+    &lt;div class=&quot;nav-item&quot; data-screen=&quot;payments&quot; onclick=&quot;gotoScreen(&#x27;payments&#x27;,this)&quot;&gt;&lt;span class=&quot;ni&quot;&gt;💳&lt;/span&gt; Payments&lt;/div&gt;
+
+    &lt;div class=&quot;nav-item&quot; data-screen=&quot;regular&quot; onclick=&quot;gotoScreen(&#x27;regular&#x27;,this)&quot;&gt;&lt;span class=&quot;ni&quot;&gt;🔄&lt;/span&gt; Regular Patients&lt;/div&gt;
+
+    &lt;div class=&quot;sb-section&quot;&gt;Admin&lt;/div&gt;
+
+    &lt;div class=&quot;nav-item&quot; data-screen=&quot;admin-telegram&quot; onclick=&quot;gotoScreen(&#x27;admin-telegram&#x27;,this)&quot;&gt;&lt;span class=&quot;ni&quot;&gt;📨&lt;/span&gt; Telegram Bot&lt;/div&gt;
+
+    &lt;div class=&quot;nav-item&quot; data-screen=&quot;admin-security&quot; onclick=&quot;gotoScreen(&#x27;admin-security&#x27;,this)&quot;&gt;&lt;span class=&quot;ni&quot;&gt;🔐&lt;/span&gt; Security&lt;/div&gt;
+
+    &lt;div class=&quot;nav-item&quot; data-screen=&quot;admin-roles&quot; onclick=&quot;gotoScreen(&#x27;admin-roles&#x27;,this)&quot;&gt;&lt;span class=&quot;ni&quot;&gt;🛡️&lt;/span&gt; Roles &amp; Access&lt;/div&gt;
+
+    &lt;div class=&quot;nav-item&quot; data-screen=&quot;admin-users&quot; onclick=&quot;gotoScreen(&#x27;admin-users&#x27;,this)&quot;&gt;&lt;span class=&quot;ni&quot;&gt;⚙️&lt;/span&gt; User Manager&lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;div class=&quot;sb-foot&quot;&gt;
+
+    &lt;div class=&quot;user-badge&quot;&gt;
+
+      &lt;div class=&quot;user-av&quot; id=&quot;sb-av&quot;&gt;A&lt;/div&gt;
+
+      &lt;div class=&quot;user-info&quot;&gt;
+
+        &lt;div class=&quot;user-name&quot; id=&quot;sb-name&quot;&gt;Admin&lt;/div&gt;
+
+        &lt;div class=&quot;user-role&quot; id=&quot;sb-role&quot;&gt;Administrator&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;button class=&quot;btn-logout&quot; onclick=&quot;doLogout()&quot; title=&quot;Logout&quot;&gt;⏻&lt;/button&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/nav&gt;
+
+&lt;!-- MAIN --&gt;
+
+&lt;div id=&quot;main&quot;&gt;
+
+  &lt;div id=&quot;topbar&quot;&gt;
+
+    &lt;div class=&quot;topbar-title&quot; id=&quot;topbar-title&quot;&gt;Dashboard&lt;/div&gt;
+
+    &lt;div class=&quot;topbar-tag&quot; id=&quot;topbar-tag&quot;&gt;Today: &lt;span id=&quot;today-date&quot;&gt;&lt;/span&gt;&lt;/div&gt;
+
+    &lt;button class=&quot;btn btn-p btn-sm&quot; onclick=&quot;gotoScreen(&#x27;patients&#x27;,null);openAddPatient()&quot; style=&quot;display:none&quot; id=&quot;btn-add-patient&quot;&gt;+ Add Patient&lt;/button&gt;
+
+  &lt;/div&gt;
+
+  &lt;div id=&quot;content&quot;&gt;
+
+\`\`\`
+
+&lt;!-- DASHBOARD --&gt;
+
+&lt;div class=&quot;screen active&quot; id=&quot;scr-dashboard&quot;&gt;
+
+  &lt;div class=&quot;stats-grid&quot;&gt;
+
+    &lt;div class=&quot;stat-card&quot; data-icon=&quot;👥&quot;&gt;&lt;div class=&quot;stat-label&quot;&gt;Total Patients&lt;/div&gt;&lt;div class=&quot;stat-val&quot; id=&quot;s-total&quot;&gt;0&lt;/div&gt;&lt;div class=&quot;stat-sub&quot;&gt;Registered&lt;/div&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;stat-card&quot; data-icon=&quot;📅&quot;&gt;&lt;div class=&quot;stat-label&quot;&gt;Today&#x27;s Sessions&lt;/div&gt;&lt;div class=&quot;stat-val&quot; id=&quot;s-today&quot;&gt;0&lt;/div&gt;&lt;div class=&quot;stat-sub&quot;&gt;Completed today&lt;/div&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;stat-card&quot; data-icon=&quot;💰&quot;&gt;&lt;div class=&quot;stat-label&quot;&gt;Today&#x27;s Revenue&lt;/div&gt;&lt;div class=&quot;stat-val&quot; id=&quot;s-rev&quot;&gt;₹0&lt;/div&gt;&lt;div class=&quot;stat-sub&quot;&gt;Cash + UPI&lt;/div&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;stat-card&quot; data-icon=&quot;🔄&quot;&gt;&lt;div class=&quot;stat-label&quot;&gt;Regular Patients&lt;/div&gt;&lt;div class=&quot;stat-val&quot; id=&quot;s-reg&quot;&gt;0&lt;/div&gt;&lt;div class=&quot;stat-sub&quot;&gt;Active plans&lt;/div&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;div style=&quot;display:grid;grid-template-columns:1fr 1fr;gap:16px&quot;&gt;
+
+    &lt;div class=&quot;card&quot;&gt;
+
+      &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;🔄 Regular Patients Today&lt;/div&gt;&lt;button class=&quot;btn btn-sm btn-o&quot; onclick=&quot;gotoScreen(&#x27;regular&#x27;,null)&quot;&gt;View All&lt;/button&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;card-bd&quot; id=&quot;dash-regular-list&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;📭&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No regular patients today&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card&quot;&gt;
+
+      &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;📋 Recent Sessions&lt;/div&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;card-bd tw&quot; id=&quot;dash-recent-list&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;📋&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No sessions yet today&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- ALL PATIENTS --&gt;
+
+&lt;div class=&quot;screen&quot; id=&quot;scr-patients&quot;&gt;
+
+  &lt;div class=&quot;sh&quot;&gt;
+
+    &lt;div&gt;&lt;div class=&quot;sh-title&quot;&gt;All Patients&lt;/div&gt;&lt;div class=&quot;sh-sub&quot;&gt;Search, view and manage patient records&lt;/div&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;sh-right&quot;&gt;
+
+      &lt;input class=&quot;fc&quot; style=&quot;width:220px&quot; placeholder=&quot;🔍 Search name / reg no...&quot; oninput=&quot;filterPatients(this.value)&quot;&gt;
+
+      &lt;button class=&quot;btn btn-p&quot; onclick=&quot;openAddPatient()&quot;&gt;+ Add Patient&lt;/button&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;div class=&quot;card&quot;&gt;
+
+    &lt;div class=&quot;tw&quot;&gt;&lt;table&gt;
+
+      &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Reg No&lt;/th&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Age/Sex&lt;/th&gt;&lt;th&gt;Mobile&lt;/th&gt;&lt;th&gt;Conditions&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Actions&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+
+      &lt;tbody id=&quot;patient-table-body&quot;&gt;&lt;/tbody&gt;
+
+    &lt;/table&gt;&lt;/div&gt;
+
+    &lt;div id=&quot;patient-empty&quot; class=&quot;empty-state&quot; style=&quot;display:none&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;👥&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No patients found&lt;/div&gt;&lt;div class=&quot;es-sub&quot;&gt;Add your first patient to get started&lt;/div&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- PATIENT DETAIL --&gt;
+
+&lt;div class=&quot;screen&quot; id=&quot;scr-patient-detail&quot;&gt;
+
+  &lt;button class=&quot;btn btn-g btn-sm&quot; onclick=&quot;gotoScreen(&#x27;patients&#x27;,null)&quot; style=&quot;margin-bottom:16px&quot;&gt;← Back to Patients&lt;/button&gt;
+
+  &lt;div class=&quot;pt-hero&quot; id=&quot;pt-hero&quot;&gt;&lt;/div&gt;
+
+  &lt;div class=&quot;tabs&quot; id=&quot;pt-tabs&quot;&gt;
+
+    &lt;div class=&quot;tab active&quot; onclick=&quot;switchTab(this,&#x27;pt-info&#x27;)&quot;&gt;📋 Info&lt;/div&gt;
+
+    &lt;div class=&quot;tab&quot; onclick=&quot;switchTab(this,&#x27;pt-sessions&#x27;)&quot;&gt;🩺 Sessions&lt;/div&gt;
+
+    &lt;div class=&quot;tab&quot; onclick=&quot;switchTab(this,&#x27;pt-regular&#x27;)&quot;&gt;🔄 Regular Visits&lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;div id=&quot;pt-info&quot; class=&quot;tab-pane active&quot;&gt;&lt;div id=&quot;pt-info-body&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+
+  &lt;div id=&quot;pt-sessions&quot; class=&quot;tab-pane&quot;&gt;
+
+    &lt;div style=&quot;display:flex;justify-content:flex-end;margin-bottom:14px&quot;&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;openAddSession()&quot;&gt;+ Add Session&lt;/button&gt;&lt;/div&gt;
+
+    &lt;div id=&quot;session-list-wrap&quot;&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;div id=&quot;pt-regular&quot; class=&quot;tab-pane&quot;&gt;&lt;div id=&quot;pt-regular-wrap&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- SCHEDULER --&gt;
+
+&lt;div class=&quot;screen&quot; id=&quot;scr-scheduler&quot;&gt;
+
+  &lt;div class=&quot;sh&quot;&gt;&lt;div&gt;&lt;div class=&quot;sh-title&quot;&gt;Scheduler&lt;/div&gt;&lt;div class=&quot;sh-sub&quot;&gt;Appointment calendar&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+
+  &lt;div class=&quot;card card-bd&quot; style=&quot;padding:24px&quot;&gt;
+
+    &lt;div id=&quot;sched-cal&quot;&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+    &lt;div id=&quot;sched-appts&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;📅&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;Select a date to view appointments&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- PAYMENTS --&gt;
+
+&lt;div class=&quot;screen&quot; id=&quot;scr-payments&quot;&gt;
+
+  &lt;div class=&quot;sh&quot;&gt;&lt;div&gt;&lt;div class=&quot;sh-title&quot;&gt;Payments&lt;/div&gt;&lt;div class=&quot;sh-sub&quot;&gt;Manual payment records&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sh-right&quot;&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;openAddPayment()&quot;&gt;+ Add Payment&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+
+  &lt;div class=&quot;card&quot;&gt;
+
+    &lt;div class=&quot;tw&quot;&gt;&lt;table&gt;
+
+      &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Date&lt;/th&gt;&lt;th&gt;Patient&lt;/th&gt;&lt;th&gt;Amount&lt;/th&gt;&lt;th&gt;Mode&lt;/th&gt;&lt;th&gt;Session&lt;/th&gt;&lt;th&gt;Notes&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+
+      &lt;tbody id=&quot;pay-table-body&quot;&gt;&lt;/tbody&gt;
+
+    &lt;/table&gt;&lt;/div&gt;
+
+    &lt;div id=&quot;pay-empty&quot; class=&quot;empty-state&quot; style=&quot;display:none&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;💳&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No payment records&lt;/div&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- REGULAR PATIENTS --&gt;
+
+&lt;div class=&quot;screen&quot; id=&quot;scr-regular&quot;&gt;
+
+  &lt;div class=&quot;sh&quot;&gt;&lt;div&gt;&lt;div class=&quot;sh-title&quot;&gt;Regular Patients&lt;/div&gt;&lt;div class=&quot;sh-sub&quot;&gt;Active recurring treatment plans&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+
+  &lt;div id=&quot;reg-list-wrap&quot;&gt;&lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- TELEGRAM BOT --&gt;
+
+&lt;div class=&quot;screen&quot; id=&quot;scr-admin-telegram&quot;&gt;
+
+  &lt;div class=&quot;sh&quot;&gt;&lt;div&gt;&lt;div class=&quot;sh-title&quot;&gt;📨 Telegram Bot Manager&lt;/div&gt;&lt;div class=&quot;sh-sub&quot;&gt;Configure bot token, commands and alerts&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+
+  &lt;div style=&quot;display:grid;grid-template-columns:1fr 1fr;gap:16px&quot;&gt;
+
+    &lt;div&gt;
+
+      &lt;div class=&quot;card&quot; style=&quot;margin-bottom:16px&quot;&gt;
+
+        &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;🔑 Bot Token&lt;/div&gt;&lt;div id=&quot;tg-status-badge&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;card-bd&quot;&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Current Token&lt;/label&gt;&lt;div class=&quot;tg-token-box&quot; id=&quot;tg-token-display&quot;&gt;Not configured&lt;/div&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;New Bot Token&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;tg-token-input&quot; type=&quot;password&quot; placeholder=&quot;Enter BotFather token...&quot;&gt;&lt;/div&gt;
+
+          &lt;div style=&quot;display:flex;gap:8px&quot;&gt;
+
+            &lt;button class=&quot;btn btn-p&quot; onclick=&quot;saveTelegramToken()&quot;&gt;💾 Save Token&lt;/button&gt;
+
+            &lt;button class=&quot;btn btn-g&quot; onclick=&quot;testBotConnection()&quot;&gt;🧪 Test&lt;/button&gt;
+
+            &lt;button class=&quot;btn btn-d btn-sm&quot; onclick=&quot;revokeTelegramToken()&quot;&gt;🗑 Revoke&lt;/button&gt;
+
+          &lt;/div&gt;
+
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;card&quot;&gt;
+
+        &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;🔔 Alert Settings&lt;/div&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;card-bd&quot;&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Recipient Chat ID&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;tg-chat-id&quot; placeholder=&quot;Your Telegram Chat ID&quot; oninput=&quot;saveTgSettings()&quot;&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Daily Summary Time&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;tg-alert-time&quot; type=&quot;time&quot; value=&quot;20:00&quot; onchange=&quot;saveTgSettings()&quot;&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;tw-row&quot;&gt;&lt;label class=&quot;toggle&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;tg-al-backup&quot; checked onchange=&quot;saveTgSettings()&quot;&gt;&lt;span class=&quot;ts&quot;&gt;&lt;/span&gt;&lt;/label&gt;&lt;span class=&quot;tw-label&quot;&gt;Daily backup alert&lt;/span&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;tw-row&quot;&gt;&lt;label class=&quot;toggle&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;tg-al-login&quot; checked onchange=&quot;saveTgSettings()&quot;&gt;&lt;span class=&quot;ts&quot;&gt;&lt;/span&gt;&lt;/label&gt;&lt;span class=&quot;tw-label&quot;&gt;Login failure alert&lt;/span&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;tw-row&quot;&gt;&lt;label class=&quot;toggle&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;tg-al-revenue&quot; onchange=&quot;saveTgSettings()&quot;&gt;&lt;span class=&quot;ts&quot;&gt;&lt;/span&gt;&lt;/label&gt;&lt;span class=&quot;tw-label&quot;&gt;Revenue summary alert&lt;/span&gt;&lt;/div&gt;
+
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card&quot;&gt;
+
+      &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;⚡ Bot Commands&lt;/div&gt;&lt;button class=&quot;btn btn-sm btn-p&quot; onclick=&quot;openAddCommand()&quot;&gt;+ Add Command&lt;/button&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;card-bd&quot;&gt;
+
+        &lt;div class=&quot;info-box&quot; style=&quot;margin-bottom:16px&quot;&gt;ℹ️ Commands the bot responds to in Telegram. Click &lt;strong&gt;Push to Bot&lt;/strong&gt; after editing.&lt;/div&gt;
+
+        &lt;div id=&quot;tg-cmd-list&quot;&gt;&lt;/div&gt;
+
+        &lt;div style=&quot;margin-top:14px;display:flex;gap:8px&quot;&gt;
+
+          &lt;button class=&quot;btn btn-a&quot; onclick=&quot;pushCommandsToTelegram()&quot;&gt;🚀 Push to Bot&lt;/button&gt;
+
+          &lt;button class=&quot;btn btn-g btn-sm&quot; onclick=&quot;loadDefaultCommands()&quot;&gt;↺ Load Defaults&lt;/button&gt;
+
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- SECURITY --&gt;
+
+&lt;div class=&quot;screen&quot; id=&quot;scr-admin-security&quot;&gt;
+
+  &lt;div class=&quot;sh&quot;&gt;&lt;div&gt;&lt;div class=&quot;sh-title&quot;&gt;🔐 Security Settings&lt;/div&gt;&lt;div class=&quot;sh-sub&quot;&gt;Change credentials and manage passwords&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+
+  &lt;div style=&quot;display:grid;grid-template-columns:1fr 1fr;gap:16px&quot;&gt;
+
+    &lt;div class=&quot;card&quot;&gt;
+
+      &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;Change Password&lt;/div&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;card-bd&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Current Password&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pw-cur&quot; type=&quot;password&quot; placeholder=&quot;Current password&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;New Password&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pw-new&quot; type=&quot;password&quot; placeholder=&quot;Min 8 chars, 1 number, 1 special&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Confirm New Password&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pw-conf&quot; type=&quot;password&quot; placeholder=&quot;Confirm new password&quot;&gt;&lt;div class=&quot;ferr&quot; id=&quot;pw-err&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+
+        &lt;button class=&quot;btn btn-p&quot; onclick=&quot;changePassword()&quot;&gt;🔒 Update Password&lt;/button&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;card&quot;&gt;
+
+      &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;Change Login ID&lt;/div&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;card-bd&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Current Login ID&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;lid-cur&quot; readonly style=&quot;background:var(--bg)&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;New Login ID&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;lid-new&quot; placeholder=&quot;Min 5 chars, alphanumeric + \_&quot;&gt;&lt;div class=&quot;ferr&quot; id=&quot;lid-err&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Confirm with Password&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;lid-pw&quot; type=&quot;password&quot; placeholder=&quot;Your current password&quot;&gt;&lt;/div&gt;
+
+        &lt;button class=&quot;btn btn-p&quot; onclick=&quot;changeLoginId()&quot;&gt;✏️ Update Login ID&lt;/button&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+  &lt;div class=&quot;card&quot; style=&quot;margin-top:16px&quot; id=&quot;admin-reset-section&quot;&gt;
+
+    &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;🔑 Reset User Password (Admin)&lt;/div&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;card-bd&quot;&gt;
+
+      &lt;div class=&quot;warn-box&quot; style=&quot;margin-bottom:16px&quot;&gt;⚠️ A one-time temporary password will be generated. Show it once only and the user must change it on next login.&lt;/div&gt;
+
+      &lt;div class=&quot;fr&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Select User&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;reset-user-sel&quot;&gt;&lt;option value=&quot;&quot;&gt;-- Select user --&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+        &lt;div style=&quot;padding-top:24px&quot;&gt;&lt;button class=&quot;btn btn-a&quot; onclick=&quot;adminResetPassword()&quot;&gt;🔄 Generate Temp Password&lt;/button&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- ROLES &amp; PERMISSIONS --&gt;
+
+&lt;div class=&quot;screen&quot; id=&quot;scr-admin-roles&quot;&gt;
+
+  &lt;div class=&quot;sh&quot;&gt;&lt;div&gt;&lt;div class=&quot;sh-title&quot;&gt;🛡️ Roles &amp; Access Control&lt;/div&gt;&lt;div class=&quot;sh-sub&quot;&gt;Define what each role can see and do&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sh-right&quot;&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;savePermissions()&quot;&gt;💾 Save All Changes&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+
+  &lt;div class=&quot;card&quot;&gt;
+
+    &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;Permission Matrix&lt;/div&gt;&lt;div style=&quot;font-size:12px;color:var(--text-muted)&quot;&gt;Changes apply immediately after save&lt;/div&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;pm-wrap card-bd&quot; style=&quot;padding:0&quot;&gt;
+
+      &lt;table class=&quot;pm-table&quot; id=&quot;pm-table&quot;&gt;&lt;/table&gt;
+
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- USER MANAGER --&gt;
+
+&lt;div class=&quot;screen&quot; id=&quot;scr-admin-users&quot;&gt;
+
+  &lt;div class=&quot;sh&quot;&gt;&lt;div&gt;&lt;div class=&quot;sh-title&quot;&gt;⚙️ User Manager&lt;/div&gt;&lt;div class=&quot;sh-sub&quot;&gt;Manage clinicians and staff accounts&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;sh-right&quot;&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;openAddUser()&quot;&gt;+ Add User&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;
+
+  &lt;div class=&quot;card&quot;&gt;
+
+    &lt;div class=&quot;tw&quot;&gt;&lt;table&gt;
+
+      &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Login ID&lt;/th&gt;&lt;th&gt;Role&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Actions&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+
+      &lt;tbody id=&quot;user-table-body&quot;&gt;&lt;/tbody&gt;
+
+    &lt;/table&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+\`\`\`
+
+  &lt;/div&gt;&lt;!-- end #content --&gt;
+
+&lt;/div&gt;&lt;!-- end #main --&gt;
+
+&lt;!-- TOAST CONTAINER --&gt;
+
+&lt;div id=&quot;tc&quot;&gt;&lt;/div&gt;
+
+&lt;!-- ============ MODALS ============ --&gt;
+
+&lt;!-- Add Patient Modal --&gt;
+
+&lt;div class=&quot;modal-ov&quot; id=&quot;modal-patient&quot;&gt;
+
+  &lt;div class=&quot;modal modal-lg&quot;&gt;
+
+    &lt;div class=&quot;modal-hd&quot;&gt;&lt;div class=&quot;modal-title&quot;&gt;👤 Patient Registration&lt;/div&gt;&lt;button class=&quot;modal-x&quot; onclick=&quot;closeModal(&#x27;modal-patient&#x27;)&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;modal-bd&quot;&gt;
+
+      &lt;div class=&quot;fr&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Full Name \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pt-name&quot; placeholder=&quot;Patient full name&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Registration No&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pt-reg&quot; placeholder=&quot;Auto-generated if blank&quot;&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;fr3&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Age \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pt-age&quot; type=&quot;number&quot; placeholder=&quot;Age&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Sex \*&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;pt-sex&quot;&gt;&lt;option&gt;Male&lt;/option&gt;&lt;option&gt;Female&lt;/option&gt;&lt;option&gt;Other&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Occupation&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pt-occ&quot; placeholder=&quot;Occupation&quot;&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Address&lt;/label&gt;&lt;textarea class=&quot;fc&quot; id=&quot;pt-addr&quot; rows=&quot;2&quot; placeholder=&quot;Full address&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fr&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Mobile \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pt-mob&quot; placeholder=&quot;Mobile number&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Telephone&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pt-tel&quot; placeholder=&quot;Alternate number&quot;&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;sec-label&quot;&gt;Conditions (check all that apply)&lt;/div&gt;
+
+      &lt;div class=&quot;cg&quot; id=&quot;cond-group&quot;&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Diabetes&quot;&gt;Diabetes&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Heart&quot;&gt;Heart&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;BP&quot;&gt;BP&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Kidney&quot;&gt;Kidney&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;B-12&quot;&gt;B-12&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Folic Acid&quot;&gt;Folic Acid&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Tongue&quot;&gt;Tongue&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;UDF&quot;&gt;UDF&lt;/label&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;sec-label&quot;&gt;Dietary Restrictions&lt;/div&gt;
+
+      &lt;div class=&quot;cg&quot; id=&quot;restr-group&quot;&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Restriction&quot;&gt;Restriction&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;No Khatta&quot;&gt;No Khatta&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;No Non-Veg&quot;&gt;No Non-Veg&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;No Alcohol&quot;&gt;No Alcohol&lt;/label&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot; style=&quot;margin-top:16px&quot;&gt;&lt;label&gt;Patient History&lt;/label&gt;&lt;textarea class=&quot;fc&quot; id=&quot;pt-history&quot; rows=&quot;3&quot; placeholder=&quot;Relevant medical history...&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;modal-ft&quot;&gt;&lt;button class=&quot;btn btn-g&quot; onclick=&quot;closeModal(&#x27;modal-patient&#x27;)&quot;&gt;Cancel&lt;/button&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;savePatient()&quot;&gt;💾 Save Patient&lt;/button&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- Add Session Modal --&gt;
+
+&lt;div class=&quot;modal-ov&quot; id=&quot;modal-session&quot;&gt;
+
+  &lt;div class=&quot;modal modal-lg&quot;&gt;
+
+    &lt;div class=&quot;modal-hd&quot;&gt;&lt;div class=&quot;modal-title&quot;&gt;🩺 Add Session Notes&lt;/div&gt;&lt;button class=&quot;modal-x&quot; onclick=&quot;closeModal(&#x27;modal-session&#x27;)&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;modal-bd&quot;&gt;
+
+      &lt;div class=&quot;fr3&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Date \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ses-date&quot; type=&quot;date&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Visit Type&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;ses-vtype&quot;&gt;&lt;option value=&quot;IN-CLINIC&quot;&gt;In-Clinic&lt;/option&gt;&lt;option value=&quot;HOME&quot;&gt;Home Visit&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Duration (min)&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ses-dur&quot; type=&quot;number&quot; placeholder=&quot;e.g. 45&quot;&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;fr&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Clinician&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;ses-clinician&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Payment Mode&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;ses-pmode&quot;&gt;&lt;option value=&quot;CASH&quot;&gt;Cash&lt;/option&gt;&lt;option value=&quot;UPI&quot;&gt;UPI&lt;/option&gt;&lt;option value=&quot;PENDING&quot;&gt;Pending&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Payment Amount (₹)&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ses-amt&quot; type=&quot;number&quot; placeholder=&quot;0&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;pre-box&quot; style=&quot;margin-bottom:14px&quot;&gt;
+
+        &lt;div class=&quot;pp-head&quot;&gt;📋 PRE-TREATMENT&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Chief Complaint Today&lt;/label&gt;&lt;textarea class=&quot;fc&quot; id=&quot;ses-pre-complaint&quot; rows=&quot;2&quot; placeholder=&quot;Patient&#x27;s main issue before session...&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Pain Level (0–10)&lt;/label&gt;&lt;div class=&quot;slider-row&quot;&gt;&lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;10&quot; value=&quot;5&quot; id=&quot;ses-pre-pain&quot; oninput=&quot;document.getElementById(&#x27;sl-pre-v&#x27;).textContent=this.value&quot;&gt;&lt;span class=&quot;slider-v&quot; id=&quot;sl-pre-v&quot;&gt;5&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fr&quot;&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Mobility Status&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;ses-pre-mob&quot;&gt;&lt;option&gt;Normal&lt;/option&gt;&lt;option&gt;Restricted&lt;/option&gt;&lt;option&gt;Bedridden&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;BP / Pulse (optional)&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ses-pre-vitals&quot; placeholder=&quot;e.g. 120/80, 72bpm&quot;&gt;&lt;/div&gt;
+
+        &lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Clinician Pre-Assessment&lt;/label&gt;&lt;textarea class=&quot;fc&quot; id=&quot;ses-pre-notes&quot; rows=&quot;2&quot; placeholder=&quot;Observations before starting treatment...&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;post-box&quot;&gt;
+
+        &lt;div class=&quot;pp-head&quot;&gt;✅ POST-TREATMENT&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Techniques Applied&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ses-post-tech&quot; placeholder=&quot;e.g. Spinal manipulation, Acupressure, Yoga...&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Post-Session Pain Level (0–10)&lt;/label&gt;&lt;div class=&quot;slider-row&quot;&gt;&lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;10&quot; value=&quot;3&quot; id=&quot;ses-post-pain&quot; oninput=&quot;document.getElementById(&#x27;sl-post-v&#x27;).textContent=this.value&quot;&gt;&lt;span class=&quot;slider-v&quot; id=&quot;sl-post-v&quot;&gt;3&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Patient Response&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;ses-post-resp&quot;&gt;&lt;option value=&quot;VERY_GOOD&quot;&gt;Very Good&lt;/option&gt;&lt;option value=&quot;GOOD&quot;&gt;Good&lt;/option&gt;&lt;option value=&quot;NEUTRAL&quot;&gt;Neutral&lt;/option&gt;&lt;option value=&quot;POOR&quot;&gt;Poor&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Post-Assessment Notes&lt;/label&gt;&lt;textarea class=&quot;fc&quot; id=&quot;ses-post-notes&quot; rows=&quot;2&quot; placeholder=&quot;Outcome observations...&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Next Session Recommendation&lt;/label&gt;&lt;textarea class=&quot;fc&quot; id=&quot;ses-post-rec&quot; rows=&quot;2&quot; placeholder=&quot;What to do next time...&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fr&quot;&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Follow-up Date&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ses-followup&quot; type=&quot;date&quot;&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;fg&quot; style=&quot;display:flex;align-items:center;gap:10px;padding-top:24px&quot;&gt;&lt;label class=&quot;toggle&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;ses-mark-regular&quot;&gt;&lt;span class=&quot;ts&quot;&gt;&lt;/span&gt;&lt;/label&gt;&lt;span style=&quot;font-size:13.5px;font-weight:600&quot;&gt;Mark as Regular Patient&lt;/span&gt;&lt;/div&gt;
+
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;modal-ft&quot;&gt;&lt;button class=&quot;btn btn-g&quot; onclick=&quot;closeModal(&#x27;modal-session&#x27;)&quot;&gt;Cancel&lt;/button&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;saveSession()&quot;&gt;💾 Save Session&lt;/button&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- Regular Visit Plan Modal --&gt;
+
+&lt;div class=&quot;modal-ov&quot; id=&quot;modal-regular-plan&quot;&gt;
+
+  &lt;div class=&quot;modal modal-md&quot;&gt;
+
+    &lt;div class=&quot;modal-hd&quot;&gt;&lt;div class=&quot;modal-title&quot;&gt;🔄 Set Regular Visit Plan&lt;/div&gt;&lt;button class=&quot;modal-x&quot; onclick=&quot;closeModal(&#x27;modal-regular-plan&#x27;)&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;modal-bd&quot;&gt;
+
+      &lt;div class=&quot;fr&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Visit Frequency&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;rp-freq&quot;&gt;&lt;option value=&quot;DAILY&quot;&gt;Daily&lt;/option&gt;&lt;option value=&quot;ALT&quot;&gt;Alternate Days&lt;/option&gt;&lt;option value=&quot;WEEKLY&quot;&gt;Weekly&lt;/option&gt;&lt;option value=&quot;CUSTOM&quot;&gt;Custom Days&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Target Sessions (optional)&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;rp-target&quot; type=&quot;number&quot; placeholder=&quot;e.g. 20&quot;&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Days of Week&lt;/label&gt;&lt;div class=&quot;cg&quot; id=&quot;rp-days-group&quot;&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Mon&quot;&gt;Mon&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Tue&quot;&gt;Tue&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Wed&quot;&gt;Wed&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Thu&quot;&gt;Thu&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Fri&quot;&gt;Fri&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Sat&quot;&gt;Sat&lt;/label&gt;
+
+        &lt;label class=&quot;ci&quot; onclick=&quot;toggleChk(this)&quot;&gt;&lt;input type=&quot;checkbox&quot; value=&quot;Sun&quot;&gt;Sun&lt;/label&gt;
+
+      &lt;/div&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fr&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Plan Start Date&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;rp-start&quot; type=&quot;date&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Plan End Date (optional)&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;rp-end&quot; type=&quot;date&quot;&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Treatment Protocol&lt;/label&gt;&lt;textarea class=&quot;fc&quot; id=&quot;rp-protocol&quot; rows=&quot;3&quot; placeholder=&quot;Standard treatment plan for this patient...&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;tw-row&quot;&gt;&lt;label class=&quot;toggle&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;rp-active&quot; checked&gt;&lt;span class=&quot;ts&quot;&gt;&lt;/span&gt;&lt;/label&gt;&lt;span class=&quot;tw-label&quot;&gt;Active Plan&lt;/span&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;modal-ft&quot;&gt;&lt;button class=&quot;btn btn-g&quot; onclick=&quot;closeModal(&#x27;modal-regular-plan&#x27;)&quot;&gt;Cancel&lt;/button&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;saveRegularPlan()&quot;&gt;💾 Save Plan&lt;/button&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- Visit Entry Modal --&gt;
+
+&lt;div class=&quot;modal-ov&quot; id=&quot;modal-visit-entry&quot;&gt;
+
+  &lt;div class=&quot;modal modal-md&quot;&gt;
+
+    &lt;div class=&quot;modal-hd&quot;&gt;&lt;div class=&quot;modal-title&quot; id=&quot;ve-modal-title&quot;&gt;📋 Visit Entry&lt;/div&gt;&lt;button class=&quot;modal-x&quot; onclick=&quot;closeModal(&#x27;modal-visit-entry&#x27;)&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;modal-bd&quot;&gt;
+
+      &lt;div class=&quot;tw-row&quot; style=&quot;margin-bottom:14px&quot;&gt;&lt;label class=&quot;toggle&quot;&gt;&lt;input type=&quot;checkbox&quot; id=&quot;ve-attended&quot; checked onchange=&quot;toggleAbsence()&quot;&gt;&lt;span class=&quot;ts&quot;&gt;&lt;/span&gt;&lt;/label&gt;&lt;span class=&quot;tw-label&quot;&gt;&lt;strong&gt;Patient Attended&lt;/strong&gt;&lt;/span&gt;&lt;/div&gt;
+
+      &lt;div id=&quot;ve-absence-row&quot; class=&quot;fg&quot; style=&quot;display:none&quot;&gt;&lt;label&gt;Absence Reason&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ve-abs-reason&quot; placeholder=&quot;Reason for absence...&quot;&gt;&lt;/div&gt;
+
+      &lt;div id=&quot;ve-fields&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Treatment Given&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ve-treatment&quot; placeholder=&quot;Techniques used today...&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fr&quot;&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Clinician&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;ve-clinician&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Duration (min)&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ve-dur&quot; type=&quot;number&quot; placeholder=&quot;45&quot;&gt;&lt;/div&gt;
+
+        &lt;/div&gt;
+
+        &lt;div class=&quot;fr&quot;&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Payment (₹)&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;ve-pay&quot; type=&quot;number&quot; placeholder=&quot;0&quot;&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Payment Mode&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;ve-pmode&quot;&gt;&lt;option value=&quot;CASH&quot;&gt;Cash&lt;/option&gt;&lt;option value=&quot;UPI&quot;&gt;UPI&lt;/option&gt;&lt;option value=&quot;PENDING&quot;&gt;Pending&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+        &lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Patient Condition&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;ve-cond&quot;&gt;&lt;option value=&quot;IMPROVING&quot;&gt;Improving ↑&lt;/option&gt;&lt;option value=&quot;STABLE&quot;&gt;Stable →&lt;/option&gt;&lt;option value=&quot;WORSENING&quot;&gt;Worsening ↓&lt;/option&gt;&lt;option value=&quot;NA&quot;&gt;Not Assessed&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Quick Notes&lt;/label&gt;&lt;textarea class=&quot;fc&quot; id=&quot;ve-notes&quot; rows=&quot;3&quot; placeholder=&quot;Notes for this visit...&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;modal-ft&quot;&gt;&lt;button class=&quot;btn btn-g&quot; onclick=&quot;closeModal(&#x27;modal-visit-entry&#x27;)&quot;&gt;Cancel&lt;/button&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;saveVisitEntry()&quot;&gt;💾 Save Entry&lt;/button&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- Add Payment Modal --&gt;
+
+&lt;div class=&quot;modal-ov&quot; id=&quot;modal-payment&quot;&gt;
+
+  &lt;div class=&quot;modal modal-sm&quot;&gt;
+
+    &lt;div class=&quot;modal-hd&quot;&gt;&lt;div class=&quot;modal-title&quot;&gt;💳 Add Payment&lt;/div&gt;&lt;button class=&quot;modal-x&quot; onclick=&quot;closeModal(&#x27;modal-payment&#x27;)&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;modal-bd&quot;&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Patient \*&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;pay-patient&quot;&gt;&lt;/select&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Date \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pay-date&quot; type=&quot;date&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fr&quot;&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Amount (₹) \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pay-amount&quot; type=&quot;number&quot; placeholder=&quot;0&quot;&gt;&lt;/div&gt;
+
+        &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Mode \*&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;pay-mode&quot;&gt;&lt;option value=&quot;CASH&quot;&gt;Cash&lt;/option&gt;&lt;option value=&quot;UPI&quot;&gt;UPI&lt;/option&gt;&lt;option value=&quot;PENDING&quot;&gt;Pending&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Notes&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;pay-notes&quot; placeholder=&quot;Optional notes...&quot;&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;modal-ft&quot;&gt;&lt;button class=&quot;btn btn-g&quot; onclick=&quot;closeModal(&#x27;modal-payment&#x27;)&quot;&gt;Cancel&lt;/button&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;savePayment()&quot;&gt;💾 Save&lt;/button&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- Add User Modal --&gt;
+
+&lt;div class=&quot;modal-ov&quot; id=&quot;modal-user&quot;&gt;
+
+  &lt;div class=&quot;modal modal-sm&quot;&gt;
+
+    &lt;div class=&quot;modal-hd&quot;&gt;&lt;div class=&quot;modal-title&quot; id=&quot;user-modal-title&quot;&gt;Add User&lt;/div&gt;&lt;button class=&quot;modal-x&quot; onclick=&quot;closeModal(&#x27;modal-user&#x27;)&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;modal-bd&quot;&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Full Name \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;u-name&quot; placeholder=&quot;Staff full name&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Login ID \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;u-lid&quot; placeholder=&quot;e.g. dr_kumar&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Password \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;u-pw&quot; type=&quot;password&quot; placeholder=&quot;Min 8 characters&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Role \*&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;u-role&quot;&gt;&lt;option value=&quot;CLINICIAN&quot;&gt;Clinician&lt;/option&gt;&lt;option value=&quot;RECEPTIONIST&quot;&gt;Receptionist&lt;/option&gt;&lt;option value=&quot;FINANCE&quot;&gt;Finance&lt;/option&gt;&lt;option value=&quot;ADMIN&quot;&gt;Admin&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;modal-ft&quot;&gt;&lt;button class=&quot;btn btn-g&quot; onclick=&quot;closeModal(&#x27;modal-user&#x27;)&quot;&gt;Cancel&lt;/button&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;saveUser()&quot;&gt;💾 Save User&lt;/button&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- Add Bot Command Modal --&gt;
+
+&lt;div class=&quot;modal-ov&quot; id=&quot;modal-cmd&quot;&gt;
+
+  &lt;div class=&quot;modal modal-sm&quot;&gt;
+
+    &lt;div class=&quot;modal-hd&quot;&gt;&lt;div class=&quot;modal-title&quot;&gt;⚡ Bot Command&lt;/div&gt;&lt;button class=&quot;modal-x&quot; onclick=&quot;closeModal(&#x27;modal-cmd&#x27;)&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;modal-bd&quot;&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Trigger Command \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;cmd-trigger&quot; placeholder=&quot;/status&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Description \*&lt;/label&gt;&lt;input class=&quot;fc&quot; id=&quot;cmd-desc&quot; placeholder=&quot;What this command does&quot;&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot;&gt;&lt;label&gt;Response Type&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;cmd-type&quot;&gt;&lt;option value=&quot;STATIC&quot;&gt;Static Text&lt;/option&gt;&lt;option value=&quot;DYNAMIC&quot;&gt;Live Data&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot; id=&quot;cmd-static-row&quot;&gt;&lt;label&gt;Response Text&lt;/label&gt;&lt;textarea class=&quot;fc&quot; id=&quot;cmd-response&quot; rows=&quot;3&quot; placeholder=&quot;Bot will reply with this...&quot;&gt;&lt;/textarea&gt;&lt;/div&gt;
+
+      &lt;div class=&quot;fg&quot; id=&quot;cmd-dyn-row&quot; style=&quot;display:none&quot;&gt;&lt;label&gt;Data Query&lt;/label&gt;&lt;select class=&quot;fc&quot; id=&quot;cmd-query&quot;&gt;&lt;option value=&quot;patients_today&quot;&gt;Patients today&lt;/option&gt;&lt;option value=&quot;revenue_today&quot;&gt;Revenue today&lt;/option&gt;&lt;option value=&quot;backup_status&quot;&gt;Backup status&lt;/option&gt;&lt;option value=&quot;next_appointment&quot;&gt;Next appointment&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;modal-ft&quot;&gt;&lt;button class=&quot;btn btn-g&quot; onclick=&quot;closeModal(&#x27;modal-cmd&#x27;)&quot;&gt;Cancel&lt;/button&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;saveCommand()&quot;&gt;💾 Save&lt;/button&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;!-- Confirm Modal --&gt;
+
+&lt;div class=&quot;modal-ov&quot; id=&quot;modal-confirm&quot;&gt;
+
+  &lt;div class=&quot;modal modal-sm&quot;&gt;
+
+    &lt;div class=&quot;modal-hd&quot;&gt;&lt;div class=&quot;modal-title&quot; id=&quot;conf-title&quot;&gt;Confirm&lt;/div&gt;&lt;button class=&quot;modal-x&quot; onclick=&quot;closeModal(&#x27;modal-confirm&#x27;)&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;modal-bd&quot;&gt;&lt;p id=&quot;conf-msg&quot; style=&quot;font-size:14px;color:var(--text)&quot;&gt;&lt;/p&gt;&lt;/div&gt;
+
+    &lt;div class=&quot;modal-ft&quot;&gt;&lt;button class=&quot;btn btn-g&quot; onclick=&quot;closeModal(&#x27;modal-confirm&#x27;)&quot;&gt;Cancel&lt;/button&gt;&lt;button class=&quot;btn btn-d&quot; id=&quot;conf-ok&quot; onclick=&quot;&quot;&gt;Confirm&lt;/button&gt;&lt;/div&gt;
+
+  &lt;/div&gt;
+
+&lt;/div&gt;
+
+&lt;script&gt;
+
+
+
+
+
+
+
+// ─── DATA LAYER ──────────────────────────────────────────────
+
+const DB = {
+
+  get(k){try{return JSON.parse(localStorage.getItem(&#x27;snc\_&#x27;+k))||null}catch{return null}},
+
+  set(k,v){localStorage.setItem(&#x27;snc\_&#x27;+k,JSON.stringify(v))},
+
+  push(k,v){const a=DB.get(k)||\[\];a.push(v);DB.set(k,a);return v},
+
+  update(k,id,patch){const a=DB.get(k)||\[\];const i=a.findIndex(x=&gt;x.id===id);if(i&gt;-1){a\[i\]={...a\[i\],...patch};DB.set(k,a)}},
+
+  delete(k,id){const a=(DB.get(k)||\[\]).filter(x=&gt;x.id!==id);DB.set(k,a)},
+
+  find(k,fn){return(DB.get(k)||\[\]).find(fn)||null},
+
+  filter(k,fn){return(DB.get(k)||\[\]).filter(fn)}
+
+};
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
+function simpleHash(s){let h=0;for(let c of s)h=(h&lt;&lt;5)-h+c.charCodeAt(0)|0;return h.toString(16)}
+
+function today(){return new Date().toISOString().split(&#x27;T&#x27;)\[0\]}
+
+function fmtDate(d){if(!d)return&#x27;—&#x27;;const x=new Date(d);return x.toLocaleDateString(&#x27;en-IN&#x27;,{day:&#x27;2-digit&#x27;,month:&#x27;short&#x27;,year:&#x27;numeric&#x27;})}
+
+function fmtMoney(n){return&#x27;₹&#x27;+(n||0).toLocaleString(&#x27;en-IN&#x27;)}
+
+// ─── AUTH ─────────────────────────────────────────────────────
+
+let currentUser = null;
+
+function initData() {
+  // Default seed data is handled server-side on first login
+},
+
+      {id:&#x27;u2&#x27;,name:&#x27;Ku. Sangeeta&#x27;,loginId:&#x27;sangeeta&#x27;,passwordHash:simpleHash(&#x27;pass123&#x27;),role:&#x27;CLINICIAN&#x27;,active:true},
+
+      {id:&#x27;u3&#x27;,name:&#x27;Reception&#x27;,loginId:&#x27;reception&#x27;,passwordHash:simpleHash(&#x27;rec123&#x27;),role:&#x27;RECEPTIONIST&#x27;,active:true}
+
+    \]);
+
+  }
+
+  if(!DB.get(&#x27;permissions&#x27;)){
+
+    DB.set(&#x27;permissions&#x27;,{
+
+      ADMIN:{dashboard:&#x27;EDIT&#x27;,patients:&#x27;EDIT&#x27;,&#x27;patient-detail&#x27;:&#x27;EDIT&#x27;,scheduler:&#x27;EDIT&#x27;,payments:&#x27;EDIT&#x27;,regular:&#x27;EDIT&#x27;,&#x27;admin-telegram&#x27;:&#x27;EDIT&#x27;,&#x27;admin-security&#x27;:&#x27;EDIT&#x27;,&#x27;admin-roles&#x27;:&#x27;EDIT&#x27;,&#x27;admin-users&#x27;:&#x27;EDIT&#x27;},
+
+      CLINICIAN:{dashboard:&#x27;VIEW&#x27;,patients:&#x27;EDIT&#x27;,&#x27;patient-detail&#x27;:&#x27;EDIT&#x27;,scheduler:&#x27;EDIT&#x27;,payments:&#x27;VIEW&#x27;,regular:&#x27;EDIT&#x27;,&#x27;admin-telegram&#x27;:&#x27;HIDDEN&#x27;,&#x27;admin-security&#x27;:&#x27;EDIT&#x27;,&#x27;admin-roles&#x27;:&#x27;HIDDEN&#x27;,&#x27;admin-users&#x27;:&#x27;HIDDEN&#x27;},
+
+      RECEPTIONIST:{dashboard:&#x27;VIEW&#x27;,patients:&#x27;EDIT&#x27;,&#x27;patient-detail&#x27;:&#x27;VIEW&#x27;,scheduler:&#x27;EDIT&#x27;,payments:&#x27;EDIT&#x27;,regular:&#x27;VIEW&#x27;,&#x27;admin-telegram&#x27;:&#x27;HIDDEN&#x27;,&#x27;admin-security&#x27;:&#x27;EDIT&#x27;,&#x27;admin-roles&#x27;:&#x27;HIDDEN&#x27;,&#x27;admin-users&#x27;:&#x27;HIDDEN&#x27;},
+
+      FINANCE:{dashboard:&#x27;VIEW&#x27;,patients:&#x27;VIEW&#x27;,&#x27;patient-detail&#x27;:&#x27;HIDDEN&#x27;,scheduler:&#x27;HIDDEN&#x27;,payments:&#x27;EDIT&#x27;,regular:&#x27;HIDDEN&#x27;,&#x27;admin-telegram&#x27;:&#x27;HIDDEN&#x27;,&#x27;admin-security&#x27;:&#x27;EDIT&#x27;,&#x27;admin-roles&#x27;:&#x27;HIDDEN&#x27;,&#x27;admin-users&#x27;:&#x27;HIDDEN&#x27;}
+
+    });
+
+  }
+
+  if(!DB.get(&#x27;tg-config&#x27;)){
+
+    DB.set(&#x27;tg-config&#x27;,{tokenEnc:&#x27;&#x27;,chatId:&#x27;&#x27;,alertTime:&#x27;20:00&#x27;,alBackup:true,alLogin:true,alRevenue:false,commands:\[\]});
+
+  }
+
+}
+
+function doLogin(){
+
+  const lid=document.getElementById(&#x27;lg-id&#x27;).value.trim();
+
+  const pw=document.getElementById(&#x27;lg-pw&#x27;).value;
+
+  const users=DB.get(&#x27;users&#x27;)||\[\];
+
+  const user=users.find(u=&gt;u.loginId===lid&amp;&amp;u.passwordHash===simpleHash(pw)&amp;&amp;u.active);
+
+  if(!user){document.getElementById(&#x27;lg-err&#x27;).style.display=&#x27;block&#x27;;return;}
+
+  document.getElementById(&#x27;lg-err&#x27;).style.display=&#x27;none&#x27;;
+
+  currentUser=user;
+
+  sessionStorage.setItem(&#x27;snc_session&#x27;,JSON.stringify({id:user.id,role:user.role}));
+
+  document.getElementById(&#x27;login-screen&#x27;).classList.add(&#x27;hidden&#x27;);
+
+  initApp();
+
+}
+
+function doLogout(){
+
+  sessionStorage.removeItem(&#x27;snc_session&#x27;);
+
+  currentUser=null;
+
+  document.getElementById(&#x27;login-screen&#x27;).classList.remove(&#x27;hidden&#x27;);
+
+  document.getElementById(&#x27;lg-id&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;lg-pw&#x27;).value=&#x27;&#x27;;
+
+}
+
+function checkSession(){
+
+  const s=sessionStorage.getItem(&#x27;snc_session&#x27;);
+
+  if(!s)return false;
+
+  const sess=JSON.parse(s);
+
+  const user=DB.find(&#x27;users&#x27;,u=&gt;u.id===sess.id);
+
+  if(user){currentUser=user;return true;}
+
+  return false;
+
+}
+
+// ─── APP INIT ─────────────────────────────────────────────────
+
+function initApp(){
+
+  // Sidebar user badge
+
+  document.getElementById(&#x27;sb-av&#x27;).textContent=currentUser.name.split(&#x27; &#x27;).map(w=&gt;w\[0\]).join(&#x27;&#x27;).slice(0,2);
+
+  document.getElementById(&#x27;sb-name&#x27;).textContent=currentUser.name;
+
+  document.getElementById(&#x27;sb-role&#x27;).textContent=currentUser.role;
+
+  // Enforce nav permissions
+
+  applyNavPermissions();
+
+  // Set today date
+
+  document.getElementById(&#x27;today-date&#x27;).textContent=fmtDate(today());
+
+  // Load dashboard
+
+  loadDashboard();
+
+  populateClinicianDropdowns();
+
+}
+
+function applyNavPermissions(){
+
+  const perms=DB.get(&#x27;permissions&#x27;)||{};
+
+  const rolePerms=perms\[currentUser.role\]||{};
+
+  document.querySelectorAll(&#x27;.nav-item\[data-screen\]&#x27;).forEach(el=&gt;{
+
+    const s=el.getAttribute(&#x27;data-screen&#x27;);
+
+    const p=rolePerms[s]||&#x27;HIDDEN&#x27;;
+
+    el.style.display=(p===&#x27;HIDDEN&#x27;)?&#x27;none&#x27;:&#x27;flex&#x27;;
+
+  });
+
+}
+
+// ─── SCREEN ROUTING ──────────────────────────────────────────
+
+function gotoScreen(name, el){
+
+  document.querySelectorAll(&#x27;.screen&#x27;).forEach(s=&gt;s.classList.remove(&#x27;active&#x27;));
+
+  const scr=document.getElementById(&#x27;scr-&#x27;+name);
+
+  if(scr)scr.classList.add(&#x27;active&#x27;);
+
+  document.querySelectorAll(&#x27;.nav-item&#x27;).forEach(n=&gt;n.classList.remove(&#x27;active&#x27;));
+
+  if(el)el.classList.add(&#x27;active&#x27;);
+
+  else{const ni=document.querySelector(&#x27;.nav-item\[data-screen=&quot;&#x27;+name+&#x27;&quot;\]&#x27;);if(ni)ni.classList.add(&#x27;active&#x27;);}
+
+  const titles={dashboard:&#x27;Dashboard&#x27;,patients:&#x27;All Patients&#x27;,scheduler:&#x27;Scheduler&#x27;,payments:&#x27;Payments&#x27;,regular:&#x27;Regular Patients&#x27;,&#x27;admin-telegram&#x27;:&#x27;Telegram Bot&#x27;,&#x27;admin-security&#x27;:&#x27;Security Settings&#x27;,&#x27;admin-roles&#x27;:&#x27;Roles &amp; Access&#x27;,&#x27;admin-users&#x27;:&#x27;User Manager&#x27;,&#x27;patient-detail&#x27;:&#x27;Patient Detail&#x27;};
+
+  document.getElementById(&#x27;topbar-title&#x27;).textContent=titles\[name\]||name;
+
+  document.getElementById(&#x27;btn-add-patient&#x27;).style.display=(name===&#x27;patients&#x27;)?&#x27;inline-flex&#x27;:&#x27;none&#x27;;
+
+  // Load screen data
+
+  if(name===&#x27;patients&#x27;)renderPatientTable();
+
+  if(name===&#x27;dashboard&#x27;)loadDashboard();
+
+  if(name===&#x27;payments&#x27;)renderPayments();
+
+  if(name===&#x27;regular&#x27;)renderRegularList();
+
+  if(name===&#x27;admin-telegram&#x27;)loadTelegramSettings();
+
+  if(name===&#x27;admin-security&#x27;)loadSecuritySettings();
+
+  if(name===&#x27;admin-roles&#x27;)renderPermissionMatrix();
+
+  if(name===&#x27;admin-users&#x27;)renderUserTable();
+
+  if(name===&#x27;scheduler&#x27;)renderSchedulerCal();
+
+}
+
+function switchTab(el,pane){
+
+  el.closest(&#x27;.tabs&#x27;).querySelectorAll(&#x27;.tab&#x27;).forEach(t=&gt;t.classList.remove(&#x27;active&#x27;));
+
+  el.classList.add(&#x27;active&#x27;);
+
+  const parent=el.closest(&#x27;.tabs&#x27;).nextElementSibling?.parentElement||document.getElementById(&#x27;pt-tabs&#x27;).parentElement;
+
+  document.querySelectorAll(&#x27;.tab-pane&#x27;).forEach(p=&gt;{if(p.closest(&#x27;#scr-patient-detail&#x27;))p.classList.remove(&#x27;active&#x27;)});
+
+  document.getElementById(pane).classList.add(&#x27;active&#x27;);
+
+}
+
+// ─── DASHBOARD ────────────────────────────────────────────────
+
+function loadDashboard(){
+
+  const patients=DB.get(&#x27;patients&#x27;)||\[\];
+
+  const sessions=DB.get(&#x27;sessions&#x27;)||\[\];
+
+  const todaySes=sessions.filter(s=&gt;s.date===today());
+
+  const rev=todaySes.reduce((a,s)=&gt;a+(parseInt(s.payment)||0),0);
+
+  const regPlans=(DB.get(&#x27;regular-plans&#x27;)||\[\]).filter(p=&gt;p.active);
+
+  document.getElementById(&#x27;s-total&#x27;).textContent=patients.length;
+
+  document.getElementById(&#x27;s-today&#x27;).textContent=todaySes.length;
+
+  document.getElementById(&#x27;s-rev&#x27;).textContent=fmtMoney(rev);
+
+  document.getElementById(&#x27;s-reg&#x27;).textContent=regPlans.length;
+
+  // Regular patients today
+
+  const todayDay=\[&#x27;Sun&#x27;,&#x27;Mon&#x27;,&#x27;Tue&#x27;,&#x27;Wed&#x27;,&#x27;Thu&#x27;,&#x27;Fri&#x27;,&#x27;Sat&#x27;\]\[new Date().getDay()\];
+
+  const dueToday=regPlans.filter(p=&gt;p.frequency===&#x27;DAILY&#x27;||(p.days&amp;&amp;p.days.includes(todayDay))||p.frequency===&#x27;ALT&#x27;);
+
+  const regWrap=document.getElementById(&#x27;dash-regular-list&#x27;);
+
+  if(dueToday.length===0){regWrap.innerHTML=&#x27;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;📭&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No regular patients today&lt;/div&gt;&lt;/div&gt;&#x27;;return;}
+
+  regWrap.innerHTML=&#x27;&#x27;;
+
+  dueToday.forEach(plan=&gt;{
+
+    const pt=DB.find(&#x27;patients&#x27;,p=&gt;p.id===plan.patientId);
+
+    if(!pt)return;
+
+    const visits=DB.filter(&#x27;visit-entries&#x27;,v=&gt;v.planId===plan.id);
+
+    const d=document.createElement(&#x27;div&#x27;);
+
+    d.style.cssText=&#x27;display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)&#x27;;
+
+    d.innerHTML`&lt;div style=&quot;font-size:20px&quot;&gt;🧑&lt;/div&gt;&lt;div style=&quot;flex:1&quot;&gt;&lt;div style=&quot;font-weight:600;font-size:13.5px&quot;&gt;${pt.name}&lt;/div&gt;&lt;div style=&quot;font-size:12px;color:var(--text-muted)&quot;&gt;${visits.length} sessions done&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;btn btn-sm btn-p&quot; onclick=&quot;openPatientDetail(&#x27;${pt.id}&#x27;)&quot;&gt;View&lt;/button&gt;`;
+
+    regWrap.appendChild(d);
+
+  });
+
+  // Recent sessions
+
+  const recentWrap=document.getElementById(&#x27;dash-recent-list&#x27;);
+
+  if(todaySes.length===0){recentWrap.innerHTML=&#x27;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;📋&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No sessions today&lt;/div&gt;&lt;/div&gt;&#x27;;return;}
+
+  recentWrap.innerHTML=\`&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Patient&lt;/th&gt;&lt;th&gt;Amount&lt;/th&gt;&lt;th&gt;Response&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;${
+
+    todaySes.slice(-5).reverse().map(s=&gt;{
+
+      const pt=DB.find(&#x27;patients&#x27;,p=&gt;p.id===s.patientId);
+
+      retur`&lt;tr onclick=&quot;openPatientDetail(&#x27;${s.patientId}&#x27;)&quot;&gt;&lt;td&gt;${pt?pt.name:&#x27;—&#x27;}&lt;/td&gt;&lt;td&gt;${fmtMoney(s.payment)}&lt;/td&gt;&lt;td&gt;${responseBadge(s.post?.response)}&lt;/td&gt;&lt;/tr&gt;`;
+
+    }).join(&#x27;&#x27;)
+
+  }&lt;/tbody&gt;&lt;/table&gt;\`;
+
+}
+
+function responseBadge(r){
+
+  const map={VERY_GOOD:&#x27;&lt;span class=&quot;badge bg-g&quot;&gt;Very Good&lt;/span&gt;&#x27;,GOOD:&#x27;&lt;span class=&quot;badge bg-b&quot;&gt;Good&lt;/span&gt;&#x27;,NEUTRAL:&#x27;&lt;span class=&quot;badge bg-grey&quot;&gt;Neutral&lt;/span&gt;&#x27;,POOR:&#x27;&lt;span class=&quot;badge bg-r&quot;&gt;Poor&lt;/span&gt;&#x27;};
+
+  return map[r]||&#x27;&lt;span class=&quot;badge bg-grey&quot;&gt;—&lt;/span&gt;&#x27;;
+
+}
+
+const API_BASE = "/api";
+// ─── PATIENTS ─────────────────────────────────────────────────
+
+let patientFilter=&#x27;&#x27;;
+
+function filterPatients(v){patientFilter=v.toLowerCase();renderPatientTable();}
+
+async function renderPatientTable() {
+  const res = await fetch(`${API_BASE}/patients`, { headers: { Authorization: `Bearer ${authToken}` } });
+  const data = await res.json();
+  const patients = data.patients || [];
+  const tbody = document.getElementById('patient-table-body');
+  document.getElementById('patient-empty').style.display = patients.length ? 'none' : 'block';
+  if (!patients.length) { tbody.innerHTML = ''; return; }
+  const q = document.getElementById('pt-search')?.value?.toLowerCase() || '';
+  const filtered = patients.filter(p => !q || p.name?.toLowerCase().includes(q) || p.regNo?.toLowerCase().includes(q));
+  tbody.innerHTML = filtered.map(p => `
+    <tr onclick="openPatientDetail('${p.id}')">
+      <td><strong>${p.regNo}</strong></td><td><div style="font-weight:600">${p.name}</div></td>
+      <td>${p.age||'—'}/${p.sex?.charAt(0)||'?'}</td><td>${p.mobile||'—'}</td>
+      <td>${(p.conditions||[]).slice(0,3).map(c=>`<span class="badge bg-b">${c}</span>`).join(' ')}</td>
+      <td>${p.active?'<span class="badge bg-g">Active</span>':'<span class="badge bg-grey">Inactive</span>'}</td>
+      <td onclick="event.stopPropagation()"><button class="btn btn-sm btn-o" onclick="openPatientDetail('${p.id}')">View</button></td>
+    </tr>`).join('');
+}
+
+async function openAddPatient() {{
+
+  document.getElementById(&#x27;pt-name&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pt-reg&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pt-age&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pt-sex&#x27;).value=&#x27;Male&#x27;;
+
+  document.getElementById(&#x27;pt-occ&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pt-addr&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pt-mob&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pt-tel&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pt-history&#x27;).value=&#x27;&#x27;;
+
+  document.querySelectorAll(&#x27;#cond-group .ci, #restr-group .ci&#x27;).forEach(el=&gt;{el.classList.remove(&#x27;checked&#x27;);el.querySelector(&#x27;input&#x27;).checked=false;});
+
+  openModal(&#x27;modal-patient&#x27;);
+
+}
+
+function savePatient(){
+
+  const name=document.getElementById(&#x27;pt-name&#x27;).value.trim();
+
+  const mob=document.getElementById(&#x27;pt-mob&#x27;).value.trim();
+
+  if(!name||!mob){toast(&#x27;Name and mobile are required&#x27;,&#x27;t-err&#x27;);return;}
+
+  const pts=DB.get(&#x27;patients&#x27;)||\[\];
+
+  const regNo=document.getElementById(&#x27;pt-reg&#x27;).value.trim()||&#x27;SNC&#x27;+String(pts.length+1).padStart(4,&#x27;0&#x27;);
+
+  const conds=getChecked(&#x27;cond-group&#x27;);
+
+  const restrs=getChecked(&#x27;restr-group&#x27;);
+
+  const pt={
+
+    id:uid(),regNo,name,age:document.getElementById(&#x27;pt-age&#x27;).value,sex:document.getElementById(&#x27;pt-sex&#x27;).value,
+
+    occupation:document.getElementById(&#x27;pt-occ&#x27;).value,address:document.getElementById(&#x27;pt-addr&#x27;).value,
+
+    mobile:mob,telephone:document.getElementById(&#x27;pt-tel&#x27;).value,
+
+    conditions:conds,restrictions:restrs,history:document.getElementById(&#x27;pt-history&#x27;).value,
+
+    active:true,createdAt:today()
+
+  };
+
+  DB.push(&#x27;patients&#x27;,pt);
+
+  closeModal(&#x27;modal-patient&#x27;);
+
+  renderPatientTable();
+
+  toast`Patient ${name} registered ✅`,&#x27;t-ok&#x27;);
+
+}
+
+function getChecked(groupId){
+
+  return \[...document.querySelectorAll(&#x27;#&#x27;+groupId+&#x27; .ci.checked&#x27;)\].map(el=&gt;el.querySelector(&#x27;input&#x27;).value);
+
+}
+
+// ─── PATIENT DETAIL ───────────────────────────────────────────
+
+let activePatientId=&#x27;&#x27;;
+
+async function openPatientDetail(pid) {
+  activePatientId = pid;
+  const r = await fetch(`${API_BASE}/patients/${pid}`, { headers: { Authorization: `Bearer ${authToken}` } });
+  const pt = await r.json();
+  if (!pt) return;
+  gotoScreen('patient-detail', null);
+  const initials = pt.name.split(' ').map(w=>w[0]).join('').slice(0,2);
+  document.getElementById('pt-hero').innerHTML = `
+    <div class="pt-av">${initials}</div>
+    <div style="flex:1">
+      <div class="pt-name">${pt.name}</div>
+      <div class="pt-meta">Reg: ${pt.regNo} &nbsp;•&nbsp; ${pt.age}/${pt.sex?.charAt(0)||'?'} &nbsp;•&nbsp; ${pt.occupation||'—'} &nbsp;•&nbsp; 📞 ${pt.mobile}</div>
+      <div class="pt-tags">${(pt.conditions||[]).map(c=>`<span class="pt-tag">⚠️ ${c}</span>`).join('')}${(pt.restrictions||[]).map(r=>`<span class="pt-tag">🚫 ${r}</span>`).join('')}</div>
+    </div>
+    <div class="pt-hero-right">
+      <button class="btn btn-a btn-sm" onclick="openAddSession()">+ Add Session</button>
+      <button class="btn btn-g btn-sm" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="openRegularPlanModal()">🔄 Set Plan</button>
+    </div>`;
+  document.getElementById('pt-info-body').innerHTML = `
+    <div class="fr">
+      <div class="card card-bd" style="margin-bottom:0">
+        <div class="sec-label">Contact</div>
+        <div class="nr"><div class="nl">Address</div><div class="nv">${pt.address||'—'}</div></div>
+        <div class="nr"><div class="nl">Mobile</div><div class="nv">${pt.mobile}</div></div>
+        <div class="nr"><div class="nl">Telephone</div><div class="nv">${pt.telephone||'—'}</div></div>
+      </div>
+      <div class="card card-bd" style="margin-bottom:0">
+        <div class="sec-label">Medical Notes</div>
+        <div class="nv" style="white-space:pre-wrap">${pt.history||'No history recorded.'}</div>
+      </div>
+    </div>`;
+  document.querySelectorAll('#pt-tabs .tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.querySelectorAll('#scr-patient-detail .tab-pane').forEach((p,i)=>p.classList.toggle('active',i===0));
+  loadSessionList();
+  loadRegularVisitTab();
+}
+
+// ─── SESSIONS ─────────────────────────────────────────────────
+
+async function loadSessionList() {
+  const r = await fetch(`${API_BASE}/sessions?patientId=${activePatientId}`, { headers: { Authorization: `Bearer ${authToken}` } });
+  const sessions = await r.json();
+  sessions.sort((a,b)=>b.sessionNo-a.sessionNo);
+  const wrap = document.getElementById('session-list-wrap');
+  if (!sessions.length) { wrap.innerHTML = '<div class="empty-state"><div class="es-icon">🩺</div><div class="es-title">No sessions yet</div><div class="es-sub">Click "+ Add Session" to record the first session</div></div>'; return; }
+  wrap.innerHTML = sessions.map(s => `
+    <div class="ses-card" id="sc-${s.id}">
+      <div class="ses-hd" onclick="toggleSession('${s.id}')">
+        <div class="ses-no">#${s.sessionNo}</div>
+        <div style="flex:1"><div style="font-weight:600;font-size:13.5px">${fmtDate(s.date)}</div>
+          <div style="font-size:12px;color:var(--text-muted)">${s.visitType==='HOME'?'🏠 Home Visit':'🏥 In-Clinic'} &nbsp;•&nbsp; ${s.clinicianName||'—'} &nbsp;•&nbsp; ${s.duration||'?'}min</div></div>
+        <div>${responseBadge(s.post?.response)}</div>
+        <div style="font-weight:700;color:var(--primary);margin-left:8px">${fmtMoney(s.payment)}</div>
+        <div style="color:var(--text-muted);margin-left:10px;font-size:18px">▾</div>
+      </div>
+      <div class="ses-bd">
+        <div class="pp-grid">
+          <div class="pre-box"><div class="pp-head">📋 Pre-Treatment</div>
+            <div class="nr"><div class="nl">Complaint</div><div class="nv">${s.pre?.complaint||'—'}</div></div>
+            <div class="nr"><div class="nl">Pain Level</div><div class="nv">${s.pre?.pain??'—'}/10</div></div>
+            <div class="nr"><div class="nl">Mobility</div><div class="nv">${s.pre?.mobility||'—'}</div></div>
+            <div class="nr"><div class="nl">Vitals</div><div class="nv">${s.pre?.vitals||'—'}</div></div>
+            <div class="nr"><div class="nl">Notes</div><div class="nv">${s.pre?.notes||'—'}</div></div>
+          </div>
+          <div class="post-box"><div class="pp-head">✅ Post-Treatment</div>
+            <div class="nr"><div class="nl">Techniques</div><div class="nv">${s.post?.techniques||'—'}</div></div>
+            <div class="nr"><div class="nl">Post Pain</div><div class="nv">${s.post?.pain??'—'}/10</div></div>
+            <div class="nr"><div class="nl">Response</div><div class="nv">${s.post?.response||'—'}</div></div>
+            <div class="nr"><div class="nl">Assessment</div><div class="nv">${s.post?.notes||'—'}</div></div>
+            <div class="nr"><div class="nl">Recommendation</div><div class="nv">${s.post?.recommendation||'—'}</div></div>
+            ${s.followup?`<div class="nr"><div class="nl">Follow-up</div><div class="nv">📅 ${fmtDate(s.followup)}</div></div>`:''}
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleSession(id){document.getElementById(&#x27;sc-&#x27;+id)?.classList.toggle(&#x27;open&#x27;)}
+
+function editSession(sid){
+  var s=DB.find(&#x27;sessions&#x27;,function(x){return x.id===sid;});
+  if(!s){toast(&#x27;Session not found&#x27;,&#x27;t-err&#x27;);return;}
+  var sessionDate=new Date(s.date);
+  var now=new Date();
+  var hoursDiff=(now-sessionDate)/(1000*60*60);
+  if(hoursDiff&gt;24&amp;&amp;currentUser.role!==&#x27;ADMIN&#x27;){toast(&#x27;Sessions can only be edited within 24 hours&#x27;,&#x27;t-err&#x27;);return;}
+  document.getElementById(&#x27;ses-date&#x27;).value=s.date||today();
+  document.getElementById(&#x27;ses-vtype&#x27;).value=s.visitType||&#x27;IN-CLINIC&#x27;;
+  document.getElementById(&#x27;ses-dur&#x27;).value=s.duration||&#x27;&#x27;;
+  document.getElementById(&#x27;ses-amt&#x27;).value=s.payment||&#x27;&#x27;;
+  document.getElementById(&#x27;ses-pmode&#x27;).value=s.paymentMode||&#x27;CASH&#x27;;
+  document.getElementById(&#x27;ses-clinician&#x27;).value=s.clinicianId||&#x27;&#x27;;
+  document.getElementById(&#x27;ses-pre-complaint&#x27;).value=s.pre?s.pre.complaint||&#x27;&#x27;:&#x27;&#x27;;
+  document.getElementById(&#x27;ses-pre-pain&#x27;).value=s.pre?s.pre.pain??5:5;document.getElementById(&#x27;sl-pre-v&#x27;).textContent=s.pre?s.pre.pain??5:5;
+  document.getElementById(&#x27;ses-pre-mob&#x27;).value=s.pre?s.pre.mobility||&#x27;&#x27;:&#x27;&#x27;;
+  document.getElementById(&#x27;ses-pre-vitals&#x27;).value=s.pre?s.pre.vitals||&#x27;&#x27;:&#x27;&#x27;;
+  document.getElementById(&#x27;ses-pre-notes&#x27;).value=s.pre?s.pre.notes||&#x27;&#x27;:&#x27;&#x27;;
+  document.getElementById(&#x27;ses-post-tech&#x27;).value=s.post?s.post.techniques||&#x27;&#x27;:&#x27;&#x27;;
+  document.getElementById(&#x27;ses-post-pain&#x27;).value=s.post?s.post.pain??3:3;document.getElementById(&#x27;sl-post-v&#x27;).textContent=s.post?s.post.pain??3:3;
+  document.getElementById(&#x27;ses-post-resp&#x27;).value=s.post?s.post.response||&#x27;GOOD&#x27;:&#x27;GOOD&#x27;;
+  document.getElementById(&#x27;ses-post-notes&#x27;).value=s.post?s.post.notes||&#x27;&#x27;:&#x27;&#x27;;
+  document.getElementById(&#x27;ses-post-rec&#x27;).value=s.post?s.post.recommendation||&#x27;&#x27;:&#x27;&#x27;;
+  document.getElementById(&#x27;ses-followup&#x27;).value=s.followup||&#x27;&#x27;;
+  document.getElementById(&#x27;modal-session&#x27;).setAttribute(&#x27;data-editing&#x27;,sid);
+  openModal(&#x27;modal-session&#x27;);
+}
+
+function deleteSession(sid){
+  if(currentUser.role!==&#x27;ADMIN&#x27;){toast(&#x27;Only ADMIN can delete sessions&#x27;,&#x27;t-err&#x27;);return;}
+  showConfirm(&#x27;Delete Session&#x27;,&#x27;Enter reason for deletion:&#x27;,function(reason){
+    if(!reason||!reason.trim()){toast(&#x27;Reason is required&#x27;,&#x27;t-err&#x27;);return;}
+    DB.delete(&#x27;sessions&#x27;,sid);
+    var pays=DB.filter(&#x27;payments&#x27;,function(p){return p.sessionId===sid;});
+    pays.forEach(function(p){DB.delete(&#x27;payments&#x27;,p.id);});
+    var log={id:uid(),event:&#x27;SESSION_DELETED&#x27;,sessionId:sid,reason:reason,deletedBy:currentUser.id,at:today()+&#x27; &#x27;+new Date().toTimeString().slice(0,5)};
+    var logs=DB.get(&#x27;audit_log&#x27;)||[];logs.push(log);DB.set(&#x27;audit_log&#x27;,logs);
+    loadSessionList();
+    loadDashboard();
+    toast(&#x27;Session deleted.&#x27;,&#x27;t-ok&#x27;);
+  });
+}
+
+function calculateProgressMetrics(){
+  var sessions=DB.filter(&#x27;sessions&#x27;,function(s){return s.patientId===activePatientId;});
+  if(!sessions.length)return null;
+  var totalDelta=0,count=0;
+  sessions.forEach(function(s){
+    var prePain=parseInt(s.pre?s.pre.pain:0);
+    var postPain=parseInt(s.post?s.post.pain:0);
+    if(!isNaN(prePain)&amp;&amp;!isNaN(postPain)){totalDelta+=prePain-postPain;count++;}
+  });
+  var avgDelta=count&gt;0?(totalDelta/count).toFixed(1):0;
+  var goodCount=sessions.filter(function(s){return s.post&amp;&amp;(s.post.response===&#x27;VERY_GOOD&#x27;||s.post.response===&#x27;GOOD&#x27;);}).length;
+  return{avgDelta:avgDelta,sessionCount:sessions.length,goodCount:goodCount,goodRate:count&gt;0?((goodCount/count)*100).toFixed(0):0};
+}
+
+function exportSessionPDF(sid){
+  var s=DB.find(&#x27;sessions&#x27;,function(x){return x.id===sid;});
+  if(!s){toast(&#x27;Session not found&#x27;,&#x27;t-err&#x27;);return;}
+  var pt=DB.find(&#x27;patients&#x27;,function(p){return p.id===s.patientId;});
+  var lines=[
+    &#x27;SNC SESSION CARD&#x27;,
+    &#x27;=================&#x27;,
+    &#x27;Patient: &#x27;+(pt?pt.name:&#x27;--&#x27;)+&#x27; | Reg: &#x27;+(pt?pt.regNo:&#x27;--&#x27;),
+    &#x27;Session #&#x27;+(s.sessionNo||&#x27;?&#x27;)+&#x27; | Date: &#x27;+(s.date||&#x27;--&#x27;)+&#x27; | &#x27;+(s.visitType||&#x27;--&#x27;),
+    &#x27;Clinician: &#x27;+(s.clinicianName||&#x27;--&#x27;)+&#x27; | Duration: &#x27;+(s.duration||&#x27;?&#x27;)+&#x27; min&#x27;,
+    &#x27;&#x27;,
+    &#x27;PRE-TREATMENT&#x27;,
+    &#x27;  Complaint: &#x27;+(s.pre?s.pre.complaint:&#x27;--&#x27;),
+    &#x27;  Pain Level: &#x27;+(s.pre?s.pre.pain:&#x27;--&#x27;)+&#x27;/10 | Mobility: &#x27;+(s.pre?s.pre.mobility:&#x27;--&#x27;),
+    &#x27;  Vitals: &#x27;+(s.pre?s.pre.vitals:&#x27;--&#x27;),
+    &#x27;  Notes: &#x27;+(s.pre?s.pre.notes:&#x27;--&#x27;),
+    &#x27;&#x27;,
+    &#x27;POST-TREATMENT&#x27;,
+    &#x27;  Techniques: &#x27;+(s.post?s.post.techniques:&#x27;--&#x27;),
+    &#x27;  Pain Level: &#x27;+(s.post?s.post.pain:&#x27;--&#x27;)+&#x27;/10 | Response: &#x27;+(s.post?s.post.response:&#x27;--&#x27;),
+    &#x27;  Notes: &#x27;+(s.post?s.post.notes:&#x27;--&#x27;),
+    &#x27;  Recommendation: &#x27;+(s.post?s.post.recommendation:&#x27;--&#x27;),
+    &#x27;&#x27;,
+    &#x27;Payment: Rs &#x27;+(s.payment||0)+&#x27; | Mode: &#x27;+(s.paymentMode||&#x27;--&#x27;),
+  ];
+  var text=lines.join(&#x27;
+&#x27;);
+  var blob=new Blob([text],{type:&#x27;text/plain&#x27;});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement(&#x27;a&#x27;);a.href=url;a.download=&#x27;SNC_Session_&#x27;+(s.sessionNo||sid)+&#x27;.txt&#x27;;a.click();
+  URL.revokeObjectURL(url);
+  toast(&#x27;Session exported.&#x27;,&#x27;t-ok&#x27;);
+}
+
+function openAddSession(){
+
+  document.getElementById(&#x27;ses-date&#x27;).value=today();
+
+  document.getElementById(&#x27;ses-pre-pain&#x27;).value=5;document.getElementById(&#x27;sl-pre-v&#x27;).textContent=&#x27;5&#x27;;
+
+  document.getElementById(&#x27;ses-post-pain&#x27;).value=3;document.getElementById(&#x27;sl-post-v&#x27;).textContent=&#x27;3&#x27;;
+
+  document.getElementById(&#x27;ses-amt&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;ses-pre-complaint&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;ses-pre-notes&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;ses-post-tech&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;ses-post-notes&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;ses-post-rec&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;ses-followup&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;ses-mark-regular&#x27;).checked=false;
+
+  openModal(&#x27;modal-session&#x27;);
+
+}
+
+function saveSession(){
+
+  if(!activePatientId){toast(&#x27;No patient selected&#x27;,&#x27;t-err&#x27;);return;}
+
+  const existing=DB.filter(&#x27;sessions&#x27;,s=&gt;s.patientId===activePatientId);
+
+  const clinSel=document.getElementById(&#x27;ses-clinician&#x27;);
+
+  const s={
+
+    id:uid(),patientId:activePatientId,sessionNo:existing.length+1,
+
+    date:document.getElementById(&#x27;ses-date&#x27;).value,
+
+    visitType:document.getElementById(&#x27;ses-vtype&#x27;).value,
+
+    clinicianId:clinSel.value,clinicianName:clinSel.options\[clinSel.selectedIndex\]?.text||&#x27;—&#x27;,
+
+    duration:document.getElementById(&#x27;ses-dur&#x27;).value,
+
+    payment:document.getElementById(&#x27;ses-amt&#x27;).value,
+
+    paymentMode:document.getElementById(&#x27;ses-pmode&#x27;).value,
+
+    pre:{
+
+      complaint:document.getElementById(&#x27;ses-pre-complaint&#x27;).value,
+
+      pain:document.getElementById(&#x27;ses-pre-pain&#x27;).value,
+
+      mobility:document.getElementById(&#x27;ses-pre-mob&#x27;).value,
+
+      vitals:document.getElementById(&#x27;ses-pre-vitals&#x27;).value,
+
+      notes:document.getElementById(&#x27;ses-pre-notes&#x27;).value
+
+    },
+
+    post:{
+
+      techniques:document.getElementById(&#x27;ses-post-tech&#x27;).value,
+
+      pain:document.getElementById(&#x27;ses-post-pain&#x27;).value,
+
+      response:document.getElementById(&#x27;ses-post-resp&#x27;).value,
+
+      notes:document.getElementById(&#x27;ses-post-notes&#x27;).value,
+
+      recommendation:document.getElementById(&#x27;ses-post-rec&#x27;).value
+
+    },
+
+    followup:document.getElementById(&#x27;ses-followup&#x27;).value
+
+  };
+
+  DB.push(&#x27;sessions&#x27;,s);
+
+  if(parseInt(s.payment)&gt;0){
+
+    DB.push(&#x27;payments&#x27;,{id:uid(),patientId:activePatientId,sessionId:s.id,date:s.date,amount:parseInt(s.payment),mode:s.paymentMode,notes`Session #${s.sessionNo}`});
+
+  }
+
+  if(document.getElementById(&#x27;ses-mark-regular&#x27;).checked){
+
+    const existing=DB.find(&#x27;regular-plans&#x27;,p=&gt;p.patientId===activePatientId&amp;&amp;p.active);
+
+    if(!existing)openRegularPlanModal();
+
+  }
+
+  closeModal(&#x27;modal-session&#x27;);
+
+  loadSessionList();
+
+  loadDashboard();
+
+  toast`Session #${s.sessionNo} saved ✅`,&#x27;t-ok&#x27;);
+
+}
+
+// ─── REGULAR VISITS ───────────────────────────────────────────
+
+let activePlanId=&#x27;&#x27;;
+
+let calYear=new Date().getFullYear(),calMonth=new Date().getMonth();
+
+let selectedCalDate=&#x27;&#x27;;
+
+function openRegularPlanModal(){
+
+  const existing=DB.find(&#x27;regular-plans&#x27;,p=&gt;p.patientId===activePatientId&amp;&amp;p.active);
+
+  document.getElementById(&#x27;rp-freq&#x27;).value=(existing?.frequency)||&#x27;WEEKLY&#x27;;
+
+  document.getElementById(&#x27;rp-target&#x27;).value=(existing?.targetSessions)||&#x27;&#x27;;
+
+  document.getElementById(&#x27;rp-start&#x27;).value=(existing?.startDate)||today();
+
+  document.getElementById(&#x27;rp-end&#x27;).value=(existing?.endDate)||&#x27;&#x27;;
+
+  document.getElementById(&#x27;rp-protocol&#x27;).value=(existing?.protocol)||&#x27;&#x27;;
+
+  document.getElementById(&#x27;rp-active&#x27;).checked=(existing?.active!==false);
+
+  document.querySelectorAll(&#x27;#rp-days-group .ci&#x27;).forEach(el=&gt;{
+
+    el.classList.toggle(&#x27;checked&#x27;,existing?.days?.includes(el.querySelector(&#x27;input&#x27;).value));
+
+    el.querySelector(&#x27;input&#x27;).checked=el.classList.contains(&#x27;checked&#x27;);
+
+  });
+
+  openModal(&#x27;modal-regular-plan&#x27;);
+
+}
+
+function saveRegularPlan(){
+
+  if(!activePatientId)return;
+
+  const existing=DB.find(&#x27;regular-plans&#x27;,p=&gt;p.patientId===activePatientId&amp;&amp;p.active);
+
+  const days=\[...document.querySelectorAll(&#x27;#rp-days-group .ci.checked&#x27;)\].map(el=&gt;el.querySelector(&#x27;input&#x27;).value);
+
+  const plan={
+
+    id:existing?.id||uid(),patientId:activePatientId,
+
+    frequency:document.getElementById(&#x27;rp-freq&#x27;).value,days,
+
+    targetSessions:parseInt(document.getElementById(&#x27;rp-target&#x27;).value)||null,
+
+    startDate:document.getElementById(&#x27;rp-start&#x27;).value,
+
+    endDate:document.getElementById(&#x27;rp-end&#x27;).value,
+
+    protocol:document.getElementById(&#x27;rp-protocol&#x27;).value,
+
+    active:document.getElementById(&#x27;rp-active&#x27;).checked
+
+  };
+
+  if(existing){DB.update(&#x27;regular-plans&#x27;,existing.id,plan);}
+
+  else{DB.push(&#x27;regular-plans&#x27;,plan);}
+
+  activePlanId=plan.id;
+
+  closeModal(&#x27;modal-regular-plan&#x27;);
+
+  loadRegularVisitTab();
+
+  toast(&#x27;Regular plan saved ✅&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+function loadRegularVisitTab(){
+
+  const wrap=document.getElementById(&#x27;pt-regular-wrap&#x27;);
+
+  const plan=DB.find(&#x27;regular-plans&#x27;,p=&gt;p.patientId===activePatientId&amp;&amp;p.active);
+
+  if(!plan){
+
+    wrap.innerHTML`&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;🔄&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No regular plan set&lt;/div&gt;&lt;div class=&quot;es-sub&quot;&gt;Set up a recurring visit plan for this patient&lt;/div&gt;&lt;/div&gt;&lt;div style=&quot;text-align:center;margin-top:12px&quot;&gt;&lt;button class=&quot;btn btn-p&quot; onclick=&quot;openRegularPlanModal()&quot;&gt;+ Set Regular Plan&lt;/button&gt;&lt;/div&gt;`;
+
+    return;
+
+  }
+
+  activePlanId=plan.id;
+
+  const entries=DB.filter(&#x27;visit-entries&#x27;,v=&gt;v.planId===plan.id);
+
+  const attended=entries.filter(v=&gt;v.attended).length;
+
+  wrap.innerHTML=\`
+
+    &lt;div style=&quot;display:grid;grid-template-columns:1fr 1fr;gap:16px&quot;&gt;
+
+      &lt;div&gt;
+
+        &lt;div class=&quot;card&quot; style=&quot;margin-bottom:14px&quot;&gt;
+
+          &lt;div class=&quot;card-hd&quot;&gt;&lt;div class=&quot;card-title&quot;&gt;📋 Plan Details&lt;/div&gt;&lt;button class=&quot;btn btn-sm btn-o&quot; onclick=&quot;openRegularPlanModal()&quot;&gt;✏️ Edit&lt;/button&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;card-bd&quot;&gt;
+
+            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Frequency&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${plan.frequency}${plan.days?.length?&#x27; — &#x27;+plan.days.join(&#x27;, &#x27;):&#x27;&#x27;}&lt;/div&gt;&lt;/div&gt;
+
+            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Start Date&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${fmtDate(plan.startDate)}&lt;/div&gt;&lt;/div&gt;
+
+            ${plan.endDate`&lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;End Date&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${fmtDate(plan.endDate)}&lt;/div&gt;&lt;/div&gt;`:&#x27;&#x27;}
+
+            ${plan.targetSessions`&lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Progress&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${attended} / ${plan.targetSessions} sessions&lt;/div&gt;&lt;/div&gt;`:&#x27;&#x27;}
+
+            &lt;div class=&quot;nr&quot;&gt;&lt;div class=&quot;nl&quot;&gt;Protocol&lt;/div&gt;&lt;div class=&quot;nv&quot;&gt;${plan.protocol||&#x27;—&#x27;}&lt;/div&gt;&lt;/div&gt;
+
+          &lt;/div&gt;
+
+        &lt;/div&gt;
+
+        &lt;div id=&quot;visit-entry-panel&quot;&gt;&lt;/div&gt;
+
+      &lt;/div&gt;
+
+      &lt;div&gt;
+
+        &lt;div class=&quot;cal-wrap&quot;&gt;
+
+          &lt;div class=&quot;cal-nav&quot;&gt;
+
+            &lt;button onclick=&quot;calPrev()&quot;&gt;◀&lt;/button&gt;
+
+            &lt;h3 id=&quot;cal-month-title&quot;&gt;&lt;/h3&gt;
+
+            &lt;button onclick=&quot;calNext()&quot;&gt;▶&lt;/button&gt;
+
+          &lt;/div&gt;
+
+          &lt;div class=&quot;cal-days-header&quot;&gt;${\[&#x27;S&#x27;,&#x27;M&#x27;,&#x27;T&#x27;,&#x27;W&#x27;,&#x27;T&#x27;,&#x27;F&#x27;,&#x27;S&#x27;\].map(d=`&lt;div class=&quot;cal-dn&quot;&gt;${d}&lt;/div&gt;`).join(&#x27;&#x27;)}&lt;/div&gt;
+
+          &lt;div class=&quot;cal-grid&quot; id=&quot;cal-grid&quot;&gt;&lt;/div&gt;
+
+          &lt;div class=&quot;cal-legend&quot;&gt;
+
+            &lt;div class=&quot;cal-leg&quot;&gt;&lt;div class=&quot;cal-dot&quot; style=&quot;background:#16a34a&quot;&gt;&lt;/div&gt;Attended&lt;/div&gt;
+
+            &lt;div class=&quot;cal-leg&quot;&gt;&lt;div class=&quot;cal-dot&quot; style=&quot;background:#dc2626&quot;&gt;&lt;/div&gt;Absent&lt;/div&gt;
+
+            &lt;div class=&quot;cal-leg&quot;&gt;&lt;div class=&quot;cal-dot&quot; style=&quot;background:var(--primary)&quot;&gt;&lt;/div&gt;Today&lt;/div&gt;
+
+          &lt;/div&gt;
+
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;\`;
+
+  renderCalendar(plan);
+
+}
+
+function renderCalendar(plan){
+
+  const title=document.getElementById(&#x27;cal-month-title&#x27;);
+
+  if(!title)return;
+
+  const grid=document.getElementById(&#x27;cal-grid&#x27;);
+
+  const months=\[&#x27;January&#x27;,&#x27;February&#x27;,&#x27;March&#x27;,&#x27;April&#x27;,&#x27;May&#x27;,&#x27;June&#x27;,&#x27;July&#x27;,&#x27;August&#x27;,&#x27;September&#x27;,&#x27;October&#x27;,&#x27;November&#x27;,&#x27;December&#x27;\];
+
+  title.textContent=months\[calMonth\]+&#x27; &#x27;+calYear;
+
+  const entries=DB.filter(&#x27;visit-entries&#x27;,v=&gt;v.planId===plan.id);
+
+  const entryMap={};
+
+  entries.forEach(e=&gt;{entryMap\[e.date\]=e;});
+
+  const first=new Date(calYear,calMonth,1);
+
+  const last=new Date(calYear,calMonth+1,0);
+
+  let cells=\[\];
+
+  for(let i=0;i&lt;first.getDay();i++)cells.push(null);
+
+  for(let d=1;d&lt;=last.getDate();d++)cells.push(d);
+
+  grid.innerHTML=cells.map(d=&gt;{
+
+    if(!d)return&#x27;&lt;div class=&quot;cal-cell off&quot;&gt;&lt;/div&gt;&#x27;;
+
+    const dateStr`${calYear}-${String(calMonth+1).padStart(2,&#x27;0&#x27;)}-${String(d).padStart(2,&#x27;0&#x27;)}`;
+
+    const e=entryMap\[dateStr\];
+
+    const isToday=dateStr===today();
+
+    const cls=e?(e.attended?&#x27;c-ok&#x27;:&#x27;c-ab&#x27;):(isToday?&#x27;today&#x27;:&#x27;&#x27;);
+
+    retur`&lt;div class=&quot;cal-cell ${cls}${selectedCalDate===dateStr?&#x27; c-sel&#x27;:&#x27;&#x27;}&quot; onclick=&quot;selectCalDate(&#x27;${dateStr}&#x27;)&quot;&gt;${d}&lt;/div&gt;`;
+
+  }).join(&#x27;&#x27;);
+
+}
+
+function calPrev(){if(calMonth===0){calMonth=11;calYear--;}else calMonth--;const plan=DB.find(&#x27;regular-plans&#x27;,p=&gt;p.id===activePlanId);if(plan)renderCalendar(plan);}
+
+function calNext(){if(calMonth===11){calMonth=0;calYear++;}else calMonth++;const plan=DB.find(&#x27;regular-plans&#x27;,p=&gt;p.id===activePlanId);if(plan)renderCalendar(plan);}
+
+function selectCalDate(date){
+
+  selectedCalDate=date;
+
+  const plan=DB.find(&#x27;regular-plans&#x27;,p=&gt;p.id===activePlanId);
+
+  if(plan)renderCalendar(plan);
+
+  const entry=DB.find(&#x27;visit-entries&#x27;,v=&gt;v.planId===activePlanId&amp;&amp;v.date===date);
+
+  // Open visit entry modal
+
+  document.getElementById(&#x27;ve-modal-title&#x27;).textContent`📋 ${fmtDate(date)}`;
+
+  document.getElementById(&#x27;ve-attended&#x27;).checked=entry?entry.attended:true;
+
+  document.getElementById(&#x27;ve-abs-reason&#x27;).value=entry?.absenceReason||&#x27;&#x27;;
+
+  document.getElementById(&#x27;ve-treatment&#x27;).value=entry?.treatment||plan?.protocol||&#x27;&#x27;;
+
+  document.getElementById(&#x27;ve-dur&#x27;).value=entry?.duration||&#x27;&#x27;;
+
+  document.getElementById(&#x27;ve-pay&#x27;).value=entry?.payment||&#x27;&#x27;;
+
+  document.getElementById(&#x27;ve-pmode&#x27;).value=entry?.paymentMode||&#x27;CASH&#x27;;
+
+  document.getElementById(&#x27;ve-cond&#x27;).value=entry?.condition||&#x27;IMPROVING&#x27;;
+
+  document.getElementById(&#x27;ve-notes&#x27;).value=entry?.notes||&#x27;&#x27;;
+
+  toggleAbsence();
+
+  populateClinicianDropdowns();
+
+  openModal(&#x27;modal-visit-entry&#x27;);
+
+}
+
+function toggleAbsence(){
+
+  const att=document.getElementById(&#x27;ve-attended&#x27;).checked;
+
+  document.getElementById(&#x27;ve-absence-row&#x27;).style.display=att?&#x27;none&#x27;:&#x27;block&#x27;;
+
+  document.getElementById(&#x27;ve-fields&#x27;).style.display=att?&#x27;block&#x27;:&#x27;none&#x27;;
+
+}
+
+function saveVisitEntry(){
+
+  if(!activePlanId||!selectedCalDate)return;
+
+  const existing=DB.find(&#x27;visit-entries&#x27;,v=&gt;v.planId===activePlanId&amp;&amp;v.date===selectedCalDate);
+
+  const attended=document.getElementById(&#x27;ve-attended&#x27;).checked;
+
+  const clinSel=document.getElementById(&#x27;ve-clinician&#x27;);
+
+  const entry={
+
+    id:existing?.id||uid(),planId:activePlanId,patientId:activePatientId,date:selectedCalDate,
+
+    attended,absenceReason:document.getElementById(&#x27;ve-abs-reason&#x27;).value,
+
+    treatment:document.getElementById(&#x27;ve-treatment&#x27;).value,
+
+    clinicianId:clinSel.value,duration:document.getElementById(&#x27;ve-dur&#x27;).value,
+
+    payment:parseInt(document.getElementById(&#x27;ve-pay&#x27;).value)||0,
+
+    paymentMode:document.getElementById(&#x27;ve-pmode&#x27;).value,
+
+    condition:document.getElementById(&#x27;ve-cond&#x27;).value,
+
+    notes:document.getElementById(&#x27;ve-notes&#x27;).value
+
+  };
+
+  if(existing)DB.update(&#x27;visit-entries&#x27;,existing.id,entry);
+
+  else DB.push(&#x27;visit-entries&#x27;,entry);
+
+  if(entry.payment&gt;0&amp;&amp;attended){
+
+    const existPay=DB.find(&#x27;payments&#x27;,p=&gt;p.visitEntryId===entry.id);
+
+    if(!existPay)DB.push(&#x27;payments&#x27;,{id:uid(),patientId:activePatientId,visitEntryId:entry.id,date:selectedCalDate,amount:entry.payment,mode:entry.paymentMode,notes:&#x27;Regular visit&#x27;});
+
+  }
+
+  closeModal(&#x27;modal-visit-entry&#x27;);
+
+  loadRegularVisitTab();
+
+  toast(&#x27;Visit entry saved ✅&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+function renderRegularList(){
+
+  const plans=DB.filter(&#x27;regular-plans&#x27;,p=&gt;p.active);
+
+  const wrap=document.getElementById(&#x27;reg-list-wrap&#x27;);
+
+  if(!plans.length){wrap.innerHTML=&#x27;&lt;div class=&quot;card card-bd&quot;&gt;&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;🔄&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No regular patients&lt;/div&gt;&lt;div class=&quot;es-sub&quot;&gt;Mark patients as regular from their session notes&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&#x27;;return;}
+
+  wrap.innerHTML=\`&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;tw&quot;&gt;&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Patient&lt;/th&gt;&lt;th&gt;Frequency&lt;/th&gt;&lt;th&gt;Start Date&lt;/th&gt;&lt;th&gt;Sessions Done&lt;/th&gt;&lt;th&gt;Protocol&lt;/th&gt;&lt;th&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;${
+
+    plans.map(plan=&gt;{
+
+      const pt=DB.find(&#x27;patients&#x27;,p=&gt;p.id===plan.patientId);
+
+      const done=DB.filter(&#x27;visit-entries&#x27;,v=&gt;v.planId===plan.id&amp;&amp;v.attended).length;
+
+      retur`&lt;tr onclick=&quot;openPatientDetail(&#x27;${plan.patientId}&#x27;)&quot;&gt;&lt;td&gt;&lt;strong&gt;${pt?.name||&#x27;Unknown&#x27;}&lt;/strong&gt;&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;badge bg-b&quot;&gt;${plan.frequency}&lt;/span&gt;&lt;/td&gt;&lt;td&gt;${fmtDate(plan.startDate)}&lt;/td&gt;&lt;td&gt;${done}${plan.targetSessions?&#x27; / &#x27;+plan.targetSessions:&#x27;&#x27;}&lt;/td&gt;&lt;td style=&quot;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap&quot;&gt;${plan.protocol||&#x27;—&#x27;}&lt;/td&gt;&lt;td&gt;&lt;button class=&quot;btn btn-sm btn-o&quot; onclick=&quot;event.stopPropagation();openPatientDetail(&#x27;${plan.patientId}&#x27;)&quot;&gt;View Plan&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;`;
+
+    }).join(&#x27;&#x27;)
+
+  }&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;&lt;/div&gt;\`;
+
+}
+
+// ─── PAYMENTS ─────────────────────────────────────────────────
+
+function renderPayments(){
+
+  const pays=DB.get(&#x27;payments&#x27;)||\[\];
+
+  const tbody=document.getElementById(&#x27;pay-table-body&#x27;);
+
+  document.getElementById(&#x27;pay-empty&#x27;).style.display=pays.length?&#x27;none&#x27;:&#x27;block&#x27;;
+
+  if(!pays.length){tbody.innerHTML=&#x27;&#x27;;return;}
+
+  const sorted=\[...pays\].sort((a,b)=&gt;b.date.localeCompare(a.date));
+
+  tbody.innerHTML=sorted.map(p=&gt;{
+
+    const pt=DB.find(&#x27;patients&#x27;,x=&gt;x.id===p.patientId);
+
+    retur`&lt;tr&gt;&lt;td&gt;${fmtDate(p.date)}&lt;/td&gt;&lt;td&gt;${pt?.name||&#x27;—&#x27;}&lt;/td&gt;&lt;td style=&quot;font-weight:700;color:var(--primary)&quot;&gt;${fmtMoney(p.amount)}&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;badge ${p.mode===&#x27;CASH&#x27;?&#x27;bg-g&#x27;:p.mode===&#x27;UPI&#x27;?&#x27;bg-b&#x27;:&#x27;bg-a&#x27;}&quot;&gt;${p.mode}&lt;/span&gt;&lt;/td&gt;&lt;td&gt;${p.sessionId?&#x27;Session&#x27;:&#x27;Regular&#x27;}&lt;/td&gt;&lt;td&gt;${p.notes||&#x27;—&#x27;}&lt;/td&gt;&lt;/tr&gt;`;
+
+  }).join(&#x27;&#x27;);
+
+}
+
+function openAddPayment(){
+
+  const patients=DB.get(&#x27;patients&#x27;)||\[\];
+
+  document.getElementById(&#x27;pay-patient&#x27;).innerHTML=patients.map(p=`&lt;option value=&quot;${p.id}&quot;&gt;${p.name}&lt;/option&gt;`).join(&#x27;&#x27;);
+
+  document.getElementById(&#x27;pay-date&#x27;).value=today();
+
+  document.getElementById(&#x27;pay-amount&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pay-notes&#x27;).value=&#x27;&#x27;;
+
+  openModal(&#x27;modal-payment&#x27;);
+
+}
+
+function savePayment(){
+
+  const pid=document.getElementById(&#x27;pay-patient&#x27;).value;
+
+  const amt=parseInt(document.getElementById(&#x27;pay-amount&#x27;).value);
+
+  if(!pid||!amt){toast(&#x27;Patient and amount required&#x27;,&#x27;t-err&#x27;);return;}
+
+  DB.push(&#x27;payments&#x27;,{id:uid(),patientId:pid,date:document.getElementById(&#x27;pay-date&#x27;).value,amount:amt,mode:document.getElementById(&#x27;pay-mode&#x27;).value,notes:document.getElementById(&#x27;pay-notes&#x27;).value});
+
+  closeModal(&#x27;modal-payment&#x27;);
+
+  renderPayments();
+
+  toast(&#x27;Payment recorded ✅&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+// ─── SCHEDULER ────────────────────────────────────────────────
+
+let schedYear=new Date().getFullYear(),schedMonth=new Date().getMonth(),schedDay=&#x27;&#x27;;
+
+function renderSchedulerCal(){
+
+  const wrap=document.getElementById(&#x27;sched-cal&#x27;);
+
+  const months=\[&#x27;January&#x27;,&#x27;February&#x27;,&#x27;March&#x27;,&#x27;April&#x27;,&#x27;May&#x27;,&#x27;June&#x27;,&#x27;July&#x27;,&#x27;August&#x27;,&#x27;September&#x27;,&#x27;October&#x27;,&#x27;November&#x27;,&#x27;December&#x27;\];
+
+  const first=new Date(schedYear,schedMonth,1);
+
+  const last=new Date(schedYear,schedMonth+1,0);
+
+  let cells=\[\];
+
+  for(let i=0;i&lt;first.getDay();i++)cells.push(null);
+
+  for(let d=1;d&lt;=last.getDate();d++)cells.push(d);
+
+  wrap.innerHTML=\`
+
+    &lt;div class=&quot;cal-nav&quot;&gt;
+
+      &lt;button onclick=&quot;schedPrev()&quot;&gt;◀&lt;/button&gt;
+
+      &lt;h3&gt;${months\[schedMonth\]} ${schedYear}&lt;/h3&gt;
+
+      &lt;button onclick=&quot;schedNext()&quot;&gt;▶&lt;/button&gt;
+
+    &lt;/div&gt;
+
+    &lt;div class=&quot;cal-days-header&quot;&gt;${\[&#x27;Sun&#x27;,&#x27;Mon&#x27;,&#x27;Tue&#x27;,&#x27;Wed&#x27;,&#x27;Thu&#x27;,&#x27;Fri&#x27;,&#x27;Sat&#x27;\].map(d=`&lt;div class=&quot;cal-dn&quot;&gt;${d}&lt;/div&gt;`).join(&#x27;&#x27;)}&lt;/div&gt;
+
+    &lt;div class=&quot;cal-grid&quot;&gt;${cells.map(d=&gt;{
+
+      if(!d)return&#x27;&lt;div class=&quot;cal-cell off&quot;&gt;&lt;/div&gt;&#x27;;
+
+      const ds`${schedYear}-${String(schedMonth+1).padStart(2,&#x27;0&#x27;)}-${String(d).padStart(2,&#x27;0&#x27;)}`;
+
+      const hasSes=DB.filter(&#x27;sessions&#x27;,s=&gt;s.date===ds).length&gt;0;
+
+      retur`&lt;div class=&quot;cal-cell ${ds===today()?&#x27;today&#x27;:&#x27;&#x27;} ${hasSes?&#x27;c-ok&#x27;:&#x27;&#x27;} ${schedDay===ds?&#x27;c-sel&#x27;:&#x27;&#x27;}&quot; onclick=&quot;selectSchedDay(&#x27;${ds}&#x27;)&quot;&gt;${d}&lt;/div&gt;`;
+
+    }).join(&#x27;&#x27;)}&lt;/div&gt;\`;
+
+}
+
+function schedPrev(){if(schedMonth===0){schedMonth=11;schedYear--;}else schedMonth--;renderSchedulerCal();}
+
+function schedNext(){if(schedMonth===11){schedMonth=0;schedYear++;}else schedMonth++;renderSchedulerCal();}
+
+function selectSchedDay(ds){
+
+  schedDay=ds;renderSchedulerCal();
+
+  const sessions=DB.filter(&#x27;sessions&#x27;,s=&gt;s.date===ds);
+
+  const wrap=document.getElementById(&#x27;sched-appts&#x27;);
+
+  if(!sessions.length){wrap.innerHTML`&lt;div class=&quot;empty-state&quot;&gt;&lt;div class=&quot;es-icon&quot;&gt;📅&lt;/div&gt;&lt;div class=&quot;es-title&quot;&gt;No sessions on ${fmtDate(ds)}&lt;/div&gt;&lt;/div&gt;`;return;}
+
+  wrap.innerHTML`&lt;h3 style=&quot;margin-bottom:12px;font-family:&#x27;Syne&#x27;,sans-serif;font-size:15px;color:var(--primary-dark)&quot;&gt;${fmtDate(ds)} — ${sessions.length} session(s)&lt;/h3&gt;`+sessions.map(s=&gt;{const pt=DB.find(&#x27;patients&#x27;,p=&gt;p.id===s.patientId);retur`&lt;div style=&quot;display:flex;align-items:center;gap:12px;padding:10px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:8px&quot;&gt;&lt;div&gt;🧑&lt;/div&gt;&lt;div style=&quot;flex:1&quot;&gt;&lt;div style=&quot;font-weight:600&quot;&gt;${pt?.name||&#x27;—&#x27;}&lt;/div&gt;&lt;div style=&quot;font-size:12px;color:var(--text-muted)&quot;&gt;${s.clinicianName||&#x27;—&#x27;} • ${s.duration||&#x27;?&#x27;} min&lt;/div&gt;&lt;/div&gt;${responseBadge(s.post?.response)}&lt;div style=&quot;font-weight:700;color:var(--primary)&quot;&gt;${fmtMoney(s.payment)}&lt;/div&gt;&lt;/div&gt;`;}).join(&#x27;&#x27;);
+
+}
+
+// ─── TELEGRAM ─────────────────────────────────────────────────
+
+function loadTelegramSettings(){
+
+  const cfg=DB.get(&#x27;tg-config&#x27;)||{};
+
+  const hasToken=!!cfg.tokenEnc;
+
+  document.getElementById(&#x27;tg-token-display&#x27;).textContent=hasToken?&#x27;••••••••••••••••••••••••••••••••••••••&#x27;:&#x27;Not configured&#x27;;
+
+  document.getElementById(&#x27;tg-status-badge&#x27;).innerHTML=hasToken?&#x27;&lt;span class=&quot;badge bg-g&quot;&gt;✅ Active&lt;/span&gt;&#x27;:&#x27;&lt;span class=&quot;badge bg-grey&quot;&gt;Not Set&lt;/span&gt;&#x27;;
+
+  document.getElementById(&#x27;tg-chat-id&#x27;).value=cfg.chatId||&#x27;&#x27;;
+
+  document.getElementById(&#x27;tg-alert-time&#x27;).value=cfg.alertTime||&#x27;20:00&#x27;;
+
+  document.getElementById(&#x27;tg-al-backup&#x27;).checked=cfg.alBackup!==false;
+
+  document.getElementById(&#x27;tg-al-login&#x27;).checked=cfg.alLogin!==false;
+
+  document.getElementById(&#x27;tg-al-revenue&#x27;).checked=!!cfg.alRevenue;
+
+  renderCommandList(cfg.commands||\[\]);
+
+}
+
+function renderCommandList(cmds){
+
+  const wrap=document.getElementById(&#x27;tg-cmd-list&#x27;);
+
+  if(!cmds.length){wrap.innerHTML=&#x27;&lt;div style=&quot;color:var(--text-muted);font-size:13px;padding:12px 0&quot;&gt;No commands defined. Click &quot;+ Add Command&quot; or load defaults.&lt;/div&gt;&#x27;;return;}
+
+  wrap.innerHTML=cmds.map((c,i)=`&lt;div class=&quot;cmd-row&quot;&gt;&lt;span class=&quot;cmd-trigger&quot;&gt;${c.trigger}&lt;/span&gt;&lt;span class=&quot;cmd-desc&quot;&gt;${c.description}&lt;/span&gt;&lt;span class=&quot;badge ${c.type===&#x27;DYNAMIC&#x27;?&#x27;bg-b&#x27;:&#x27;bg-grey&#x27;}&quot;&gt;${c.type}&lt;/span&gt;&lt;button class=&quot;btn btn-sm btn-d&quot; onclick=&quot;deleteCommand(${i})&quot;&gt;✕&lt;/button&gt;&lt;/div&gt;`).join(&#x27;&#x27;);
+
+}
+
+function saveTelegramToken(){
+
+  const raw=document.getElementById(&#x27;tg-token-input&#x27;).value.trim();
+
+  if(!raw){toast(&#x27;Enter a bot token first&#x27;,&#x27;t-err&#x27;);return;}
+
+  const tokenReg=/^\\d{8,12}:\[A-Za-z0-9\_-\]{35,}$/;
+
+  if(!tokenReg.test(raw)){toast(&#x27;Invalid token format. Check your BotFather token.&#x27;,&#x27;t-err&#x27;);return;}
+
+  const cfg=DB.get(&#x27;tg-config&#x27;)||{};
+
+  // Simple XOR &quot;encryption&quot; for demo purposes
+
+  cfg.tokenEnc=btoa(raw.split(&#x27;&#x27;).map((c,i)=&gt;String.fromCharCode(c.charCodeAt(0)^(42+i%13))).join(&#x27;&#x27;));
+
+  DB.set(&#x27;tg-config&#x27;,cfg);
+
+  document.getElementById(&#x27;tg-token-input&#x27;).value=&#x27;&#x27;;
+
+  loadTelegramSettings();
+
+  toast(&#x27;Bot token saved and verified ✅&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+function revokeTelegramToken(){
+
+  showConfirm(&#x27;Revoke Bot Token&#x27;,&#x27;Revoke bot token? All Telegram alerts will stop immediately.&#x27;,()=&gt;{
+
+    const cfg=DB.get(&#x27;tg-config&#x27;)||{};
+
+    cfg.tokenEnc=&#x27;&#x27;;
+
+    DB.set(&#x27;tg-config&#x27;,cfg);
+
+    loadTelegramSettings();
+
+    toast(&#x27;Token revoked&#x27;,&#x27;t-warn&#x27;);
+
+  });
+
+}
+
+function testBotConnection(){
+
+  const cfg=DB.get(&#x27;tg-config&#x27;)||{};
+
+  if(!cfg.tokenEnc){toast(&#x27;No token configured&#x27;,&#x27;t-err&#x27;);return;}
+
+  toast(&#x27;Testing connection… (demo mode ✅)&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+function saveTgSettings(){
+
+  const cfg=DB.get(&#x27;tg-config&#x27;)||{};
+
+  cfg.chatId=document.getElementById(&#x27;tg-chat-id&#x27;).value;
+
+  cfg.alertTime=document.getElementById(&#x27;tg-alert-time&#x27;).value;
+
+  cfg.alBackup=document.getElementById(&#x27;tg-al-backup&#x27;).checked;
+
+  cfg.alLogin=document.getElementById(&#x27;tg-al-login&#x27;).checked;
+
+  cfg.alRevenue=document.getElementById(&#x27;tg-al-revenue&#x27;).checked;
+
+  DB.set(&#x27;tg-config&#x27;,cfg);
+
+}
+
+let editingCmdIndex=-1;
+
+function openAddCommand(){editingCmdIndex=-1;document.getElementById(&#x27;cmd-trigger&#x27;).value=&#x27;&#x27;;document.getElementById(&#x27;cmd-desc&#x27;).value=&#x27;&#x27;;document.getElementById(&#x27;cmd-response&#x27;).value=&#x27;&#x27;;document.getElementById(&#x27;cmd-type&#x27;).value=&#x27;STATIC&#x27;;toggleCmdType();openModal(&#x27;modal-cmd&#x27;);}
+
+function toggleCmdType(){const t=document.getElementById(&#x27;cmd-type&#x27;).value;document.getElementById(&#x27;cmd-static-row&#x27;).style.display=t===&#x27;STATIC&#x27;?&#x27;block&#x27;:&#x27;none&#x27;;document.getElementById(&#x27;cmd-dyn-row&#x27;).style.display=t===&#x27;DYNAMIC&#x27;?&#x27;block&#x27;:&#x27;none&#x27;;}
+
+document.getElementById(&#x27;cmd-type&#x27;).addEventListener(&#x27;change&#x27;,toggleCmdType);
+
+function saveCommand(){
+
+  const trigger=document.getElementById(&#x27;cmd-trigger&#x27;).value.trim();
+
+  const desc=document.getElementById(&#x27;cmd-desc&#x27;).value.trim();
+
+  if(!trigger||!desc){toast(&#x27;Trigger and description required&#x27;,&#x27;t-err&#x27;);return;}
+
+  const cfg=DB.get(&#x27;tg-config&#x27;)||{};
+
+  if(!cfg.commands)cfg.commands=\[\];
+
+  const type=document.getElementById(&#x27;cmd-type&#x27;).value;
+
+  const cmd={trigger:trigger.startsWith(&#x27;/&#x27;)?trigger:&#x27;/&#x27;+trigger,description:desc,type,response:type===&#x27;STATIC&#x27;?document.getElementById(&#x27;cmd-response&#x27;).value:&#x27;&#x27;,query:type===&#x27;DYNAMIC&#x27;?document.getElementById(&#x27;cmd-query&#x27;).value:&#x27;&#x27;};
+
+  cfg.commands.push(cmd);
+
+  DB.set(&#x27;tg-config&#x27;,cfg);
+
+  closeModal(&#x27;modal-cmd&#x27;);
+
+  renderCommandList(cfg.commands);
+
+  toast(&#x27;Command added ✅&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+function deleteCommand(i){
+
+  const cfg=DB.get(&#x27;tg-config&#x27;)||{};
+
+  cfg.commands.splice(i,1);
+
+  DB.set(&#x27;tg-config&#x27;,cfg);
+
+  renderCommandList(cfg.commands);
+
+  toast(&#x27;Command removed&#x27;,&#x27;t-warn&#x27;);
+
+}
+
+function pushCommandsToTelegram(){
+
+  const cfg=DB.get(&#x27;tg-config&#x27;)||{};
+
+  if(!cfg.tokenEnc){toast(&#x27;Configure bot token first&#x27;,&#x27;t-err&#x27;);return;}
+
+  toast`${(cfg.commands||[]).length} commands pushed to Telegram bot ✅`,&#x27;t-ok&#x27;);
+
+}
+
+function loadDefaultCommands(){
+
+  const defaults=\[
+
+    {trigger:&#x27;/status&#x27;,description:&#x27;Get system status&#x27;,type:&#x27;DYNAMIC&#x27;,query:&#x27;backup_status&#x27;},
+
+    {trigger:&#x27;/patients&#x27;,description:&#x27;Patients seen today&#x27;,type:&#x27;DYNAMIC&#x27;,query:&#x27;patients_today&#x27;},
+
+    {trigger:&#x27;/revenue&#x27;,description:&#x27;Revenue summary today&#x27;,type:&#x27;DYNAMIC&#x27;,query:&#x27;revenue_today&#x27;},
+
+    {trigger:&#x27;/next&#x27;,description:&#x27;Next scheduled appointment&#x27;,type:&#x27;DYNAMIC&#x27;,query:&#x27;next_appointment&#x27;},
+
+    {trigger:&#x27;/help&#x27;,description:&#x27;List all commands&#x27;,type:&#x27;STATIC&#x27;,response:&#x27;Available: /status /patients /revenue /next&#x27;}
+
+  \];
+
+  const cfg=DB.get(&#x27;tg-config&#x27;)||{};
+
+  cfg.commands=defaults;
+
+  DB.set(&#x27;tg-config&#x27;,cfg);
+
+  renderCommandList(cfg.commands);
+
+  toast(&#x27;Default commands loaded ✅&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+// ─── SECURITY ─────────────────────────────────────────────────
+
+function loadSecuritySettings(){
+
+  document.getElementById(&#x27;lid-cur&#x27;).value=currentUser.loginId;
+
+  document.getElementById(&#x27;pw-cur&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pw-new&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;pw-conf&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;lid-new&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;lid-pw&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;admin-reset-section&#x27;).style.display=currentUser.role===&#x27;ADMIN&#x27;?&#x27;block&#x27;:&#x27;none&#x27;;
+
+  if(currentUser.role===&#x27;ADMIN&#x27;){
+
+    const users=DB.get(&#x27;users&#x27;)||\[\];
+
+    document.getElementById(&#x27;reset-user-sel&#x27;).innerHTML=users.filter(u=&gt;u.id!==currentUser.id).map(u=`&lt;option value=&quot;${u.id}&quot;&gt;${u.name} (${u.loginId})&lt;/option&gt;`).join(&#x27;&#x27;);
+
+  }
+
+}
+
+function changePassword(){
+
+  const cur=document.getElementById(&#x27;pw-cur&#x27;).value;
+
+  const nw=document.getElementById(&#x27;pw-new&#x27;).value;
+
+  const conf=document.getElementById(&#x27;pw-conf&#x27;).value;
+
+  const err=document.getElementById(&#x27;pw-err&#x27;);
+
+  if(simpleHash(cur)!==currentUser.passwordHash){err.textContent=&#x27;Current password incorrect&#x27;;err.style.display=&#x27;block&#x27;;return;}
+
+  if(nw.length&lt;8||!/\\d/.test(nw)||!/\[^a-zA-Z0-9\]/.test(nw)){err.textContent=&#x27;Min 8 chars, 1 number, 1 special character&#x27;;err.style.display=&#x27;block&#x27;;return;}
+
+  if(nw!==conf){err.textContent=&#x27;Passwords do not match&#x27;;err.style.display=&#x27;block&#x27;;return;}
+
+  err.style.display=&#x27;none&#x27;;
+
+  DB.update(&#x27;users&#x27;,currentUser.id,{passwordHash:simpleHash(nw)});
+
+  DB.update(&#x27;users&#x27;,currentUser.id,{passwordHash:simpleHash(nw),mustChangePassword:false});
+  // Force re-login - per addendum: invalidate all sessions
+  sessionStorage.clear();
+  toast(&#x27;Password updated. Please log in again.&#x27;,&#x27;t-ok&#x27;);
+  setTimeout(()=&gt;{location.reload();},1200);
+
+  toast(&#x27;Password updated ✅ You remain logged in.&#x27;,&#x27;t-ok&#x27;);
+
+  document.getElementById(&#x27;pw-cur&#x27;).value=&#x27;&#x27;;document.getElementById(&#x27;pw-new&#x27;).value=&#x27;&#x27;;document.getElementById(&#x27;pw-conf&#x27;).value=&#x27;&#x27;;
+
+}
+
+function changeLoginId(){
+
+  const nw=document.getElementById(&#x27;lid-new&#x27;).value.trim();
+
+  const pw=document.getElementById(&#x27;lid-pw&#x27;).value;
+
+  const err=document.getElementById(&#x27;lid-err&#x27;);
+
+  if(!/^\[a-zA-Z0-9\_\]{5,}$/.test(nw)){err.textContent=&#x27;Min 5 chars, alphanumeric and \_ only&#x27;;err.style.display=&#x27;block&#x27;;return;}
+
+  if(DB.find(&#x27;users&#x27;,u=&gt;u.loginId===nw&amp;&amp;u.id!==currentUser.id)){err.textContent=&#x27;Login ID already taken&#x27;;err.style.display=&#x27;block&#x27;;return;}
+
+  if(simpleHash(pw)!==currentUser.passwordHash){err.textContent=&#x27;Password incorrect&#x27;;err.style.display=&#x27;block&#x27;;return;}
+
+  err.style.display=&#x27;none&#x27;;
+
+  DB.update(&#x27;users&#x27;,currentUser.id,{loginId:nw});
+
+  currentUser.loginId=nw;
+
+  document.getElementById(&#x27;lid-cur&#x27;).value=nw;
+
+  toast(&#x27;Login ID updated to: &#x27;+nw+&#x27; ✅&#x27;,&#x27;t-ok&#x27;);
+
+  document.getElementById(&#x27;lid-new&#x27;).value=&#x27;&#x27;;document.getElementById(&#x27;lid-pw&#x27;).value=&#x27;&#x27;;
+
+}
+
+function adminResetPassword(){
+
+  const uid2=document.getElementById(&#x27;reset-user-sel&#x27;).value;
+
+  if(!uid2){toast(&#x27;Select a user&#x27;,&#x27;t-err&#x27;);return;}
+
+  const chars=&#x27;ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!&#x27;;
+
+  const tmp=Array.from({length:10},()=&gt;chars\[Math.floor(Math.random()\*chars.length)\]).join(&#x27;&#x27;);
+
+  DB.update(&#x27;users&#x27;,uid2,{passwordHash:simpleHash(tmp),mustChangePassword:true});
+
+  const user=DB.find(&#x27;users&#x27;,u=&gt;u.id===uid2);
+
+  showConfirm(&#x27;Temp Password Generated&#x27;`Temporary password for ${user.name}:\n\n🔑 ${tmp}\n\nShare this once only. User must change it on next login.`,()=&gt;{});
+
+  document.getElementById(&#x27;conf-ok&#x27;).style.display=&#x27;none&#x27;;
+
+}
+
+// ─── PERMISSIONS ──────────────────────────────────────────────
+
+const SCREENS=\[
+
+  {k:&#x27;dashboard&#x27;,label:&#x27;📊 Dashboard&#x27;},
+
+  {k:&#x27;patients&#x27;,label:&#x27;👥 All Patients&#x27;},
+
+  {k:&#x27;patient-detail&#x27;,label:&#x27;📋 Patient Detail&#x27;},
+
+  {k:&#x27;sessions&#x27;,label:&#x27;🩺 Session Notes&#x27;},
+
+  {k:&#x27;scheduler&#x27;,label:&#x27;📅 Scheduler&#x27;},
+
+  {k:&#x27;payments&#x27;,label:&#x27;💳 Payments&#x27;},
+
+  {k:&#x27;regular&#x27;,label:&#x27;🔄 Regular Visits&#x27;},
+
+  {k:&#x27;admin-telegram&#x27;,label:&#x27;📨 Telegram Bot&#x27;},
+
+  {k:&#x27;admin-security&#x27;,label:&#x27;🔐 Security&#x27;},
+
+  {k:&#x27;admin-roles&#x27;,label:&#x27;🛡️ Roles &amp; Access&#x27;},
+
+  {k:&#x27;admin-users&#x27;,label:&#x27;⚙️ User Manager&#x27;}
+
+\];
+
+const ROLES=\[&#x27;ADMIN&#x27;,&#x27;CLINICIAN&#x27;,&#x27;RECEPTIONIST&#x27;,&#x27;FINANCE&#x27;\];
+
+let customRoles=[];
+function getAllRoles(){return [...ROLES,...customRoles];}
+function openAddRoleModal(){
+  var name=prompt(&#x27;Enter new role name (uppercase, no spaces):&#x27;);
+  if(!name)return;
+  var roleName=name.toUpperCase().replace(/\s+/g,&#x27;_&#x27;);
+  if(ROLES.indexOf(roleName)&gt;=0||customRoles.indexOf(roleName)&gt;=0){toast(&#x27;Role already exists&#x27;,&#x27;t-err&#x27;);return;}
+  customRoles.push(roleName);
+  renderPermissionMatrix();
+  toast(&#x27;Role &#x27;+roleName+&#x27; created.&#x27;,&#x27;t-ok&#x27;);
+}
+function deleteRole(roleName){
+  if(ROLES.indexOf(roleName)&gt;=0){toast(&#x27;Cannot delete built-in roles&#x27;,&#x27;t-err&#x27;);return;}
+  var usersWithRole=(DB.get(&#x27;users&#x27;)||[]).filter(function(u){return u.role===roleName;});
+  if(usersWithRole.length&gt;0){toast(&#x27;Cannot delete: &#x27;+usersWithRole.length+&#x27; user(s) have this role&#x27;,&#x27;t-err&#x27;);return;}
+  customRoles=customRoles.filter(function(r){return r!==roleName;});
+  var perms=DB.get(&#x27;permissions&#x27;)||{};
+  if(perms[roleName])delete perms[roleName];
+  DB.set(&#x27;permissions&#x27;,perms);
+  renderPermissionMatrix();
+  toast(&#x27;Role deleted.&#x27;,&#x27;t-ok&#x27;);
+}
+
+function renderPermissionMatrix(){
+
+  const perms=DB.get(&#x27;permissions&#x27;)||{};
+
+  const table=document.getElementById(&#x27;pm-table&#x27;);
+
+  table.innerHTML`&lt;thead&gt;&lt;tr&gt;&lt;th&gt;Screen / Feature&lt;/th&gt;${getAllRoles().map(function(r){return`&lt;th&gt;${r}&lt;/th&gt;`;}).join(&#x27;&#x27;)}&lt;/tr&gt;&lt;/thead&gt;
+
+  &lt;tbody&gt;${SCREENS.map(sc=&gt;\`&lt;tr&gt;&lt;td style=&quot;font-weight:600&quot;&gt;${sc.label}&lt;/td&gt;${getAllRoles().map(function(role){
+
+    const val=(perms[role]||{})[sc.k]||&#x27;HIDDEN&#x27;;
+
+    retur`&lt;td&gt;&lt;select class=&quot;pm-sel pm-${val}&quot; data-role=&quot;${role}&quot; data-screen=&quot;${sc.k}&quot; onchange=&quot;updatePerm(this)&quot;&gt;${[&#x27;EDIT&#x27;,&#x27;VIEW&#x27;,&#x27;HIDDEN&#x27;].map(v=&gt;`&lt;option value=&quot;${v}&quot;${val===v?&#x27; selected&#x27;:&#x27;&#x27;}&gt;${v}&lt;/option`).join(&#x27;&#x27;)}&lt;/select&gt;&lt;/td&gt;`;
+
+  }).join(&#x27;&#x27;)}&lt;/tr`).join(&#x27;&#x27;)}&lt;/tbody&gt;`;
+
+}
+
+function updatePerm(sel){markSessionDirty();
+
+  sel.className`pm-sel pm-${sel.value}`;
+
+}
+
+function savePermissions(){
+
+  const sels=document.querySelectorAll(&#x27;#pm-table .pm-sel&#x27;);
+
+  const perms={};
+
+  ROLES.forEach(r=&gt;{perms[r]={};});
+
+  sels.forEach(sel=&gt;{const r=sel.getAttribute(&#x27;data-role&#x27;);const s=sel.getAttribute(&#x27;data-screen&#x27;);perms[r][s]=sel.value;});
+  // Lockout prevention: no role can have 0 accessible screens
+  for(var ri=0;ri&lt;ROLES.length;ri++){
+    var role=ROLES[ri];
+    var accessible=SCREENS.filter(function(sc){return perms[role]&amp;&amp;perms[role][sc.k]&amp;&amp;perms[role][sc.k]!==&#x27;HIDDEN&#x27;;});
+    if(accessible.length===0){toast(&#x27;Error: &#x27;+role+&#x27; needs at least one accessible screen&#x27;,&#x27;t-err&#x27;);return;}
+  }
+
+  DB.set(&#x27;permissions&#x27;,perms);
+
+  applyNavPermissions();
+
+  toast(&#x27;Permissions saved ✅&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+// ─── USERS ────────────────────────────────────────────────────
+
+function renderUserTable(){
+
+  const users=DB.get(&#x27;users&#x27;)||\[\];
+
+  document.getElementById(&#x27;user-table-body&#x27;).innerHTML=users.map(u=&gt;\`
+
+    &lt;tr&gt;
+
+      &lt;td&gt;&lt;strong&gt;${u.name}&lt;/strong&gt;&lt;/td&gt;
+
+      &lt;td&gt;&lt;code style=&quot;background:var(--bg);padding:2px 8px;border-radius:4px&quot;&gt;${u.loginId}&lt;/code&gt;&lt;/td&gt;
+
+      &lt;td&gt;&lt;span class=&quot;badge ${u.role===&#x27;ADMIN&#x27;?&#x27;bg-pu&#x27;:u.role===&#x27;CLINICIAN&#x27;?&#x27;bg-g&#x27;:u.role===&#x27;RECEPTIONIST&#x27;?&#x27;bg-b&#x27;:&#x27;bg-a&#x27;}&quot;&gt;${u.role}&lt;/span&gt;&lt;/td&gt;
+
+      &lt;td&gt;${u.active?&#x27;&lt;span class=&quot;badge bg-g&quot;&gt;Active&lt;/span&gt;&#x27;:&#x27;&lt;span class=&quot;badge bg-grey&quot;&gt;Inactive&lt;/span&gt;&#x27;}&lt;/td&gt;
+
+      &lt;td&gt;&lt;button class=&quot;btn btn-sm btn-g&quot; onclick=&quot;toggleUserActive(&#x27;${u.id}&#x27;,${u.active})&quot;&gt;${u.active?&#x27;Deactivate&#x27;:&#x27;Activate&#x27;}&lt;/button&gt;&lt;/td&gt;
+
+    &lt;/tr&gt;\`).join(&#x27;&#x27;);
+
+}
+
+function toggleUserActive(id,current){
+
+  DB.update(&#x27;users&#x27;,id,{active:!current});
+
+  renderUserTable();
+
+  toast(&#x27;User status updated&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+function openAddUser(){
+
+  document.getElementById(&#x27;u-name&#x27;).value=&#x27;&#x27;;document.getElementById(&#x27;u-lid&#x27;).value=&#x27;&#x27;;
+
+  document.getElementById(&#x27;u-pw&#x27;).value=&#x27;&#x27;;document.getElementById(&#x27;u-role&#x27;).value=&#x27;CLINICIAN&#x27;;
+
+  document.getElementById(&#x27;user-modal-title&#x27;).textContent=&#x27;Add User&#x27;;
+
+  openModal(&#x27;modal-user&#x27;);
+
+}
+
+function saveUser(){
+
+  const name=document.getElementById(&#x27;u-name&#x27;).value.trim();
+
+  const lid=document.getElementById(&#x27;u-lid&#x27;).value.trim();
+
+  const pw=document.getElementById(&#x27;u-pw&#x27;).value;
+
+  if(!name||!lid||pw.length&lt;8){toast(&#x27;All fields required; password min 8 chars&#x27;,&#x27;t-err&#x27;);return;}
+
+  if(DB.find(&#x27;users&#x27;,u=&gt;u.loginId===lid)){toast(&#x27;Login ID already in use&#x27;,&#x27;t-err&#x27;);return;}
+
+  DB.push(&#x27;users&#x27;,{id:uid(),name,loginId:lid,passwordHash:simpleHash(pw),role:document.getElementById(&#x27;u-role&#x27;).value,active:true});
+
+  closeModal(&#x27;modal-user&#x27;);
+
+  renderUserTable();
+
+  populateClinicianDropdowns();
+
+  toast(&#x27;User added ✅&#x27;,&#x27;t-ok&#x27;);
+
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────
+
+function populateClinicianDropdowns(){
+
+  const clinicians=(DB.get(&#x27;users&#x27;)||\[\]).filter(u=&gt;u.active&amp;&amp;(u.role===&#x27;CLINICIAN&#x27;||u.role===&#x27;ADMIN&#x27;));
+
+  const opts=clinicians.map(c=`&lt;option value=&quot;${c.id}&quot;&gt;${c.name}&lt;/option&gt;`).join(&#x27;&#x27;);
+
+  \[&#x27;ses-clinician&#x27;,&#x27;ve-clinician&#x27;\].forEach(id=&gt;{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
+
+}
+
+function toggleChk(el){el.classList.toggle(&#x27;checked&#x27;);el.querySelector(&#x27;input&#x27;).checked=el.classList.contains(&#x27;checked&#x27;);}
+
+function openModal(id){document.getElementById(id).classList.add(&#x27;active&#x27;);}
+
+function closeModal(id){document.getElementById(id).classList.remove(&#x27;active&#x27;);}
+
+function toast(msg,cls=&#x27;&#x27;){
+
+  const t=document.createElement(&#x27;div&#x27;);
+
+  t.className=&#x27;toast &#x27;+(cls||&#x27;&#x27;);
+
+  t.innerHTML=msg;
+
+  document.getElementById(&#x27;tc&#x27;).appendChild(t);
+
+  setTimeout(()=&gt;t.remove(),3500);
+
+}
+
+function showConfirm(title,msg,onOk){
+
+  document.getElementById(&#x27;conf-title&#x27;).textContent=title;
+
+  document.getElementById(&#x27;conf-msg&#x27;).textContent=msg;
+
+  const ok=document.getElementById(&#x27;conf-ok&#x27;);
+
+  ok.style.display=&#x27;inline-flex&#x27;;
+
+  ok.onclick=()=&gt;{onOk();closeModal(&#x27;modal-confirm&#x27;);};
+
+  openModal(&#x27;modal-confirm&#x27;);
+
+}
+
+// Close modals on overlay click
+
+document.querySelectorAll(&#x27;.modal-ov&#x27;).forEach(ov=&gt;{ov.addEventListener(&#x27;click&#x27;,e=&gt;{if(e.target===ov)ov.classList.remove(&#x27;active&#x27;);});});
+
+// Enter key on login
+
+document.getElementById(&#x27;lg-pw&#x27;).addEventListener(&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;Enter&#x27;)doLogin();});
+
+document.getElementById(&#x27;lg-id&#x27;).addEventListener(&#x27;keydown&#x27;,e=&gt;{if(e.key===&#x27;Enter&#x27;)doLogin();});
+
+// ─── BOOT ─────────────────────────────────────────────────────
+
+initData();
+
+if(checkSession()){
+
+  document.getElementById(&#x27;login-screen&#x27;).classList.add(&#x27;hidden&#x27;);
+
+  initApp();
+
+}
+
+// Seed some demo data if empty
+
+if(!(DB.get(&#x27;patients&#x27;)||\[\]).length){
+
+  const demo=\[
+
+    {id:&#x27;p1&#x27;,regNo:&#x27;SNC2018293&#x27;,name:&#x27;Ramesh Kumar&#x27;,age:52,sex:&#x27;Male&#x27;,occupation:&#x27;Teacher&#x27;,address:&#x27;Shaheed Nagar, Agra&#x27;,mobile:&#x27;9876543210&#x27;,telephone:&#x27;&#x27;,conditions:\[&#x27;BP&#x27;,&#x27;Diabetes&#x27;\],restrictions:\[&#x27;No Khatta&#x27;\],history:&#x27;Chronic back pain for 3 years. Previous physiotherapy with partial relief.&#x27;,active:true,createdAt:&#x27;2024-01-10&#x27;},
+
+    {id:&#x27;p2&#x27;,regNo:&#x27;SNC2018294&#x27;,name:&#x27;Sunita Devi&#x27;,age:38,sex:&#x27;Female&#x27;,occupation:&#x27;Housewife&#x27;,address:&#x27;Rajpur Chungi, Agra&#x27;,mobile:&#x27;9876543211&#x27;,telephone:&#x27;&#x27;,conditions:\[&#x27;B-12&#x27;,&#x27;Folic Acid&#x27;\],restrictions:\[&#x27;Restriction&#x27;\],history:&#x27;Neck stiffness, mild cervical spondylosis.&#x27;,active:true,createdAt:&#x27;2024-01-15&#x27;},
+
+    {id:&#x27;p3&#x27;,regNo:&#x27;SNC2018295&#x27;,name:&#x27;Manoj Singh&#x27;,age:45,sex:&#x27;Male&#x27;,occupation:&#x27;Businessman&#x27;,address:&#x27;Civil Lines, Agra&#x27;,mobile:&#x27;9876543212&#x27;,telephone:&#x27;&#x27;,conditions:\[&#x27;Heart&#x27;,&#x27;Kidney&#x27;\],restrictions:\[&#x27;No Non-Veg&#x27;,&#x27;No Alcohol&#x27;\],history:&#x27;Sciatica, radiating pain in left leg.&#x27;,active:true,createdAt:&#x27;2024-02-01&#x27;}
+
+  \];
+
+  DB.set(&#x27;patients&#x27;,demo);
+
+  // Demo sessions
+
+  DB.push(&#x27;sessions&#x27;,{id:&#x27;s1&#x27;,patientId:&#x27;p1&#x27;,sessionNo:1,date:today(),visitType:&#x27;IN-CLINIC&#x27;,clinicianId:&#x27;u1&#x27;,clinicianName:&#x27;Pt. Pradeep Kumar&#x27;,duration:45,payment:500,paymentMode:&#x27;CASH&#x27;,pre:{complaint:&#x27;Severe lower back pain&#x27;,pain:&#x27;7&#x27;,mobility:&#x27;Restricted&#x27;,vitals:&#x27;130/85&#x27;,notes:&#x27;Patient walked with difficulty, lumbar region tender&#x27;},post:{techniques:&#x27;Spinal manipulation, Acupressure L3-L5&#x27;,pain:&#x27;3&#x27;,response:&#x27;GOOD&#x27;,notes:&#x27;Significant improvement in pain and mobility&#x27;,recommendation:&#x27;Continue spinal manipulation 3x/week&#x27;},followup:&#x27;&#x27;});
+
+  DB.push(&#x27;payments&#x27;,{id:&#x27;pay1&#x27;,patientId:&#x27;p1&#x27;,sessionId:&#x27;s1&#x27;,date:today(),amount:500,mode:&#x27;CASH&#x27;,notes:&#x27;Session #1&#x27;});
+
+  // Demo regular plan
+
+  DB.push(&#x27;regular-plans&#x27;,{id:&#x27;rp1&#x27;,patientId:&#x27;p2&#x27;,frequency:&#x27;WEEKLY&#x27;,days:\[&#x27;Mon&#x27;,&#x27;Wed&#x27;,&#x27;Fri&#x27;\],startDate:&#x27;2024-03-01&#x27;,endDate:&#x27;&#x27;,targetSessions:24,protocol:&#x27;Cervical traction + shoulder mobilisation + hot pack&#x27;,active:true});
+
+}
+
+
+
+
+
+
+
+&lt;/script&gt;
+
+&lt;/body&gt;
+
+&lt;/html&gt;
