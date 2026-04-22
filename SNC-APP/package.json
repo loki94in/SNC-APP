@@ -1,0 +1,24 @@
+{
+  "name": "snc-patient-register",
+  "version": "1.0.0",
+  "description": "SNC Patient Register - Siyaram Neurotherapy Center",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js",
+    "build:frontend": "cd snc && npm install && npm run build",
+    "package": "electron-builder --win --x64"
+  },
+  "keywords": ["clinic", "patient", "management"],
+  "author": "Siyaram Neurotherapy Center",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.9.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {}
+}
