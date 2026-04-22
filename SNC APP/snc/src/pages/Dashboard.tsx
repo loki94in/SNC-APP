@@ -81,15 +81,9 @@ export default function Dashboard() {
       onAppEvent("app:regular-visits-changed", loadData),
     ];
     return () => cleanups.forEach(fn => fn());
-  }, []);
+  }, [loadData]);
 
   useEffect(() => { loadData(); }, []);
-
-  // Listen for payments changes too
-  useEffect(() => {
-    const cleanups = [onAppEvent("app:payments-changed", loadData)];
-    return () => cleanups.forEach(fn => fn());
-  }, [loadData]);
 
   const statCards = [
     { label: "Total Patients", value: stats.totalPatients, icon: IconUsers, color: "#1a7a4a" },

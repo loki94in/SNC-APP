@@ -62,6 +62,7 @@ export default function Regular() {
     const cleanups = [
       onAppEvent("app:patients-changed", loadData),
       onAppEvent("app:sessions-changed", loadData),
+      onAppEvent("app:regular-visits-changed", loadData),
     ];
     return () => cleanups.forEach(fn => fn());
   }, []);
