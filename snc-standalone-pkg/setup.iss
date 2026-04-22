@@ -37,11 +37,10 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputBaseFilename=SNC-Patient-Register-Setup-{#MyAppVersion}
-SetupIconFile=build\icon.ico
 WizardStyle=modern
 PrivilegesRequiredOverridesAllowed=dialog
 DisableProgramGroupPage=yes
-Compression=lzma2/optimal64bit
+Compression=lzma2/ultra64
 SolidCompression=yes
 ; Windows 10 or later (64-bit only)
 MinVersion=10.0
@@ -59,17 +58,13 @@ Name: "quicklaunch"; Description: "Create a &Quick Launch shortcut"; GroupDescri
 [Files]
 ; ── Electron App Files ──────────────────────────────────────
 Source: "dist\win-unpacked\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.pdb"
-; ── Frontend Built Files ────────────────────────────────────
-; (already included above in win-unpacked/*)
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 Name: "{group}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
-; Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunch
 
 [Run]
-; Launch app after install
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName} now"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
