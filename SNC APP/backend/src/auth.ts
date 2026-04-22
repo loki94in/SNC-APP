@@ -69,9 +69,8 @@ export interface AuthUser {
 export async function authMiddleware(c: Context, next: Next) {
   // Skip auth middleware for login/logout endpoints
   const path = c.req.path;
-  if (path === "/api/auth/login" || path === "/api/auth/logout") {
-    await next();
-    return;
+  if (path === "/api/auth/login" || path === "/api/auth/logout" || path === "/api/config/login-bypass" || path === "/api/telegram/test") {
+    await next(); return;
   }
   const header = c.req.header("Authorization");
   if (!header?.startsWith("Bearer ")) return c.json({ error: "Unauthorized" }, 401);

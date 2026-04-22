@@ -40,6 +40,26 @@ export default function Security() {
       .finally(() => setAuditLoading(false));
   }, []);
 
+  // Login Bypass toggle (ADMIN only)
+  const [bypassEnabled, setBypassEnabled] = useState(false);
+  useEffect(() => {
+    if (user?.role !== "ADMIN") return;
+    api<{ enabled: boolean }>("/api/config/login-bypass")
+      .then(data => setBypassEnabled(data.enabled))
+      .catch(() => {});
+  }, [user?.role]);
+
+  const toggleBypass = async () => {
+    const next = !bypassEnabled;
+    try {
+      await api("/api/config/login-bypass", { method: "PUT", body: { enabled: next } });
+      setBypassEnabled(next);
+      setBackupMsg?.({ type: "success", text: next ? "Login bypass ENABLED — app will auto-login on next visit." : "Login bypass DISABLED — login screen required." });
+    } catch (err: any) {
+      setBackupMsg?.({ type: "error", text: err.message || "Failed" });
+    }
+  };
+
   const handlePasswordChange = async () => {
     if (!currentPwd || !newPwd || !confirmPwd) {
       setMessage({ type: "error", text: "All fields are required" }); return;
