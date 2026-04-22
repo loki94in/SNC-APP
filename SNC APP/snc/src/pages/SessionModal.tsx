@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "@/lib/api";
+import { emitAppEvent } from "@/lib/appEvents";
 
 interface SessionModalProps {
   patientId: string;
@@ -15,11 +16,11 @@ export default function SessionModal({ patientId, onClose }: SessionModalProps) 
     paymentMode: "CASH",
     preComplaint: "",
     prePain: 5,
-    preMobility: "NORMAL",
+    preMobility: "Normal",
     preVitals: "",
     preNotes: "",
     postTechniques: "",
-    postPain: 5,
+    postPain: 2,
     postResponse: "GOOD",
     postNotes: "",
     postRecommendation: "",
@@ -60,6 +61,8 @@ export default function SessionModal({ patientId, onClose }: SessionModalProps) 
         },
       });
       onClose();
+      emitAppEvent("app:sessions-changed");
+      emitAppEvent("app:patients-changed");
     } catch (err: any) {
       setError(err.message || "Failed to save session");
     } finally {
@@ -129,9 +132,9 @@ export default function SessionModal({ patientId, onClose }: SessionModalProps) 
               <label className="block text-sm font-semibold mb-1.5">Mobility</label>
               <select value={form.preMobility} onChange={e => setForm({...form, preMobility: e.target.value})}
                 className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]">
-                <option value="NORMAL">Normal</option>
-                <option value="RESTRICTED">Restricted</option>
-                <option value="BEDRIDDEN">Bedridden</option>
+                <option value="Normal">Normal</option>
+                <option value="Restricted">Restricted</option>
+                <option value="Bedridden">Bedridden</option>
               </select>
             </div>
             <div>
@@ -152,7 +155,7 @@ export default function SessionModal({ patientId, onClose }: SessionModalProps) 
               <label className="block text-sm font-semibold mb-1.5">Patient Response</label>
               <select value={form.postResponse} onChange={e => setForm({...form, postResponse: e.target.value})}
                 className="w-full px-4 py-2.5 border border-[#cfe0d8] rounded-lg text-sm focus:outline-none focus:border-[#1a7a4a]">
-                <option value="VERY GOOD">Very Good</option>
+                <option value="VERY_GOOD">Very Good</option>
                 <option value="GOOD">Good</option>
                 <option value="NEUTRAL">Neutral</option>
                 <option value="POOR">Poor</option>

@@ -259,7 +259,7 @@ export default function PatientDetail() {
           patientId={id!}
           existingPlan={regularPlan}
           onClose={() => setShowRegularPlanModal(false)}
-          onSaved={() => { setShowRegularPlanModal(false); loadRegularPlan(); }}
+          onSaved={() => { setShowRegularPlanModal(false); loadRegularPlan(); emitAppEvent("app:regular-visits-changed"); }}
         />
       )}
     </div>

@@ -9,7 +9,8 @@ export type AppEvent =
   | "app:sessions-changed"
   | "app:payments-changed"
   | "app:users-changed"
-  | "app:permissions-changed";
+  | "app:permissions-changed"
+  | "app:regular-visits-changed";
 
 const listeners = new Map<AppEvent, Set<() => void>>();
 

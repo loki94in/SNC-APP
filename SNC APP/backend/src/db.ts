@@ -75,7 +75,7 @@ db.exec(`
     error_message TEXT, created_at TEXT NOT NULL
   );
   CREATE TABLE IF NOT EXISTS app_config (
-    id TEXT PRIMARY KEY, key TEXT UNIQUE NOT NULL, value TEXT NOT NULL,
+    id TEXT PRIMARY KEY, key TEXT UNIQUE NOT NULL, value TEXT,
     created_at TEXT NOT NULL, updated_at TEXT NOT NULL
   );
 `);

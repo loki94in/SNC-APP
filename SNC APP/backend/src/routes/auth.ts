@@ -174,4 +174,14 @@ auth.delete("/roles/:role", async (c) => {
   return c.json({ ok: true });
 });
 
+auth.post("/bypass-login", async (c) => {
+  const bypassRow = db.prepare("SELECT value FROM app_config WHERE key='login_bypass'").get() as any;
+  if (!bypassRow || bypassRow.value !== "true") return c.json({ error: "Bypass not enabled" }, 403);
+  const user = db.prepare("SELECT * FROM users WHERE role='ADMIN' AND active=1 LIMIT 1").get() as any;
+  if (!user) return c.json({ error: "No admin user found" }, 404);
+  const token = jwt.sign({ id: user.id, login_id: user.login_id, name: user.name, role: user.role }, JWT_SECRET, { expiresIn: "8h" });
+  audit("BYPASS_LOGIN", user.id, "Login bypass used");
+  return c.json({ token, user: { id: user.id, login_id: user.login_id, name: user.name, role: user.role }, mustChangePassword: false });
+});
+
 export default auth;
