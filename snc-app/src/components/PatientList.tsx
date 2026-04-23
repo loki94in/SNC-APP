@@ -1,7 +1,10 @@
-import { getPatients } from '../api';
 import TreatmentCard from './TreatmentCard';
 
-const PatientList: React.FC = () => {
+interface PatientListProps {
+    onEdit: (patient: any) => void;
+}
+
+const PatientList: React.FC<PatientListProps> = ({ onEdit }) => {
     const [patients, setPatients] = useState<any[]>([]);
     const [search, setSearch] = useState('');
     const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
@@ -56,7 +59,12 @@ const PatientList: React.FC = () => {
                                         >
                                             Card
                                         </button>
-                                        <button className="text-slate-600 border px-3 py-1 rounded hover:bg-slate-100">Edit</button>
+                                        <button 
+                                            onClick={() => onEdit(p)}
+                                            className="text-slate-600 border px-3 py-1 rounded hover:bg-slate-100"
+                                        >
+                                            Edit
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

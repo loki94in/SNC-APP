@@ -44,6 +44,20 @@ app.post('/api/patients', (req, res) => {
     });
 });
 
+// Update patient
+app.put('/api/patients/:id', (req, res) => {
+    const { id } = req.params;
+    const { name, phone, age, gender, address, occupation, conditions, diet, history } = req.body;
+    
+    const sql = `UPDATE patients SET name=?, phone=?, age=?, gender=?, address=?, occupation=?, conditions=?, diet=?, history=? WHERE id=?`;
+    const params = [name, phone, age, gender, address, occupation, JSON.stringify(conditions), JSON.stringify(diet), history, id];
+    
+    db.run(sql, params, function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: "Updated successfully" });
+    });
+});
+
 // --- SESSIONS API ---
 
 // Get all sessions
@@ -109,6 +123,25 @@ app.post('/api/payments', (req, res) => {
             res.status(201).json({ id, ...req.body });
         }
     );
+});
+
+// --- SETTINGS API ---
+
+app.get('/api/settings', (req, res) => {
+    db.all("SELECT * FROM settings", [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        const settings = {};
+        rows.forEach(r => settings[r.key] = r.value);
+        res.json(settings);
+    });
+});
+
+app.post('/api/settings', (req, res) => {
+    const { key, value } = req.body;
+    db.run("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", [key, value], (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ success: true });
+    });
 });
 
 app.listen(PORT, () => {

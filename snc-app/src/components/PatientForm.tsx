@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
-import { createPatient } from '../api';
+import React, { useState, useEffect } from 'react';
+import { createPatient, updatePatient } from '../api';
 
-const AddPatient: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+interface PatientFormProps {
+    onComplete: () => void;
+    editData?: any;
+}
+
+const PatientForm: React.FC<PatientFormProps> = ({ onComplete, editData }) => {
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -14,14 +19,30 @@ const AddPatient: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
         history: ''
     });
 
+    useEffect(() => {
+        if (editData) {
+            setFormData({
+                ...editData,
+                conditions: Array.isArray(JSON.parse(editData.conditions || '[]')) ? JSON.parse(editData.conditions).join(', ') : editData.conditions,
+                diet: Array.isArray(JSON.parse(editData.diet || '[]')) ? JSON.parse(editData.diet).join(', ') : editData.diet,
+            });
+        }
+    }, [editData]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        const payload = {
+            ...formData,
+            conditions: formData.conditions.split(',').map(s => s.trim()).filter(Boolean),
+            diet: formData.diet.split(',').map(s => s.trim()).filter(Boolean)
+        };
+
         try {
-            await createPatient({
-                ...formData,
-                conditions: formData.conditions.split(',').map(s => s.trim()),
-                diet: formData.diet.split(',').map(s => s.trim())
-            });
+            if (editData) {
+                await updatePatient(editData.id, payload);
+            } else {
+                await createPatient(payload);
+            }
             onComplete();
         } catch (err) {
             alert('Failed to save patient');
@@ -30,7 +51,7 @@ const AddPatient: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 
     return (
         <div className="max-w-4xl">
-            <h2 className="text-2xl font-bold mb-8">Register New Patient</h2>
+            <h2 className="text-2xl font-bold mb-8">{editData ? 'Edit Patient Record' : 'Register New Patient'}</h2>
             <div className="bg-white rounded-xl shadow-sm border p-8">
                 <form onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -118,7 +139,7 @@ const AddPatient: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
                             type="submit" 
                             className="px-6 py-3 bg-primary text-white rounded-lg font-bold hover:bg-primary-dark transition-colors"
                         >
-                            Save Patient Record
+                            {editData ? 'Update Record' : 'Save Patient Record'}
                         </button>
                     </div>
                 </form>
@@ -127,4 +148,4 @@ const AddPatient: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     );
 };
 
-export default AddPatient;
+export default PatientForm;
