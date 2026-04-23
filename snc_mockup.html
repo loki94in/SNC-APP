@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNC Patient Register - Mockup</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 
+           ========================================
+           DESIGN SYSTEM & VARIABLES
+           ========================================
+        */
+        :root {
+            --primary: #16a34a;
+            --primary-dark: #15803d;
+            --primary-light: #dcfce7;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border-color: #e2e8f0;
+            --sidebar-width: 260px;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 
+           ========================================
+           UTILITIES
+           ========================================
+        */
+        .hidden { display: none !important; }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-dark); }
+        .btn-outline:hover { background: var(--bg-color); }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-success { background: var(--primary-light); color: var(--primary-dark); }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+
+        /* 
+           ========================================
+           SIDEBAR
+           ========================================
+        */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--primary-dark);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-menu {
+            padding: 1.5rem 0;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            border-right: 4px solid white;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* 
+           ========================================
+           MAIN CONTENT
+           ========================================
+        */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        header {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .search-bar {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            width: 300px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+
+        .content {
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* 
+           ========================================
+           DASHBOARD STATS
+           ========================================
+        */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card h3 {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        /* 
+           ========================================
+           TABLES
+           ========================================
+        */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 1rem;
+            background: var(--bg-color);
+            color: var(--text-gray);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        tr:hover td {
+            background: #f9fafb;
+        }
+
+        /* 
+           ========================================
+           FORMS
+           ========================================
+        */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+
+        input, select, textarea {
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        /* 
+           ========================================
+           LOGIN SCREEN
+           ========================================
+        */
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .login-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .login-card h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+        }
+
+        /* 
+           ========================================
+           TREATMENT CARD (MODAL)
+           ========================================
+        */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .treatment-card-printable {
+            padding: 2rem;
+            border: 2px solid #000;
+            margin: 1rem;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .tc-header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tc-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tc-section {
+            border: 1px solid #000;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tc-title {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* 
+           ========================================
+           RESPONSIVE
+           ========================================
+        */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            .sidebar-header h1, .nav-item span {
+                display: none;
+            }
+            .main-wrapper {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+
+        /* Printing logic */
+        @media print {
+            .sidebar, header, .btn, .nav-menu { display: none !important; }
+            .main-wrapper { margin: 0; width: 100%; }
+            .modal { position: absolute; background: white; padding: 0; }
+            .modal-content { max-height: none; box-shadow: none; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 
+        ========================================
+        LOGIN SCREEN
+        ========================================
+    -->
+    <div id="login-screen">
+        <div class="login-card">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🏥</div>
+            <h2>Siyaram Neurotherapy</h2>
+            <p style="color: var(--text-gray); margin-bottom: 2rem;">Admin Portal Login</p>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group" style="text-align: left; margin-bottom: 1.5rem;">
+                    <label>Username</label>
+                    <input type="text" value="admin" id="login-user" required>
+                </div>
+                <div class="form-group" style="text-align: left; margin-bottom: 2rem;">
+                    <label>Password</label>
+                    <input type="password" value="admin123" id="login-pass" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Login</button>
+            </form>
+            <p style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-gray);">Default: admin / admin123</p>
+        </div>
+    </div>
+
+    <!-- 
+        ========================================
+        SIDEBAR
+        ========================================
+    -->
+    <aside class="sidebar hidden" id="app-sidebar">
+        <div class="sidebar-header">
+            <h1>SNC REGISTER</h1>
+        </div>
+        <nav class="nav-menu">
+            <a href="#" class="nav-item active" onclick="showScreen('dashboard')">
+                <i>📊</i> <span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showScreen('patients')">
+                <i>👥</i> <span>Patients</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showScreen('sessions')">
+                <i>📅</i> <span>Sessions</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showScreen('payments')">
+                <i>💰</i> <span>Payments</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showScreen('settings')">
+                <i>⚙️</i> <span>Settings</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item" onclick="logout()">
+                <i>🚪</i> <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- 
+        ========================================
+        MAIN CONTENT AREA
+        ========================================
+    -->
+    <div class="main-wrapper hidden" id="app-main">
+        <header>
+            <div class="search-bar">
+                <i>🔍</i>
+                <input type="text" placeholder="Search patients...">
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="font-weight: 600; font-size: 0.9rem;">Admin</span>
+                <div style="width: 36px; height: 36px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary-dark); font-weight: bold;">A</div>
+            </div>
+        </header>
+
+        <main class="content">
+            
+            <!-- DASHBOARD SCREEN -->
+            <div id="screen-dashboard" class="screen">
+                <h2 style="margin-bottom: 2rem;">Welcome back, Admin</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Patients</h3>
+                        <div class="value">1,248</div>
+                        <div style="color: var(--primary); font-size: 0.8rem; margin-top: 0.5rem;">↑ 12% this month</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: #3b82f6;">
+                        <h3>Sessions Today</h3>
+                        <div class="value">24</div>
+                        <div style="color: var(--text-gray); font-size: 0.8rem; margin-top: 0.5rem;">8 scheduled remaining</div>
+                    </div>
+                    <div class="stat-card" style="border-left-color: #8b5cf6;">
+                        <h3>Revenue (MTD)</h3>
+                        <div class="value">₹45,600</div>
+                        <div style="color: var(--text-gray); font-size: 0.8rem; margin-top: 0.5rem;">Target: ₹60,000</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1.1rem;">Recent Patients</h3>
+                        <button class="btn btn-primary" onclick="showScreen('add-patient')">+ New Patient</button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Last Visit</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-patients-table">
+                                <!-- Mock Data -->
+                                <tr>
+                                    <td>#SNC-001</td>
+                                    <td><strong>Rajesh Sharma</strong></td>
+                                    <td>9876543210</td>
+                                    <td>Today, 10:30 AM</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                    <td><button class="btn btn-outline" style="padding: 0.4rem 0.8rem;" onclick="showScreen('patients')">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>#SNC-002</td>
+                                    <td><strong>Anita Verma</strong></td>
+                                    <td>9812345678</td>
+                                    <td>Today, 11:15 AM</td>
+                                    <td><span class="badge badge-warning">Waiting</span></td>
+                                    <td><button class="btn btn-outline" style="padding: 0.4rem 0.8rem;">View</button></td>
+                                </tr>
+                                <tr>
+                                    <td>#SNC-003</td>
+                                    <td><strong>Sunil Gupta</strong></td>
+                                    <td>9988776655</td>
+                                    <td>Yesterday</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                    <td><button class="btn btn-outline" style="padding: 0.4rem 0.8rem;">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PATIENTS SCREEN -->
+            <div id="screen-patients" class="screen hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h2>Patients Directory</h2>
+                    <button class="btn btn-primary" onclick="showScreen('add-patient')">+ Register New</button>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Reg. No</th>
+                                    <th>Patient Name</th>
+                                    <th>Age/Sex</th>
+                                    <th>Phone</th>
+                                    <th>Conditions</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024-001</td>
+                                    <td><strong>Vikram Singh</strong></td>
+                                    <td>45 / Male</td>
+                                    <td>9876543210</td>
+                                    <td>Slip Disc, Back Pain</td>
+                                    <td>
+                                        <button class="btn btn-outline" onclick="showTreatmentCard()">Card</button>
+                                        <button class="btn btn-outline">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2024-002</td>
+                                    <td><strong>Meena Devi</strong></td>
+                                    <td>52 / Female</td>
+                                    <td>9812345678</td>
+                                    <td>Cervical, BP</td>
+                                    <td>
+                                        <button class="btn btn-outline" onclick="showTreatmentCard()">Card</button>
+                                        <button class="btn btn-outline">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADD PATIENT SCREEN -->
+            <div id="screen-add-patient" class="screen hidden">
+                <h2 style="margin-bottom: 2rem;">Register New Patient</h2>
+                <div class="card">
+                    <form onsubmit="event.preventDefault(); showScreen('patients');">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" placeholder="Enter patient name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" placeholder="10-digit mobile number" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Age</label>
+                                <input type="number" placeholder="Years">
+                            </div>
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <select>
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Address</label>
+                                <textarea rows="2" placeholder="Full residential address"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Occupation</label>
+                                <input type="text" placeholder="e.g. Service, Business">
+                            </div>
+                            <div class="form-group">
+                                <label>Referred By</label>
+                                <input type="text" placeholder="Doctor or Person name">
+                            </div>
+                        </div>
+
+                        <h3 style="margin: 2rem 0 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">Medical History</h3>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label>Health Conditions (comma separated)</label>
+                                <input type="text" placeholder="e.g. Paralysis, BP, Sugar, Slip Disc">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Dietary Restrictions</label>
+                                <input type="text" placeholder="e.g. No Alcohol, Light Diet">
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button type="button" class="btn btn-outline" onclick="showScreen('dashboard')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Patient Record</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SESSIONS SCREEN -->
+            <div id="screen-sessions" class="screen hidden">
+                <h2 style="margin-bottom: 2rem;">Treatment Sessions</h2>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Patient</th>
+                                    <th>Assessment</th>
+                                    <th>Pain Level</th>
+                                    <th>Mobility</th>
+                                    <th>Technique Used</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>23-04-2026</td>
+                                    <td>Vikram Singh</td>
+                                    <td>Improved Range</td>
+                                    <td>3/10</td>
+                                    <td>Flexible</td>
+                                    <td>Nerve Press</td>
+                                </tr>
+                                <tr>
+                                    <td>22-04-2026</td>
+                                    <td>Meena Devi</td>
+                                    <td>Stable</td>
+                                    <td>5/10</td>
+                                    <td>Limited</td>
+                                    <td>Shoulder Rot.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAYMENTS SCREEN -->
+            <div id="screen-payments" class="screen hidden">
+                <h2 style="margin-bottom: 2rem;">Payment Logs</h2>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Patient</th>
+                                    <th>Amount</th>
+                                    <th>Method</th>
+                                    <th>Status</th>
+                                    <th>Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>23-04-2026</td>
+                                    <td>Vikram Singh</td>
+                                    <td>₹500</td>
+                                    <td>UPI</td>
+                                    <td><span class="badge badge-success">Paid</span></td>
+                                    <td><button class="btn btn-outline" style="padding: 0.2rem 0.5rem;" onclick="alert('Downloading Receipt PDF...')">PDF</button></td>
+                                </tr>
+                                <tr>
+                                    <td>22-04-2026</td>
+                                    <td>Meena Devi</td>
+                                    <td>₹300</td>
+                                    <td>Cash</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                    <td><button class="btn btn-outline" style="padding: 0.2rem 0.5rem;">PDF</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS SCREEN -->
+            <div id="screen-settings" class="screen hidden">
+                <h2 style="margin-bottom: 2rem;">System Settings</h2>
+                <div class="card" style="max-width: 600px;">
+                    <h3 style="margin-bottom: 1.5rem;">Backup & Security</h3>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label>Admin Password</label>
+                        <input type="password" value="********">
+                        <button class="btn btn-outline" style="margin-top: 0.5rem; width: fit-content;">Change Password</button>
+                    </div>
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                        <h4 style="margin-bottom: 1rem;">Data Management</h4>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-primary" onclick="alert('Data backed up successfully to snc_backup_2026-04-23.zip')">Backup to ZIP</button>
+                            <button class="btn btn-outline">Restore from File</button>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-gray);">Last backup: Today, 08:00 AM</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- 
+        ========================================
+        TREATMENT CARD MODAL
+        ========================================
+    -->
+    <div id="modal-treatment-card" class="modal hidden">
+        <div class="modal-content">
+            <div style="padding: 1rem; display: flex; justify-content: flex-end; border-bottom: 1px solid var(--border-color);">
+                <button class="btn btn-primary" onclick="window.print()">Print Card</button>
+                <button class="btn btn-outline" style="margin-left: 0.5rem;" onclick="hideModal()">Close</button>
+            </div>
+            
+            <div class="treatment-card-printable" id="printable-card">
+                <div class="tc-header">
+                    <h2 style="margin: 0; font-size: 1.5rem;">SIYA RAM NEUROTHERAPY CENTER</h2>
+                    <p style="margin: 5px 0;">Reg. No.: 2018293 | Neurotherapist: Pt. Pradeep Kumar</p>
+                    <p style="font-size: 0.9rem;">Address: Village Rampur, Near Main Chawk, Sector 12, Delhi | Phone: 9812345678</p>
+                </div>
+
+                <div class="tc-grid">
+                    <div>
+                        <p><strong>Patient Name:</strong> Vikram Singh</p>
+                        <p><strong>Address:</strong> Flat 402, Green Apartments, Delhi</p>
+                    </div>
+                    <div>
+                        <p><strong>Age/Sex:</strong> 45 / Male</p>
+                        <p><strong>Telephone:</strong> 9876543210</p>
+                        <p><strong>Occupation:</strong> Govt. Service</p>
+                    </div>
+                </div>
+
+                <div class="tc-section">
+                    <span class="tc-title">Health Conditions</span>
+                    <div class="checkbox-group">
+                        <span>[ ] Paralysis</span>
+                        <span>[x] Joint Pain</span>
+                        <span>[x] Slip Disc</span>
+                        <span>[ ] Cervical</span>
+                        <span>[ ] BP</span>
+                        <span>[ ] Sugar</span>
+                        <span>[ ] Heart</span>
+                        <span>[ ] Stomach</span>
+                        <span>[ ] Asthma</span>
+                    </div>
+                </div>
+
+                <div class="tc-section">
+                    <span class="tc-title">Dietary Restrictions</span>
+                    <div class="checkbox-group">
+                        <span>[x] No Alcohol</span>
+                        <span>[ ] No Egg</span>
+                        <span>[x] No Non-Veg</span>
+                        <span>[x] Light Diet</span>
+                    </div>
+                </div>
+
+                <div class="tc-section" style="min-height: 100px;">
+                    <span class="tc-title">Patient History</span>
+                    <p style="font-size: 0.9rem;">Patient reported chronic lower back pain for 6 months. Difficulty in sitting for long hours. Previous MRI shows mild disc bulge at L4-L5. Recommended 15 sessions of nerve pressing therapy.</p>
+                </div>
+
+                <div class="tc-section">
+                    <span class="tc-title">Treatment History</span>
+                    <table style="border: 1px solid #000; margin-top: 0.5rem; border-collapse: collapse; width: 100%;">
+                        <thead>
+                            <tr style="background: #eee;">
+                                <th style="border: 1px solid #000; color: black; padding: 4px; text-align: left;">Date</th>
+                                <th style="border: 1px solid #000; color: black; padding: 4px; text-align: left;">Assessment</th>
+                                <th style="border: 1px solid #000; color: black; padding: 4px; text-align: left;">Pain</th>
+                                <th style="border: 1px solid #000; color: black; padding: 4px; text-align: left;">Mobility</th>
+                                <th style="border: 1px solid #000; color: black; padding: 4px; text-align: left;">Tech</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 4px;">16-04-2026</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Initial Check</td>
+                                <td style="border: 1px solid #000; padding: 4px;">8/10</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Stiff</td>
+                                <td style="border: 1px solid #000; padding: 4px;">General</td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 4px;">20-04-2026</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Improved</td>
+                                <td style="border: 1px solid #000; padding: 4px;">5/10</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Better</td>
+                                <td style="border: 1px solid #000; padding: 4px;">Nerve Press</td>
+                            </tr>
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 4px;">&nbsp;</td>
+                                <td style="border: 1px solid #000; padding: 4px;">&nbsp;</td>
+                                <td style="border: 1px solid #000; padding: 4px;">&nbsp;</td>
+                                <td style="border: 1px solid #000; padding: 4px;">&nbsp;</td>
+                                <td style="border: 1px solid #000; padding: 4px;">&nbsp;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p style="text-align: center; font-size: 0.8rem; margin-top: 1rem; border-top: 1px dashed #000; padding-top: 10px;">
+                    ⚠️ Treatment is at patient's own risk. This is a computer generated record.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+        ========================================
+        JAVASCRIPT LOGIC
+        ========================================
+    -->
+    <script>
+        /**
+         * Navigation logic
+         * Switches between different screens by toggling the 'hidden' class
+         */
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            // Show target screen
+            document.getElementById('screen-' + screenId).classList.remove('hidden');
+            
+            // Update sidebar active state for visual feedback
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if(item.innerText.toLowerCase().includes(screenId.split('-')[0])) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        /**
+         * Login handling mockup
+         * Simulates a login flow
+         */
+        function handleLogin(e) {
+            e.preventDefault();
+            // Mock validation
+            const user = document.getElementById('login-user').value;
+            const pass = document.getElementById('login-pass').value;
+            
+            if(user === 'admin' && pass === 'admin123') {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-sidebar').classList.remove('hidden');
+                document.getElementById('app-main').classList.remove('hidden');
+                showScreen('dashboard');
+            } else {
+                alert('Invalid credentials. Please use admin / admin123');
+            }
+        }
+
+        /**
+         * Logout handling
+         */
+        function logout() {
+            if(confirm('Are you sure you want to logout?')) {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('app-sidebar').classList.add('hidden');
+                document.getElementById('app-main').classList.add('hidden');
+            }
+        }
+
+        /**
+         * Modal handling for Treatment Card
+         */
+        function showTreatmentCard() {
+            document.getElementById('modal-treatment-card').classList.remove('hidden');
+        }
+
+        function hideModal() {
+            document.getElementById('modal-treatment-card').classList.add('hidden');
+        }
+
+        // Close modal when clicking outside the content area
+        window.onclick = function(event) {
+            let modal = document.getElementById('modal-treatment-card');
+            if (event.target == modal) {
+                hideModal();
+            }
+        }
+
+        // Initialize with focus on login
+        window.onload = () => {
+            console.log("Mockup Initialized");
+        };
+    </script>
+
+</body>
+</html>
