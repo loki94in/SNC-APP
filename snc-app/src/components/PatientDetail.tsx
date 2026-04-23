@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getSessions, logSession, recordPayment, getPayments } from '../api';
+import { getSessions, logSession, recordPayment, getPayments, safeParse } from '../api';
 
 interface PatientDetailProps {
     patient: any;
@@ -96,7 +96,7 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                         <div>
                             <span className="text-slate-500 block mb-1">Conditions</span>
                             <div className="flex flex-wrap gap-1">
-                                {JSON.parse(patient.conditions || '[]').map((c: string) => (
+                                {safeParse(patient.conditions).map((c: string) => (
                                     <span key={c} className="bg-primary-light text-primary-dark px-2 py-0.5 rounded text-[10px] font-bold uppercase">{c}</span>
                                 ))}
                             </div>
@@ -142,7 +142,7 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                                                 <span className="text-primary font-bold">{s.painLevel}/10 Pain</span>
                                             </div>
                                             <p className="text-sm text-slate-600 mb-2">{s.assessment}</p>
-                                            <div className="text-xs text-slate-400 italic">Techniques: {Array.isArray(JSON.parse(s.techniques || '[]')) ? JSON.parse(s.techniques).join(', ') : s.techniques}</div>
+                                            <div className="text-xs text-slate-400 italic">Techniques: {safeParse(s.techniques).join(', ')}</div>
                                         </div>
                                     ))}
                                     {sessions.length === 0 && <p className="text-center py-10 text-slate-400 italic">No sessions recorded yet.</p>}
