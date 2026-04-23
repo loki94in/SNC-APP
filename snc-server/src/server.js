@@ -46,6 +46,20 @@ app.post('/api/patients', (req, res) => {
 
 // --- SESSIONS API ---
 
+// Get all sessions
+app.get('/api/sessions', (req, res) => {
+    const sql = `
+        SELECT s.*, p.name as patientName 
+        FROM sessions s 
+        JOIN patients p ON s.patientId = p.id 
+        ORDER BY s.date DESC`;
+    db.all(sql, [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(rows);
+    });
+});
+
+// Get sessions for a specific patient
 app.get('/api/sessions/:patientId', (req, res) => {
     const { patientId } = req.params;
     db.all("SELECT * FROM sessions WHERE patientId = ? ORDER BY date DESC", [patientId], (err, rows) => {
@@ -74,6 +88,13 @@ app.get('/api/payments', (req, res) => {
     db.all("SELECT p.*, pat.name as patientName FROM payments p JOIN patients pat ON p.patientId = pat.id ORDER BY p.date DESC", [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
+    });
+});
+
+app.get('/api/revenue', (req, res) => {
+    db.get("SELECT SUM(amount) as total FROM payments WHERE status = 'PAID'", [], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ total: row.total || 0 });
     });
 });
 

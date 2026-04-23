@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
 import { getPatients } from '../api';
+import TreatmentCard from './TreatmentCard';
 
 const PatientList: React.FC = () => {
     const [patients, setPatients] = useState<any[]>([]);
     const [search, setSearch] = useState('');
+    const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
 
     useEffect(() => {
         getPatients(search).then(setPatients);
@@ -49,7 +50,12 @@ const PatientList: React.FC = () => {
                                     <td className="p-4">{p.phone}</td>
                                     <td className="p-4 max-w-xs truncate">{p.conditions}</td>
                                     <td className="p-4 flex gap-2">
-                                        <button className="text-slate-600 border px-3 py-1 rounded hover:bg-slate-100">Card</button>
+                                        <button 
+                                            onClick={() => setSelectedPatient(p)}
+                                            className="text-slate-600 border px-3 py-1 rounded hover:bg-slate-100"
+                                        >
+                                            Card
+                                        </button>
                                         <button className="text-slate-600 border px-3 py-1 rounded hover:bg-slate-100">Edit</button>
                                     </td>
                                 </tr>
@@ -58,6 +64,13 @@ const PatientList: React.FC = () => {
                     </table>
                 </div>
             </div>
+
+            {selectedPatient && (
+                <TreatmentCard 
+                    patient={selectedPatient} 
+                    onClose={() => setSelectedPatient(null)} 
+                />
+            )}
         </div>
     );
 };

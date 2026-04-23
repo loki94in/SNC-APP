@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import PatientList from './components/PatientList';
 import AddPatient from './components/AddPatient';
+import SessionList from './components/SessionList';
+import PaymentList from './components/PaymentList';
 
 const App: React.FC = () => {
     const [screen, setScreen] = useState('dashboard');
@@ -53,6 +55,18 @@ const App: React.FC = () => {
                     >
                         <span>👥</span> Patients
                     </button>
+                    <button 
+                        onClick={() => setScreen('sessions')}
+                        className={`w-full flex items-center gap-3 px-8 py-3 transition-colors ${screen === 'sessions' ? 'bg-white/10 border-r-4 border-white' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                    >
+                        <span>📅</span> Sessions
+                    </button>
+                    <button 
+                        onClick={() => setScreen('payments')}
+                        className={`w-full flex items-center gap-3 px-8 py-3 transition-colors ${screen === 'payments' ? 'bg-white/10 border-r-4 border-white' : 'text-white/70 hover:text-white hover:bg-white/5'}`}
+                    >
+                        <span>💰</span> Payments
+                    </button>
                 </nav>
                 <div className="p-6 border-t border-white/10">
                     <button onClick={() => setIsLoggedIn(false)} className="w-full flex items-center gap-3 px-2 py-2 text-white/70 hover:text-white">
@@ -66,6 +80,8 @@ const App: React.FC = () => {
                 {screen === 'dashboard' && <Dashboard onNavigate={setScreen} />}
                 {screen === 'patients' && <PatientList />}
                 {screen === 'add-patient' && <AddPatient onComplete={() => setScreen('patients')} />}
+                {screen === 'sessions' && <SessionList />}
+                {screen === 'payments' && <PaymentList />}
             </main>
         </div>
     );

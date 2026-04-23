@@ -3,9 +3,16 @@ import { getPatients } from '../api';
 
 const Dashboard: React.FC<{ onNavigate: (screen: string) => void }> = ({ onNavigate }) => {
     const [recentPatients, setRecentPatients] = useState<any[]>([]);
+    const [stats, setStats] = useState({ totalPatients: 0, revenue: 0 });
 
     useEffect(() => {
-        getPatients().then(data => setRecentPatients(data.slice(0, 5)));
+        getPatients().then(data => {
+            setRecentPatients(data.slice(0, 5));
+            setStats(prev => ({ ...prev, totalPatients: data.length }));
+        });
+        import('../api').then(api => api.getRevenue()).then(data => {
+            setStats(prev => ({ ...prev, revenue: data.total }));
+        });
     }, []);
 
     return (
@@ -15,8 +22,8 @@ const Dashboard: React.FC<{ onNavigate: (screen: string) => void }> = ({ onNavig
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-primary">
                     <h3 className="text-slate-500 text-xs uppercase font-semibold tracking-wider mb-2">Total Patients</h3>
-                    <div className="text-3xl font-bold">1,248</div>
-                    <div className="text-primary text-xs mt-2">↑ 12% this month</div>
+                    <div className="text-3xl font-bold">{stats.totalPatients}</div>
+                    <div className="text-primary text-xs mt-2">All time records</div>
                 </div>
                 <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
                     <h3 className="text-slate-500 text-xs uppercase font-semibold tracking-wider mb-2">Sessions Today</h3>
@@ -24,9 +31,9 @@ const Dashboard: React.FC<{ onNavigate: (screen: string) => void }> = ({ onNavig
                     <div className="text-slate-400 text-xs mt-2">8 scheduled remaining</div>
                 </div>
                 <div className="bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500">
-                    <h3 className="text-slate-500 text-xs uppercase font-semibold tracking-wider mb-2">Revenue (MTD)</h3>
-                    <div className="text-3xl font-bold">₹45,600</div>
-                    <div className="text-slate-400 text-xs mt-2">Target: ₹60,000</div>
+                    <h3 className="text-slate-500 text-xs uppercase font-semibold tracking-wider mb-2">Total Revenue</h3>
+                    <div className="text-3xl font-bold">₹{stats.revenue.toLocaleString()}</div>
+                    <div className="text-slate-400 text-xs mt-2">Paid collections</div>
                 </div>
             </div>
 
