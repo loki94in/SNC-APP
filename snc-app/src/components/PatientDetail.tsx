@@ -12,51 +12,71 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
     const [activeTab, setActiveTab] = useState<'sessions' | 'payments'>('sessions');
     const [showSessionForm, setShowSessionForm] = useState(false);
     const [showPaymentForm, setShowPaymentForm] = useState(false);
+    
+    // UI States
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formError, setFormError] = useState('');
 
     // Form States
     const [newSession, setNewSession] = useState({ assessment: '', painLevel: 5, mobility: 'Normal', techniques: '' });
     const [newPayment, setNewPayment] = useState({ amount: '', method: 'Cash', status: 'PAID' });
 
     useEffect(() => {
+        setFormError('');
         getSessions(patient.id).then(setSessions);
         getPayments().then(all => setPayments(all.filter((p: any) => p.patientId === patient.id)));
     }, [patient.id]);
 
     const handleAddSession = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (newSession.assessment.length < 5) return setFormError('Please provide a meaningful assessment.');
+        
+        setIsSubmitting(true);
+        setFormError('');
         try {
             await logSession({
                 patientId: patient.id,
                 ...newSession,
-                techniques: newSession.techniques.split(',').map(t => t.trim())
+                techniques: newSession.techniques.split(',').map(t => t.trim()).filter(Boolean)
             });
             setShowSessionForm(false);
+            setNewSession({ assessment: '', painLevel: 5, mobility: 'Normal', techniques: '' });
             getSessions(patient.id).then(setSessions);
         } catch (err) {
-            alert('Failed to log session');
+            setFormError('Failed to save session. Try again.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     const handleAddPayment = async (e: React.FormEvent) => {
         e.preventDefault();
+        const amt = Number(newPayment.amount);
+        if (isNaN(amt) || amt <= 0) return setFormError('Amount must be a positive number.');
+
+        setIsSubmitting(true);
+        setFormError('');
         try {
             await recordPayment({
                 patientId: patient.id,
-                amount: Number(newPayment.amount),
+                amount: amt,
                 method: newPayment.method,
                 status: newPayment.status
             });
             setShowPaymentForm(false);
+            setNewPayment({ amount: '', method: 'Cash', status: 'PAID' });
             getPayments().then(all => setPayments(all.filter((p: any) => p.patientId === patient.id)));
         } catch (err) {
-            alert('Failed to record payment');
+            setFormError('Failed to record payment. Try again.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             <div className="flex items-center gap-4">
-                <button onClick={onBack} className="text-slate-400 hover:text-slate-600 p-2">← Back</button>
+                <button onClick={onBack} className="text-slate-400 hover:text-slate-600 p-2 transition-colors">← Back</button>
                 <h2 className="text-3xl font-bold">{patient.name} <span className="text-slate-400 text-lg font-normal ml-2">({patient.regNo})</span></h2>
             </div>
 
@@ -89,13 +109,13 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                     <div className="flex border-b">
                         <button 
                             onClick={() => setActiveTab('sessions')}
-                            className={`px-8 py-4 font-bold text-sm transition-colors ${activeTab === 'sessions' ? 'border-b-2 border-primary text-primary' : 'text-slate-400'}`}
+                            className={`px-8 py-4 font-bold text-sm transition-colors ${activeTab === 'sessions' ? 'border-b-2 border-primary text-primary' : 'text-slate-400 hover:text-slate-600'}`}
                         >
                             Sessions
                         </button>
                         <button 
                             onClick={() => setActiveTab('payments')}
-                            className={`px-8 py-4 font-bold text-sm transition-colors ${activeTab === 'payments' ? 'border-b-2 border-primary text-primary' : 'text-slate-400'}`}
+                            className={`px-8 py-4 font-bold text-sm transition-colors ${activeTab === 'payments' ? 'border-b-2 border-primary text-primary' : 'text-slate-400 hover:text-slate-600'}`}
                         >
                             Payments
                         </button>
@@ -107,8 +127,8 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                                 <div className="flex justify-between items-center mb-6">
                                     <h4 className="font-bold text-slate-700">Treatment History</h4>
                                     <button 
-                                        onClick={() => setShowSessionForm(true)}
-                                        className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold"
+                                        onClick={() => { setFormError(''); setShowSessionForm(true); }}
+                                        className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20"
                                     >
                                         + New Session
                                     </button>
@@ -133,8 +153,8 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                                 <div className="flex justify-between items-center mb-6">
                                     <h4 className="font-bold text-slate-700">Financial History</h4>
                                     <button 
-                                        onClick={() => setShowPaymentForm(true)}
-                                        className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold"
+                                        onClick={() => { setFormError(''); setShowPaymentForm(true); }}
+                                        className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20"
                                     >
                                         + Record Payment
                                     </button>
@@ -161,31 +181,33 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
 
             {/* Session Modal */}
             {showSessionForm && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl p-8 w-full max-w-xl shadow-2xl">
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl p-8 w-full max-w-xl shadow-2xl animate-in zoom-in duration-200">
                         <h3 className="text-xl font-bold mb-6">Log Treatment Session</h3>
+                        {formError && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-xs font-bold uppercase">{formError}</div>}
                         <form onSubmit={handleAddSession} className="space-y-4">
                             <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-slate-500">Clinical Assessment</label>
+                                <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Clinical Assessment</label>
                                 <textarea 
-                                    required className="w-full p-3 border rounded-xl" rows={3}
+                                    required className="w-full p-4 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-light outline-none transition-all" rows={3}
+                                    placeholder="Enter findings and patient feedback..."
                                     value={newSession.assessment}
                                     onChange={e => setNewSession({...newSession, assessment: e.target.value})}
                                 ></textarea>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold uppercase text-slate-500">Pain Level (1-10)</label>
+                                    <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Pain Level (1-10)</label>
                                     <input 
-                                        type="number" min="1" max="10" className="w-full p-3 border rounded-xl"
+                                        type="number" min="1" max="10" className="w-full p-4 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-light outline-none"
                                         value={newSession.painLevel}
                                         onChange={e => setNewSession({...newSession, painLevel: Number(e.target.value)})}
                                     />
                                 </div>
                                 <div className="space-y-1">
-                                    <label className="text-xs font-bold uppercase text-slate-500">Mobility</label>
+                                    <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Mobility</label>
                                     <select 
-                                        className="w-full p-3 border rounded-xl"
+                                        className="w-full p-4 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-light outline-none"
                                         value={newSession.mobility}
                                         onChange={e => setNewSession({...newSession, mobility: e.target.value})}
                                     >
@@ -196,16 +218,18 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                                 </div>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-slate-500">Techniques Used (comma separated)</label>
+                                <label className="text-xs font-bold uppercase text-slate-500 tracking-wider">Techniques Used (comma separated)</label>
                                 <input 
-                                    type="text" className="w-full p-3 border rounded-xl" placeholder="e.g. Navel Setting, Back Massage"
+                                    type="text" className="w-full p-4 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-light outline-none" placeholder="e.g. Navel Setting, Back Massage"
                                     value={newSession.techniques}
                                     onChange={e => setNewSession({...newSession, techniques: e.target.value})}
                                 />
                             </div>
-                            <div className="flex gap-4 pt-4">
-                                <button type="button" onClick={() => setShowSessionForm(false)} className="flex-grow border py-3 rounded-xl font-bold">Cancel</button>
-                                <button type="submit" className="flex-grow bg-primary text-white py-3 rounded-xl font-bold">Save Session</button>
+                            <div className="flex gap-4 pt-6">
+                                <button type="button" disabled={isSubmitting} onClick={() => setShowSessionForm(false)} className="flex-grow border py-4 rounded-xl font-bold hover:bg-slate-50 transition-all disabled:opacity-50">Cancel</button>
+                                <button type="submit" disabled={isSubmitting} className="flex-grow bg-primary text-white py-4 rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 disabled:bg-slate-400">
+                                    {isSubmitting ? 'Saving...' : 'Save Session'}
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -214,22 +238,24 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
 
             {/* Payment Modal */}
             {showPaymentForm && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl">
-                        <h3 className="text-xl font-bold mb-6">Record Payment</h3>
-                        <form onSubmit={handleAddPayment} className="space-y-4">
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-slate-500">Amount (₹)</label>
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+                    <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl animate-in zoom-in duration-200">
+                        <h3 className="text-xl font-bold mb-6 text-center">Record Payment</h3>
+                        {formError && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-xs font-bold uppercase text-center">{formError}</div>}
+                        <form onSubmit={handleAddPayment} className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase text-slate-500 tracking-wider text-center block">Amount (₹)</label>
                                 <input 
-                                    type="number" required className="w-full p-3 border rounded-xl text-2xl font-bold"
+                                    type="number" required className="w-full p-6 border rounded-2xl bg-slate-50 focus:ring-4 focus:ring-primary-light outline-none text-4xl font-bold text-center text-primary"
+                                    placeholder="0"
                                     value={newPayment.amount}
                                     onChange={e => setNewPayment({...newPayment, amount: e.target.value})}
                                 />
                             </div>
-                            <div className="space-y-1">
-                                <label className="text-xs font-bold uppercase text-slate-500">Method</label>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase text-slate-500 tracking-wider block">Payment Method</label>
                                 <select 
-                                    className="w-full p-3 border rounded-xl"
+                                    className="w-full p-4 border rounded-xl bg-slate-50 focus:ring-2 focus:ring-primary-light outline-none font-semibold"
                                     value={newPayment.method}
                                     onChange={e => setNewPayment({...newPayment, method: e.target.value})}
                                 >
@@ -240,8 +266,10 @@ const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onBack }) => {
                                 </select>
                             </div>
                             <div className="flex gap-4 pt-4">
-                                <button type="button" onClick={() => setShowPaymentForm(false)} className="flex-grow border py-3 rounded-xl font-bold">Cancel</button>
-                                <button type="submit" className="flex-grow bg-primary text-white py-3 rounded-xl font-bold">Record Payment</button>
+                                <button type="button" disabled={isSubmitting} onClick={() => setShowPaymentForm(false)} className="flex-grow border py-4 rounded-xl font-bold hover:bg-slate-50 transition-all disabled:opacity-50">Cancel</button>
+                                <button type="submit" disabled={isSubmitting} className="flex-grow bg-primary text-white py-4 rounded-xl font-bold shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 disabled:bg-slate-400">
+                                    {isSubmitting ? 'Recording...' : 'Confirm Payment'}
+                                </button>
                             </div>
                         </form>
                     </div>

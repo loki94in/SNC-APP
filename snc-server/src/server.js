@@ -9,6 +9,9 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Helper for generic error responses
+const handleError = (res, err) => res.status(500).json({ success: false, error: err.message });
+
 // --- PATIENTS API ---
 
 // Get all patients
@@ -23,7 +26,7 @@ app.get('/api/patients', (req, res) => {
     }
     
     db.all(sql, params, (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) return handleError(res, err);
         res.json(rows);
     });
 });
@@ -31,15 +34,19 @@ app.get('/api/patients', (req, res) => {
 // Create patient
 app.post('/api/patients', (req, res) => {
     const { name, phone, age, gender, address, occupation, conditions, diet, history } = req.body;
+    
+    // Basic server-side validation
+    if (!name || !phone) return res.status(400).json({ error: "Name and Phone are required" });
+
     const id = uuidv4();
-    const regNo = `SNC-${Date.now().toString().slice(-6)}`; // Simple regNo generator
+    const regNo = `SNC-${Date.now().toString().slice(-6)}`;
     
     const sql = `INSERT INTO patients (id, regNo, name, phone, age, gender, address, occupation, conditions, diet, history) 
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const params = [id, regNo, name, phone, age, gender, address, occupation, JSON.stringify(conditions), JSON.stringify(diet), history];
     
     db.run(sql, params, function(err) {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) return handleError(res, err);
         res.status(201).json({ id, regNo, ...req.body });
     });
 });
@@ -49,12 +56,14 @@ app.put('/api/patients/:id', (req, res) => {
     const { id } = req.params;
     const { name, phone, age, gender, address, occupation, conditions, diet, history } = req.body;
     
+    if (!name || !phone) return res.status(400).json({ error: "Name and Phone are required" });
+
     const sql = `UPDATE patients SET name=?, phone=?, age=?, gender=?, address=?, occupation=?, conditions=?, diet=?, history=? WHERE id=?`;
     const params = [name, phone, age, gender, address, occupation, JSON.stringify(conditions), JSON.stringify(diet), history, id];
     
     db.run(sql, params, function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Updated successfully" });
+        if (err) return handleError(res, err);
+        res.json({ success: true, message: "Updated successfully" });
     });
 });
 
@@ -68,7 +77,7 @@ app.get('/api/sessions', (req, res) => {
         JOIN patients p ON s.patientId = p.id 
         ORDER BY s.date DESC`;
     db.all(sql, [], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) return handleError(res, err);
         res.json(rows);
     });
 });
@@ -77,20 +86,23 @@ app.get('/api/sessions', (req, res) => {
 app.get('/api/sessions/:patientId', (req, res) => {
     const { patientId } = req.params;
     db.all("SELECT * FROM sessions WHERE patientId = ? ORDER BY date DESC", [patientId], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) return handleError(res, err);
         res.json(rows);
     });
 });
 
 app.post('/api/sessions', (req, res) => {
     const { patientId, assessment, painLevel, mobility, techniques } = req.body;
+    
+    if (!patientId || !assessment) return res.status(400).json({ error: "Patient ID and Assessment are required" });
+
     const id = uuidv4();
     const date = new Date().toISOString();
     
     db.run("INSERT INTO sessions (id, patientId, date, assessment, painLevel, mobility, techniques) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [id, patientId, date, assessment, painLevel, mobility, JSON.stringify(techniques)],
         function(err) {
-            if (err) return res.status(500).json({ error: err.message });
+            if (err) return handleError(res, err);
             res.status(201).json({ id, date, ...req.body });
         }
     );
@@ -100,27 +112,31 @@ app.post('/api/sessions', (req, res) => {
 
 app.get('/api/payments', (req, res) => {
     db.all("SELECT p.*, pat.name as patientName FROM payments p JOIN patients pat ON p.patientId = pat.id ORDER BY p.date DESC", [], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) return handleError(res, err);
         res.json(rows);
     });
 });
 
 app.get('/api/revenue', (req, res) => {
     db.get("SELECT SUM(amount) as total FROM payments WHERE status = 'PAID'", [], (err, row) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) return handleError(res, err);
         res.json({ total: row.total || 0 });
     });
 });
 
 app.post('/api/payments', (req, res) => {
-    const { patientId, sessionId, amount, method, status } = req.body;
-    const id = uuidv4();
+    const { patientId, amount, method, status } = req.body;
     
-    db.run("INSERT INTO payments (id, patientId, sessionId, amount, method, status) VALUES (?, ?, ?, ?, ?, ?)",
-        [id, patientId, sessionId, amount, method, status],
+    if (!patientId || !amount) return res.status(400).json({ error: "Patient ID and Amount are required" });
+
+    const id = uuidv4();
+    const date = new Date().toISOString();
+    
+    db.run("INSERT INTO payments (id, patientId, date, amount, method, status) VALUES (?, ?, ?, ?, ?, ?)",
+        [id, patientId, date, amount, method, status],
         function(err) {
-            if (err) return res.status(500).json({ error: err.message });
-            res.status(201).json({ id, ...req.body });
+            if (err) return handleError(res, err);
+            res.status(201).json({ id, date, ...req.body });
         }
     );
 });
@@ -129,7 +145,7 @@ app.post('/api/payments', (req, res) => {
 
 app.get('/api/settings', (req, res) => {
     db.all("SELECT * FROM settings", [], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) return handleError(res, err);
         const settings = {};
         rows.forEach(r => settings[r.key] = r.value);
         res.json(settings);
@@ -138,8 +154,10 @@ app.get('/api/settings', (req, res) => {
 
 app.post('/api/settings', (req, res) => {
     const { key, value } = req.body;
+    if (!key) return res.status(400).json({ error: "Setting key is required" });
+
     db.run("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", [key, value], (err) => {
-        if (err) return res.status(500).json({ error: err.message });
+        if (err) return handleError(res, err);
         res.json({ success: true });
     });
 });

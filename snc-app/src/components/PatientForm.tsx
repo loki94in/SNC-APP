@@ -19,6 +19,9 @@ const PatientForm: React.FC<PatientFormProps> = ({ onComplete, editData }) => {
         history: ''
     });
 
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     useEffect(() => {
         if (editData) {
             setFormData({
@@ -29,8 +32,21 @@ const PatientForm: React.FC<PatientFormProps> = ({ onComplete, editData }) => {
         }
     }, [editData]);
 
+    const validate = () => {
+        const newErrors: Record<string, string> = {};
+        if (formData.name.trim().length < 3) newErrors.name = 'Name must be at least 3 characters';
+        if (!/^\d{10}$/.test(formData.phone)) newErrors.phone = 'Phone must be exactly 10 digits';
+        if (Number(formData.age) < 1 || Number(formData.age) > 120) newErrors.age = 'Enter a valid age (1-120)';
+        
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validate()) return;
+
+        setIsSubmitting(true);
         const payload = {
             ...formData,
             conditions: formData.conditions.split(',').map(s => s.trim()).filter(Boolean),
@@ -45,7 +61,9 @@ const PatientForm: React.FC<PatientFormProps> = ({ onComplete, editData }) => {
             }
             onComplete();
         } catch (err) {
-            alert('Failed to save patient');
+            setErrors({ submit: 'Failed to save patient. Please check your connection.' });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -54,33 +72,38 @@ const PatientForm: React.FC<PatientFormProps> = ({ onComplete, editData }) => {
             <h2 className="text-2xl font-bold mb-8">{editData ? 'Edit Patient Record' : 'Register New Patient'}</h2>
             <div className="bg-white rounded-xl shadow-sm border p-8">
                 <form onSubmit={handleSubmit}>
+                    {errors.submit && <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-lg text-sm font-semibold">{errors.submit}</div>}
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex flex-col gap-2">
                             <label className="text-xs font-semibold text-slate-500 uppercase">Full Name</label>
                             <input 
-                                type="text" required 
-                                className="p-3 border rounded-lg focus:ring-2 focus:ring-primary-light outline-none"
+                                type="text" 
+                                className={`p-3 border rounded-lg focus:ring-2 focus:ring-primary-light outline-none ${errors.name ? 'border-red-500' : ''}`}
                                 value={formData.name}
                                 onChange={(e) => setFormData({...formData, name: e.target.value})}
                             />
+                            {errors.name && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.name}</span>}
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-xs font-semibold text-slate-500 uppercase">Phone Number</label>
                             <input 
-                                type="tel" required 
-                                className="p-3 border rounded-lg focus:ring-2 focus:ring-primary-light outline-none"
+                                type="tel" 
+                                className={`p-3 border rounded-lg focus:ring-2 focus:ring-primary-light outline-none ${errors.phone ? 'border-red-500' : ''}`}
                                 value={formData.phone}
                                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                             />
+                            {errors.phone && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.phone}</span>}
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-xs font-semibold text-slate-500 uppercase">Age</label>
                             <input 
                                 type="number" 
-                                className="p-3 border rounded-lg focus:ring-2 focus:ring-primary-light outline-none"
+                                className={`p-3 border rounded-lg focus:ring-2 focus:ring-primary-light outline-none ${errors.age ? 'border-red-500' : ''}`}
                                 value={formData.age}
                                 onChange={(e) => setFormData({...formData, age: e.target.value})}
                             />
+                            {errors.age && <span className="text-[10px] text-red-500 font-bold uppercase">{errors.age}</span>}
                         </div>
                         <div className="flex flex-col gap-2">
                             <label className="text-xs font-semibold text-slate-500 uppercase">Gender</label>
@@ -130,16 +153,18 @@ const PatientForm: React.FC<PatientFormProps> = ({ onComplete, editData }) => {
                     <div className="mt-10 flex gap-4 justify-end">
                         <button 
                             type="button" 
+                            disabled={isSubmitting}
                             onClick={onComplete}
-                            className="px-6 py-3 border rounded-lg font-semibold hover:bg-slate-50 transition-colors"
+                            className="px-6 py-3 border rounded-lg font-semibold hover:bg-slate-50 transition-colors disabled:opacity-50"
                         >
                             Cancel
                         </button>
                         <button 
                             type="submit" 
-                            className="px-6 py-3 bg-primary text-white rounded-lg font-bold hover:bg-primary-dark transition-colors"
+                            disabled={isSubmitting}
+                            className="px-6 py-3 bg-primary text-white rounded-lg font-bold hover:bg-primary-dark transition-colors disabled:bg-slate-400"
                         >
-                            {editData ? 'Update Record' : 'Save Patient Record'}
+                            {isSubmitting ? 'Saving...' : (editData ? 'Update Record' : 'Save Patient Record')}
                         </button>
                     </div>
                 </form>
