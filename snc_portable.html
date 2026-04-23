@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNC Patient Register | Portable Full</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .modal-bg { background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); }
+        @media print { 
+            .no-print { display: none !important; } 
+            .print-only { display: block !important; position: absolute; top: 0; left: 0; width: 100%; } 
+            body { background: white; }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+    <div id="app" class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-[#15803d] text-white fixed h-full flex flex-col shadow-xl no-print">
+            <div class="p-8 border-b border-white/10">
+                <h1 class="text-xl font-bold tracking-tight">SNC REGISTER</h1>
+            </div>
+            <nav id="nav" class="flex-grow py-6 space-y-1"></nav>
+            <div class="p-6 border-t border-white/10">
+                <button onclick="window.location.reload()" class="text-white/70 hover:text-white flex items-center gap-2">🔄 Restart App</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="ml-64 flex-grow p-10 max-w-7xl no-print" id="main-content"></main>
+    </div>
+
+    <!-- Modals & Overlay -->
+    <div id="modal-root" class="fixed inset-0 z-50 hidden no-print"></div>
+    
+    <!-- Print Container -->
+    <div id="print-content" class="print-only hidden"></div>
+
+    <script>
+        // --- 1. DATA STORAGE & ARCHITECTURE ---
+        const DB = {
+            get: (key) => JSON.parse(localStorage.getItem(`snc_${key}`)) || [],
+            save: (key, data) => localStorage.setItem(`snc_${key}`, JSON.stringify(data)),
+            init: () => {
+                if (!localStorage.getItem('snc_patients')) {
+                    DB.save('patients', [{
+                        id: 'p1', regNo: 'SNC-123456', name: 'Sample Patient', phone: '1234567890', age: '30', gender: 'Male',
+                        address: '123 Clinic St', conditions: '["Back Pain"]', history: 'Demo data'
+                    }]);
+                }
+            }
+        };
+
+        // --- 2. STATE MANAGEMENT ---
+        let state = {
+            screen: 'dashboard',
+            activePatient: null,
+            patients: [],
+            sessions: [],
+            payments: []
+        };
+
+        function refreshState() {
+            state.patients = DB.get('patients');
+            state.sessions = DB.get('sessions');
+            state.payments = DB.get('payments');
+        }
+
+        // --- 3. NAVIGATION ---
+        function navigate(screen, patientId = null) {
+            state.screen = screen;
+            if (patientId) {
+                state.activePatient = state.patients.find(p => p.id === patientId);
+            }
+            render();
+        }
+
+        // --- 4. INTEGRATION LOGIC ---
+        
+        async function handlePatientSubmit(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerText = "Saving...";
+            btn.disabled = true;
+
+            try {
+                const formData = {
+                    id: Date.now().toString(),
+                    regNo: 'SNC-' + Math.floor(100000 + Math.random() * 900000),
+                    name: document.getElementById('p-name').value,
+                    phone: document.getElementById('p-phone').value,
+                    age: document.getElementById('p-age').value,
+                    gender: document.getElementById('p-gender').value,
+                    address: document.getElementById('p-address').value,
+                    conditions: JSON.stringify(document.getElementById('p-conditions').value.split(',').map(s => s.trim()).filter(Boolean)),
+                    history: document.getElementById('p-history').value
+                };
+
+                if (!/^\d{10}$/.test(formData.phone)) throw "Phone must be 10 digits";
+
+                state.patients.push(formData);
+                DB.save('patients', state.patients);
+                
+                alert("Patient Registered Successfully!");
+                navigate('patients');
+            } catch (err) {
+                alert("Error: " + err);
+            } finally {
+                btn.innerText = "Save Patient Record";
+                btn.disabled = false;
+            }
+        }
+
+        // --- 5. PAGE RENDERERS ---
+
+        function render() {
+            refreshState();
+            const main = document.getElementById('main-content');
+            const nav = document.getElementById('nav');
+
+            const links = [
+                { id: 'dashboard', label: '📊 Dashboard' },
+                { id: 'patients', label: '👥 Patients' },
+                { id: 'sessions', label: '📅 Sessions' },
+                { id: 'payments', label: '💰 Payments' }
+            ];
+            nav.innerHTML = links.map(l => `
+                <button onclick="navigate('${l.id}')" class="w-full text-left px-8 py-3 transition-colors ${state.screen === l.id ? 'bg-white/10 border-r-4' : 'text-white/70 hover:bg-white/5'}">
+                    ${l.label}
+                </button>
+            `).join('');
+
+            if (state.screen === 'dashboard') renderDashboard(main);
+            if (state.screen === 'patients') renderPatients(main);
+            if (state.screen === 'add-patient') renderPatientForm(main);
+            if (state.screen === 'patient-detail') renderPatientDetail(main);
+            if (state.screen === 'sessions') renderSessions(main);
+            if (state.screen === 'payments') renderPayments(main);
+        }
+
+        function renderDashboard(el) {
+            const revenue = state.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+            el.innerHTML = `
+                <h2 class="text-3xl font-bold mb-8 text-[#15803d]">Clinic Dashboard</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border-l-8 border-[#16a34a]">
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">Total Patients</span>
+                        <div class="text-4xl font-bold mt-2">${state.patients.length}</div>
+                    </div>
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border-l-8 border-blue-500">
+                        <span class="text-slate-400 text-xs font-bold uppercase tracking-widest">Total Revenue</span>
+                        <div class="text-4xl font-bold mt-2">₹${revenue.toLocaleString()}</div>
+                    </div>
+                </div>
+                <button onclick="navigate('add-patient')" class="bg-[#16a34a] text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-green-500/20 hover:scale-105 transition-all">
+                    + Register New Patient
+                </button>
+            `;
+        }
+
+        function renderPatients(el) {
+            el.innerHTML = `
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-2xl font-bold">Patient Directory</h2>
+                    <input type="text" placeholder="Search..." class="p-3 border rounded-xl w-64 shadow-sm" onkeyup="handleSearch(this.value)">
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 text-slate-500 text-[10px] uppercase font-bold tracking-widest">
+                            <tr><th class="p-6">ID</th><th class="p-6">Name</th><th class="p-6">Phone</th><th class="p-6 text-right">Action</th></tr>
+                        </thead>
+                        <tbody id="p-list" class="divide-y">
+                            ${state.patients.map(p => `
+                                <tr class="hover:bg-slate-50">
+                                    <td class="p-6 font-bold text-slate-400 text-xs">${p.regNo}</td>
+                                    <td class="p-6 font-bold text-slate-700">${p.name}</td>
+                                    <td class="p-6 text-slate-500">${p.phone}</td>
+                                    <td class="p-6 text-right space-x-2">
+                                        <button onclick="navigate('patient-detail', '${p.id}')" class="bg-[#16a34a] text-white px-4 py-1.5 rounded-lg text-xs font-bold">View</button>
+                                        <button onclick="showPrintCard('${p.id}')" class="border px-4 py-1.5 rounded-lg text-xs font-bold text-slate-600">Card</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function renderPatientForm(el) {
+            el.innerHTML = `
+                <h2 class="text-2xl font-bold mb-8">Registration</h2>
+                <div class="bg-white p-10 rounded-2xl border shadow-sm max-w-4xl">
+                    <form onsubmit="handlePatientSubmit(event)" class="space-y-6">
+                        <div class="grid grid-cols-2 gap-6">
+                            <input type="text" id="p-name" placeholder="Full Name" required class="p-4 border rounded-xl bg-slate-50">
+                            <input type="tel" id="p-phone" placeholder="Phone" required class="p-4 border rounded-xl bg-slate-50">
+                            <input type="number" id="p-age" placeholder="Age" required class="p-4 border rounded-xl bg-slate-50">
+                            <select id="p-gender" class="p-4 border rounded-xl bg-slate-50"><option>Male</option><option>Female</option></select>
+                        </div>
+                        <textarea id="p-address" placeholder="Address" class="w-full p-4 border rounded-xl bg-slate-50"></textarea>
+                        <input type="text" id="p-conditions" placeholder="Conditions (comma separated)" class="w-full p-4 border rounded-xl bg-slate-50">
+                        <textarea id="p-history" placeholder="History" class="w-full p-4 border rounded-xl bg-slate-50"></textarea>
+                        <div class="flex justify-end gap-4"><button type="button" onclick="navigate('patients')" class="px-8 py-4 border rounded-xl">Cancel</button><button type="submit" class="px-8 py-4 bg-[#16a34a] text-white rounded-xl font-bold">Save</button></div>
+                    </form>
+                </div>
+            `;
+        }
+
+        function renderPatientDetail(el) {
+            const p = state.activePatient;
+            const pSessions = state.sessions.filter(s => s.patientId === p.id);
+            el.innerHTML = `
+                <div class="flex items-center gap-4 mb-8"><button onclick="navigate('patients')" class="text-slate-400 font-bold">← Back</button><h2 class="text-3xl font-bold">${p.name}</h2></div>
+                <div class="grid grid-cols-3 gap-8">
+                    <div class="col-span-1 space-y-4">
+                        <div class="bg-white p-6 rounded-2xl border"><h3 class="font-bold text-xs uppercase mb-4">Patient Profile</h3><p class="text-sm">Phone: ${p.phone}</p><p class="text-sm">Age/Sex: ${p.age}/${p.gender}</p></div>
+                        <button onclick="showSessionModal()" class="w-full bg-[#16a34a] text-white p-4 rounded-xl font-bold">+ Session</button>
+                        <button onclick="showPaymentModal()" class="w-full bg-blue-500 text-white p-4 rounded-xl font-bold">+ Payment</button>
+                    </div>
+                    <div class="col-span-2 bg-white rounded-2xl border p-8">
+                        <h4 class="font-bold mb-6">History</h4>
+                        ${pSessions.map(s => `<div class="border-l-4 border-green-500 pl-4 mb-4"><p class="text-sm font-bold">${new Date(s.date).toLocaleDateString()} - Pain ${s.painLevel}/10</p><p class="text-xs text-slate-500">${s.assessment}</p></div>`).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSessions(el) {
+            el.innerHTML = `<h2 class="text-2xl font-bold mb-8">Sessions</h2><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 text-[10px] font-bold uppercase tracking-widest"><tr><th class="p-6">Date</th><th class="p-6">Patient</th><th class="p-6">Pain</th></tr></thead><tbody class="divide-y">${state.sessions.map(s => `<tr><td class="p-6">${new Date(s.date).toLocaleDateString()}</td><td class="p-6 font-bold">${state.patients.find(p => p.id === s.patientId)?.name}</td><td class="p-6 font-bold text-green-600">${s.painLevel}/10</td></tr>`).join('')}</tbody></table></div>`;
+        }
+
+        function renderPayments(el) {
+            el.innerHTML = `<h2 class="text-2xl font-bold mb-8">Payments</h2><div class="bg-white rounded-2xl border overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 text-[10px] font-bold uppercase tracking-widest"><tr><th class="p-6">Date</th><th class="p-6">Patient</th><th class="p-6">Amount</th></tr></thead><tbody class="divide-y">${state.payments.map(p => `<tr><td class="p-6">${new Date(p.date).toLocaleDateString()}</td><td class="p-6 font-bold">${state.patients.find(pat => pat.id === p.patientId)?.name}</td><td class="p-6 font-bold">₹${p.amount}</td></tr>`).join('')}</tbody></table></div>`;
+        }
+
+        function showSessionModal() {
+            const root = document.getElementById('modal-root');
+            root.classList.remove('hidden');
+            root.innerHTML = `<div class="modal-bg absolute inset-0"></div><div class="relative bg-white max-w-xl mx-auto mt-20 p-10 rounded-2xl shadow-2xl">
+                <h3 class="text-xl font-bold mb-6">Log Session</h3>
+                <form onsubmit="handleSessionSubmit(event)" class="space-y-4">
+                    <textarea id="s-assessment" required class="w-full p-4 border rounded-xl bg-slate-50" placeholder="Assessment..."></textarea>
+                    <input type="number" id="s-pain" required min="1" max="10" value="5" class="p-4 border rounded-xl w-full bg-slate-50">
+                    <input type="text" id="s-tech" class="w-full p-4 border rounded-xl bg-slate-50" placeholder="Techniques...">
+                    <div class="flex gap-4 pt-4"><button type="button" onclick="closeModal()" class="flex-grow border py-4 rounded-xl">Cancel</button><button type="submit" class="flex-grow bg-[#16a34a] text-white py-4 rounded-xl font-bold">Save</button></div>
+                </form></div>`;
+        }
+
+        function showPaymentModal() {
+            const root = document.getElementById('modal-root');
+            root.classList.remove('hidden');
+            root.innerHTML = `<div class="modal-bg absolute inset-0"></div><div class="relative bg-white max-w-md mx-auto mt-32 p-10 rounded-2xl shadow-2xl text-center">
+                <h3 class="text-xl font-bold mb-8">Payment</h3>
+                <form onsubmit="handlePaymentSubmit(event)" class="space-y-6">
+                    <input type="number" id="pay-amt" required class="w-full p-6 border rounded-2xl text-4xl font-bold text-center text-green-600" placeholder="₹ 0">
+                    <div class="flex gap-4 pt-4"><button type="button" onclick="closeModal()" class="flex-grow border py-4 rounded-xl">Cancel</button><button type="submit" class="flex-grow bg-[#16a34a] text-white py-4 rounded-xl font-bold">Confirm</button></div>
+                </form></div>`;
+        }
+
+        async function handleSessionSubmit(e) { e.preventDefault(); state.sessions.push({ id: Date.now().toString(), patientId: state.activePatient.id, date: new Date().toISOString(), assessment: document.getElementById('s-assessment').value, painLevel: document.getElementById('s-pain').value, techniques: JSON.stringify(document.getElementById('s-tech').value.split(',').map(t => t.trim())) }); DB.save('sessions', state.sessions); closeModal(); render(); }
+        async function handlePaymentSubmit(e) { e.preventDefault(); state.payments.push({ id: Date.now().toString(), patientId: state.activePatient.id, date: new Date().toISOString(), amount: document.getElementById('pay-amt').value, status: 'PAID' }); DB.save('payments', state.payments); closeModal(); render(); }
+        function closeModal() { document.getElementById('modal-root').classList.add('hidden'); }
+
+        function showPrintCard(patientId) {
+            const p = state.patients.find(pat => pat.id === patientId);
+            const pSessions = state.sessions.filter(s => s.patientId === p.id);
+            const root = document.getElementById('modal-root');
+            root.classList.remove('hidden');
+            const cardHTML = `<div class="bg-white p-10 border-4 border-slate-800 text-slate-800 max-w-4xl mx-auto shadow-2xl relative">
+                <div class="text-center mb-6"><h1 class="text-2xl font-black uppercase">Siya Ram Neurotherapy Center</h1><p class="text-sm font-bold">Reg. No.: 2018293 | Neurotherapist: Pt. Pradeep Kumar</p></div>
+                <div class="grid grid-cols-2 gap-4 border-y-2 border-slate-800 py-4 mb-6 text-sm">
+                    <div><p><strong>Name:</strong> ${p.name}</p><p><strong>Phone:</strong> ${p.phone}</p></div>
+                    <div class="text-right"><p><strong>Age/Sex:</strong> ${p.age}/${p.gender}</p></div>
+                </div>
+                <table class="w-full border-collapse border-2 border-slate-800 text-[10px] mb-8">
+                    <thead class="bg-slate-50 border-b-2 border-slate-800"><tr><th class="p-2 border-r-2 border-slate-800">Date</th><th class="p-2 border-r-2 border-slate-800">Assessment</th><th class="p-2 text-center">Pain</th></tr></thead>
+                    <tbody>${pSessions.map(s => `<tr class="border-b border-slate-400"><td class="p-2 border-r-2 border-slate-800">${new Date(s.date).toLocaleDateString()}</td><td class="p-2 border-r-2 border-slate-800">${s.assessment}</td><td class="p-2 text-center">${s.painLevel}/10</td></tr>`).join('')}</tbody>
+                </table>
+                <div class="text-[10px] font-black italic text-red-600 uppercase">⚠ Treatment is at patient's own risk.</div>
+            </div>`;
+            root.innerHTML = `<div class="modal-bg absolute inset-0"></div><div class="relative max-w-4xl mx-auto mt-10"><div class="flex justify-between items-center mb-4 text-white"><h3 class="font-bold">Card Preview</h3><div class="space-x-2"><button onclick="window.print()" class="bg-[#16a34a] px-6 py-2 rounded-lg font-bold">Print</button><button onclick="closeModal()" class="bg-slate-700 px-6 py-2 rounded-lg font-bold">Close</button></div></div>${cardHTML}</div>`;
+            document.getElementById('print-content').innerHTML = cardHTML;
+        }
+
+        function handleSearch(val) {
+            const query = val.toLowerCase();
+            const filtered = DB.get('patients').filter(p => p.name.toLowerCase().includes(query) || p.phone.includes(query));
+            document.getElementById('p-list').innerHTML = filtered.map(p => `<tr class="hover:bg-slate-50"><td class="p-6 font-bold text-slate-400 text-xs">${p.regNo}</td><td class="p-6 font-bold text-slate-700">${p.name}</td><td class="p-6 text-slate-500">${p.phone}</td><td class="p-6 text-right space-x-2"><button onclick="navigate('patient-detail', '${p.id}')" class="bg-[#16a34a] text-white px-4 py-1.5 rounded-lg text-xs font-bold">View</button><button onclick="showPrintCard('${p.id}')" class="border px-4 py-1.5 rounded-lg text-xs font-bold text-slate-600">Card</button></td></tr>`).join('');
+        }
+
+        DB.init(); render();
+    </script>
+</body>
+</html>
