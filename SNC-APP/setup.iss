@@ -3,12 +3,17 @@
 ;  Siyaram Neurotherapy Center, Agra — Version 1.0.0
 ; ═══════════════════════════════════════════════════════════════
 ;
-;  BEFORE COMPILING:
-;    1. npm install          (download dependencies)
-;    2. npm start            (test app runs fine)
-;    3. Open this file in Inno Setup 6 → Compile (Ctrl+F9)
+;  PREREQUISITES:
+;    1. Install Node.js from https://nodejs.org
+;    2. Run: npm install
+;    3. Compile this .iss file with Inno Setup 6+
+;    4. Output: a single .exe installer
 ;
-;  OUTPUT:  SNC-Patient-Register-Setup-1.0.0.exe
+;  The installer will:
+;    - Install to Program Files
+;    - Create Desktop shortcut (optional)
+;    - Launch the app after install
+;    - Store SQLite DB in app folder
 ; ═══════════════════════════════════════════════════════════════
 
 #define MyAppName         "SNC Patient Register"
@@ -45,24 +50,17 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional shortcuts:"
 
 [Files]
-; Core app files
-Source: "app.js";        DestDir: "{app}";         Flags: ignoreversion
-Source: "database.js";    DestDir: "{app}";         Flags: ignoreversion
-Source: "package.json";   DestDir: "{app}";         Flags: ignoreversion
-Source: "launch.bat";     DestDir: "{app}";         Flags: ignoreversion
-; Route handlers
-Source: "routes\*";       DestDir: "{app}\routes";   Flags: ignoreversion recursesubdirs createallsubdirs
-; Frontend HTML/UI
-Source: "public\*";       DestDir: "{app}\public";   Flags: ignoreversion recursesubdirs createallsubdirs
-; Data folder (created at runtime, skip if empty)
-Source: "data\*";         DestDir: "{app}\data";    Flags: ignoreversion recursesubdirs createallsubdirs ifdoesntexist
-; Logs folder (created at runtime, skip if empty)
-Source: "logs\*";         DestDir: "{app}\logs";    Flags: ignoreversion recursesubdirs createallsubdirs ifdoesntexist
+Source: "app.js";       DestDir: "{app}"; Flags: ignoreversion
+Source: "database.js";  DestDir: "{app}"; Flags: ignoreversion
+Source: "package.json";  DestDir: "{app}"; Flags: ignoreversion
+Source: "launch.bat";    DestDir: "{app}"; Flags: ignoreversion
+Source: "routes\*";     DestDir: "{app}\routes"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "public\*";    DestDir: "{app}\public"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}";             Filename: "{app}\launch.bat"; WorkingDir: "{app}"
 Name: "{group}\Uninstall {#MyAppName}";  Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#MyAppName}";      Filename: "{app}\launch.bat"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{autodesktop}\{#MyAppName}";       Filename: "{app}\launch.bat"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\launch.bat"; Description: "Launch {#MyAppName} now"; Flags: nowait postinstall skipifsilent; WorkingDir: "{app}"
