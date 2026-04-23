@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getPatients } from '../api';
+import { getPatients, getRevenue } from '../api';
 
 const Dashboard: React.FC<{ onNavigate: (screen: string) => void }> = ({ onNavigate }) => {
     const [recentPatients, setRecentPatients] = useState<any[]>([]);
@@ -10,8 +10,10 @@ const Dashboard: React.FC<{ onNavigate: (screen: string) => void }> = ({ onNavig
             setRecentPatients(data.slice(0, 5));
             setStats(prev => ({ ...prev, totalPatients: data.length }));
         });
-        import('../api').then(api => api.getRevenue()).then(data => {
+        getRevenue().then(data => {
             setStats(prev => ({ ...prev, revenue: data.total }));
+        }).catch(() => {
+            setStats(prev => ({ ...prev, revenue: 0 }));
         });
     }, []);
 

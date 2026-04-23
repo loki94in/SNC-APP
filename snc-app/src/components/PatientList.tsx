@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+import { getPatients } from '../api';
 import TreatmentCard from './TreatmentCard';
 
 interface PatientListProps {
@@ -10,7 +12,7 @@ const PatientList: React.FC<PatientListProps> = ({ onEdit }) => {
     const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
 
     useEffect(() => {
-        getPatients(search).then(setPatients);
+        getPatients(search).then(setPatients).catch(() => setPatients([]));
     }, [search]);
 
     return (
