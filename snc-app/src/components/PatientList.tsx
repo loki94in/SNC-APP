@@ -4,9 +4,10 @@ import TreatmentCard from './TreatmentCard';
 
 interface PatientListProps {
     onEdit: (patient: any) => void;
+    onView: (patient: any) => void;
 }
 
-const PatientList: React.FC<PatientListProps> = ({ onEdit }) => {
+const PatientList: React.FC<PatientListProps> = ({ onEdit, onView }) => {
     const [patients, setPatients] = useState<any[]>([]);
     const [search, setSearch] = useState('');
     const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
@@ -55,6 +56,12 @@ const PatientList: React.FC<PatientListProps> = ({ onEdit }) => {
                                     <td className="p-4">{p.phone}</td>
                                     <td className="p-4 max-w-xs truncate">{p.conditions}</td>
                                     <td className="p-4 flex gap-2">
+                                        <button 
+                                            onClick={() => onView(p)}
+                                            className="text-white bg-primary px-3 py-1 rounded hover:bg-primary-dark font-semibold transition-colors"
+                                        >
+                                            View
+                                        </button>
                                         <button 
                                             onClick={() => setSelectedPatient(p)}
                                             className="text-slate-600 border px-3 py-1 rounded hover:bg-slate-100"

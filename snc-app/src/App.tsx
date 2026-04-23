@@ -5,6 +5,7 @@ import PatientForm from './components/PatientForm';
 import SessionList from './components/SessionList';
 import PaymentList from './components/PaymentList';
 import Settings from './components/Settings';
+import PatientDetail from './components/PatientDetail';
 
 const App: React.FC = () => {
     const [screen, setScreen] = useState('dashboard');
@@ -12,6 +13,7 @@ const App: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [editPatient, setEditPatient] = useState<any | null>(null);
+    const [activePatient, setActivePatient] = useState<any | null>(null);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,6 +27,11 @@ const App: React.FC = () => {
     const handleEditPatient = (patient: any) => {
         setEditPatient(patient);
         setScreen('add-patient');
+    };
+
+    const handleViewPatient = (patient: any) => {
+        setActivePatient(patient);
+        setScreen('patient-detail');
     };
 
     if (!isLoggedIn) {
@@ -113,7 +120,7 @@ const App: React.FC = () => {
             {/* Main Content */}
             <main className="ml-64 flex-grow p-10 max-w-7xl">
                 {screen === 'dashboard' && <Dashboard onNavigate={setScreen} />}
-                {screen === 'patients' && <PatientList onEdit={handleEditPatient} />}
+                {screen === 'patients' && <PatientList onEdit={handleEditPatient} onView={handleViewPatient} />}
                 {screen === 'add-patient' && (
                     <PatientForm 
                         editData={editPatient}
@@ -126,6 +133,12 @@ const App: React.FC = () => {
                 {screen === 'sessions' && <SessionList />}
                 {screen === 'payments' && <PaymentList />}
                 {screen === 'settings' && <Settings />}
+                {screen === 'patient-detail' && activePatient && (
+                    <PatientDetail 
+                        patient={activePatient} 
+                        onBack={() => setScreen('patients')} 
+                    />
+                )}
             </main>
         </div>
     );
